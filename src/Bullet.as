@@ -11,6 +11,7 @@ package  {
 		private var speed:int = 80;
 		private var initialX:int;
 		private var deadZombieIndex:int;
+		private var bulletDamage:Number;
 		
 		public function Bullet(playerX:int,playerY:int, playerDirection:String) 
 		{
@@ -30,10 +31,14 @@ package  {
 			
 			//functions that will run on enter frame
 			addEventListener(Event.ENTER_FRAME, loop);
+			
+			//Temporary Params
+			bulletTypes("Pistol");
 		}
 		
-		public function bulletTypes ():void {
+		public function bulletTypes (gun:String):void {
 			//Change Bullets depend on what weapon survivor use
+			bulletDamage = 10;
 		}
 		
 		private function loop(event:Event):void
@@ -82,10 +87,8 @@ package  {
 				if (this.hitTestObject(Game.zombieList[i] as MovieClip))
 				{
 					//Remove Zombie
-					Game.zombieList[i].removeSelf();
-					deadZombieIndex = i;
-					Game.zombieList.splice(deadZombieIndex, 1);
-					Main.mainStage.kills_mc.kill_txt.text = String( Number(Main.mainStage.kills_mc.kill_txt.text) + 1 );
+					Game.zombieList[i].takeDamage(bulletDamage, i);
+				
 					//Remove the Bullet
 					removeSelf();
 				}

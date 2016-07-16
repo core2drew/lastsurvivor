@@ -15,16 +15,19 @@
 		public var attackingBool:Boolean;
 		public var direction:String;
 		public var zombieSpeed:Number;
-		public var zombieLife:Number;
+		public var zombieHitpoints:Number;
 		
+		private var zombieLifeBar_mc:MovieClip;
 		private var zombieBody_mc:MovieClip;
 		private var zombieLegs_mc:MovieClip;
 		
-		public function Zombie (xLocation:int, yLocation:int, direction:String,survivor:Survivor,stageWidth:int) {
+		public function Zombie (xLocation:int, yLocation:int, direction:String, survivor:Survivor, stageWidth:int) {
             // constructor code
             x = xLocation;
             y = yLocation;
-			zombieSpeed = 0.5;
+			zombieSpeed = 1; ; //must be from database object
+			zombieHitpoints = 100; //must be from database object
+			
 			stop();
 			addEventListener(Event.ENTER_FRAME, loop);
 			this.stageWidth = stageWidth;
@@ -32,6 +35,7 @@
 			this.direction = direction;
 			zombieBody_mc = this.body_mc;
 			zombieLegs_mc = this.legs_mc;
+			zombieLifeBar_mc = this.lifebar_mc;
 			zombieBody_mc.stop();
 			zombieLegs_mc.stop();
 			updateDirection();
@@ -39,9 +43,11 @@
 		
 		public function updateDirection ():void {
 			if (direction == 'left') {
+				zombieLifeBar_mc.rotationY = 0;
 				this.rotationY = 0;
 			}
 			else if (direction == 'right') {
+				zombieLifeBar_mc.rotationY = 180;
 				this.rotationY = 180;
 			}
 		}
@@ -52,7 +58,18 @@
 			playerCollision();
 			playerCurrentPosition();
         }
-
+		
+		public function takeDamage (damage:Number, currentZombieIndex:int):void {
+			var currentHitpoints = zombieHitpoints -= damage;
+			zombieHitpoints = currentHitpoints;
+			zombieLifeBar_mc.bar_mc.scaleX = (currentHitpoints / 100);
+			if (zombieHitpoints <= 0) {
+				Game.zombieList.splice(currentZombieIndex, 1);
+				Main.mainStage.kills_mc.kill_txt.text = String( Number(Main.mainStage.kills_mc.kill_txt.text) + 1 );
+				removeSelf();
+			}
+		}
+		
 		//Remove Zombie
         public function removeSelf ():void {
             removeEventListener(Event.ENTER_FRAME, loop); //stop the loop
