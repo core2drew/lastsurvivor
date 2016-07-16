@@ -2,7 +2,8 @@ package {
 	import flash.display.MovieClip;
 	import flash.display.Stage;
 	import flash.events.Event;
-	import flash.utils.setTimeout;
+	import flash.events.TimerEvent;
+	import flash.utils.Timer;
 	import Controller;
 	import Survivor;
 	import Zombie;
@@ -21,18 +22,20 @@ package {
 		public var survivor:Survivor;
 		public var stageWidth:int;
 		public var scrollBGWidth:Number;
+		public var zombieSpawnTimer:Timer;
 
 		public function Game () {
 			mainStage = Main.mainStage;
 			stageWidth = Main.STAGE.stageWidth;
 			InGame = false;
-		
 		}
 		
 		//InGame functions
 		//Call this when click start
 		public function GameInit ():void {
 			mainStage.gotoAndStop(3);
+			zombieSpawnTimer = new Timer(5000, 1);
+			zombieSpawnTimer.addEventListener(TimerEvent.TIMER, spawnZombie);
 			survivor = new Survivor();
 			controller = new Controller(mainStage, survivor);
 			spawnSurvivor();//Add Survivor to Stage;
@@ -42,7 +45,7 @@ package {
 		
 		public function enterFrame (e:Event):void {
 			if (zombieList.length <= 2) {
-				spawnZombie();
+				zombieSpawnTimer.start();
 			}
 		}
 		
@@ -50,7 +53,7 @@ package {
 			mainStage.addChild(survivor);
 		}
 		
-		public function spawnZombie ():void {
+		public function spawnZombie (e:TimerEvent):void {
 			var zombie:Zombie
 			var xLocation:int;
 			var direction:String;
@@ -69,6 +72,7 @@ package {
 			zombie = new Zombie(xLocation, 0, direction , survivor, stageWidth);//Creating new Zombie Obj
 			mainStage.scrollingBG_mc.addChild(zombie);
 			zombieList.push(zombie);
+			trace(zombieList.length);
 		}
 
 		public function PauseGame ():void {

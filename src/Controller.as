@@ -11,8 +11,8 @@ package
 	 */
 	public class Controller extends MovieClip 
  	{
-		private var speedConstant = 7;
-		private var maxSpeedConstant = 7;
+		private var speedConstant = 10;
+		private var maxSpeedConstant = 10;
 		private var LeftMoveLimit:Number;
 		private var RightMoveLimit:Number;
 		private var MovingLeft:Boolean;
