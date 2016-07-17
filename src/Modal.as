@@ -26,6 +26,7 @@ package
 		public var showing:Boolean;
 		public var DB:Database;
 		private var levelsCon:MovieClip = new MovieClip();
+		private var shopCurrentView:String;
 		
 		public function Modal() {
 			modal = this;
@@ -40,18 +41,58 @@ package
 		
 		public function showShop ():void {
 			shop.visible = true;
+			hideShopBtns();
 			
-			prevBtn.visible = false;
-			nextBtn.visible = false;
-			buyBtn.visible = false;
-			viewBtn.visible = false;
+			shop.characterBtn.addEventListener(MouseEvent.CLICK, function (e:MouseEvent) { 
+				resetShopNavEvent();
+				showShopBtns();
+			});
+			
+			shop.weaponryBtn.addEventListener(MouseEvent.CLICK, function (e:MouseEvent) { 
+				resetShopNavEvent();
+				showShopBtns();
+			});
 			
 			//TweenMax.fromTo(shop, .8, { x:2607 }, { x:955, ease:Back.easeOut } );
 			modal.showModal();
 			//Hide Shop Modal
 			shop.Xbtn.addEventListener(MouseEvent.CLICK, function (e:MouseEvent) {
-				hideAllModal();
+				switch (shopCurrentView) 
+				{
+					case "Category":
+						hideAllModal();
+					break;
+					
+					case "Shop":
+						hideShopBtns();
+					break;
+				}
 			});
+		}
+		
+		public function showShopBtns ():void {
+			shopCurrentView = "Shop";
+			shop.prevBtn.visible = true;
+			shop.nextBtn.visible = true;
+			shop.buyBtn.visible = true;
+			shop.viewBtn.visible = true;
+			shop.characterBtn.visible = false;
+			shop.weaponryBtn.visible = false;
+		}
+		
+		public function hideShopBtns ():void {
+			shopCurrentView = "Category";
+			shop.prevBtn.visible = false;
+			shop.nextBtn.visible = false;
+			shop.buyBtn.visible = false;
+			shop.viewBtn.visible = false;
+			shop.characterBtn.visible = true;
+			shop.weaponryBtn.visible = true;
+		}
+		
+		public function resetShopNavEvent ():void {
+			shop.prevBtn.removeEventListener(MouseEvent.CLICK, arguments.callee);
+			shop.nextBtn.removeEventListener(MouseEvent.CLICK, arguments.callee);
 		}
 		
 		public function showExit ():void {
