@@ -44,7 +44,8 @@ package
 		public function showShop ():void {
 			shop.visible = true;
 			hideShopBtns();//Hide Nav, Buy, View
-			hideCharacterPageShop();
+			hideAllCharacterPageShop();
+			hideAllWeaponryPageShop();
 			
 			shop.characterBtn.addEventListener(MouseEvent.CLICK, function (e:MouseEvent) {
 				shopCharacterCurrentPage = 1;
@@ -54,8 +55,10 @@ package
 			});
 			
 			shop.weaponryBtn.addEventListener(MouseEvent.CLICK, function (e:MouseEvent) { 
+				shopWeaponryCurrentPage = 1;
 				resetShopNavEvent();
 				showShopBtns(true);
+				showWeaponryPageShop();
 			});
 			
 			//TweenMax.fromTo(shop, .8, { x:2607 }, { x:955, ease:Back.easeOut } );
@@ -71,7 +74,8 @@ package
 					
 					case "Shop":
 						hideShopBtns();
-						hideCharacterPageShop();
+						hideAllCharacterPageShop();
+						hideAllWeaponryPageShop();
 					break;
 				}
 			});
@@ -98,12 +102,12 @@ package
 			shop.weaponryBtn.visible = true;
 		}
 		
-		public function hideCharacterPageShop ():void {
+		public function hideAllCharacterPageShop ():void {
 			shop.characterShop1_mc.visible = false;
 		}
 		
 		public function showCharacterPageShop ():void {
-			hideCharacterPageShop();
+			hideAllCharacterPageShop();
 			switch (shopCharacterCurrentPage) 
 			{
 				case 1:
@@ -113,15 +117,16 @@ package
 			}
 		}
 		
-		public function hideWeaponryPageShop ():void {
-			
+		public function hideAllWeaponryPageShop ():void {
+			shop.weaponryShop1_mc.visible = false;
 		}
 		
 		public function showWeaponryPageShop ():void {
+			hideAllWeaponryPageShop();
 			switch (shopWeaponryCurrentPage) 
 			{
 				case 1:
-					
+					shop.weaponryShop1_mc.visible = true;
 				break;
 				default:
 			}
