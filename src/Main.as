@@ -113,7 +113,8 @@ package
 			
 			ss.last_mc.alpha = 0;
 			ss.survivor_mc.alpha = 0;
-			ss.touchscreenstart_mc.alpha = 0;
+			touchscreenstart_mc.alpha = 0;
+			
 			
 			TweenMax.to(ss.moon_mc, 2, { 
 				delay:1.5, 
@@ -135,21 +136,13 @@ package
 						y:439,
 						ease:Circ.easeIn,
 						onComplete:function () {
-							TweenMax.to(ss.last_mc, 0.8, {delay:1, alpha:1 } );
-							TweenMax.to(ss.survivor_mc, 0.8, {
-								delay:2, 
-								alpha:1, 
-								onComplete:function () {
-									TweenMax.to(ss.touchscreenstart_mc, 1, { alpha:1, yoyo:true, repeat: -1 } );
-									//addEventListener(TouchEvent.TOUCH_BEGIN, ScreenTouched); //Original Flow
-								}
-							} );
+							TweenMax.to(ss.last_mc, 0.8, { delay:1, alpha:1 } );
+							TweenMax.to(ss.survivor_mc, 0.8, { delay:2, alpha:1 } );
 						}
 					});
 				}
 			});
-			
-			//Temporary for fast start only
+			TweenMax.to(touchscreenstart_mc, 1, { alpha:1, yoyo:true, repeat: -1 } );
 			addEventListener(MouseEvent.CLICK, ScreenTouched);
 		}
 		
