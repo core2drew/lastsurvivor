@@ -27,6 +27,8 @@ package
 		public var DB:Database;
 		private var levelsCon:MovieClip = new MovieClip();
 		private var shopCurrentView:String;
+		private var shopCharacterCurrentPage:Number;
+		private var shopWeaponryCurrentPage:Number;
 		
 		public function Modal() {
 			modal = this;
@@ -41,20 +43,24 @@ package
 		
 		public function showShop ():void {
 			shop.visible = true;
-			hideShopBtns();
+			hideShopBtns();//Hide Nav, Buy, View
+			hideCharacterPageShop();
 			
-			shop.characterBtn.addEventListener(MouseEvent.CLICK, function (e:MouseEvent) { 
+			shop.characterBtn.addEventListener(MouseEvent.CLICK, function (e:MouseEvent) {
+				shopCharacterCurrentPage = 1;
 				resetShopNavEvent();
-				showShopBtns();
+				showShopBtns(false);
+				showCharacterPageShop();
 			});
 			
 			shop.weaponryBtn.addEventListener(MouseEvent.CLICK, function (e:MouseEvent) { 
 				resetShopNavEvent();
-				showShopBtns();
+				showShopBtns(true);
 			});
 			
 			//TweenMax.fromTo(shop, .8, { x:2607 }, { x:955, ease:Back.easeOut } );
 			modal.showModal();
+			
 			//Hide Shop Modal
 			shop.Xbtn.addEventListener(MouseEvent.CLICK, function (e:MouseEvent) {
 				switch (shopCurrentView) 
@@ -65,17 +71,19 @@ package
 					
 					case "Shop":
 						hideShopBtns();
+						hideCharacterPageShop();
 					break;
 				}
 			});
 		}
 		
-		public function showShopBtns ():void {
+		public function showShopBtns (nav:Boolean):void {
 			shopCurrentView = "Shop";
-			shop.prevBtn.visible = true;
-			shop.nextBtn.visible = true;
-			shop.buyBtn.visible = true;
-			shop.viewBtn.visible = true;
+			//If Nav true show prev next btn
+			if (nav) {
+				shop.prevBtn.visible = true;
+				shop.nextBtn.visible = true;
+			}
 			shop.characterBtn.visible = false;
 			shop.weaponryBtn.visible = false;
 		}
@@ -90,10 +98,40 @@ package
 			shop.weaponryBtn.visible = true;
 		}
 		
+		public function hideCharacterPageShop ():void {
+			shop.characterShop1_mc.visible = false;
+		}
+		
+		public function showCharacterPageShop ():void {
+			hideCharacterPageShop();
+			switch (shopCharacterCurrentPage) 
+			{
+				case 1:
+					shop.characterShop1_mc.visible = true;
+				break;
+				default:
+			}
+		}
+		
+		public function hideWeaponryPageShop ():void {
+			
+		}
+		
+		public function showWeaponryPageShop ():void {
+			switch (shopWeaponryCurrentPage) 
+			{
+				case 1:
+					
+				break;
+				default:
+			}
+		}
+		
 		public function resetShopNavEvent ():void {
 			shop.prevBtn.removeEventListener(MouseEvent.CLICK, arguments.callee);
 			shop.nextBtn.removeEventListener(MouseEvent.CLICK, arguments.callee);
 		}
+		
 		
 		public function showExit ():void {
 			exit.visible = true;
