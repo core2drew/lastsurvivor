@@ -40,6 +40,12 @@ package
 		
 		public function showShop ():void {
 			shop.visible = true;
+			
+			prevBtn.visible = false;
+			nextBtn.visible = false;
+			buyBtn.visible = false;
+			viewBtn.visible = false;
+			
 			//TweenMax.fromTo(shop, .8, { x:2607 }, { x:955, ease:Back.easeOut } );
 			modal.showModal();
 			//Hide Shop Modal
@@ -55,7 +61,7 @@ package
 			
 			//Exit the Game
 			exit.yesBtn.addEventListener(MouseEvent.CLICK, function () {
-				NativeApplication.nativeApplication.exit(); 
+				NativeApplication.nativeApplication.exit();
 			});
 			
 			//Hide Exit Modal
