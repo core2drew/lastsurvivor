@@ -8,7 +8,7 @@ package  {
 	public class Bullet extends MovieClip {
 		
 		//how quickly the bullet will move
-		private var speed:int = 80;
+		private var speed:int = 50;
 		private var initialX:int;
 		private var deadZombieIndex:int;
 		private var bulletDamage:Number;
@@ -18,11 +18,11 @@ package  {
 			// constructor code
 			if (playerDirection == "left") 
 			{
-				speed = -30; //speed is faster if player is running
+				speed *= -1; //speed is faster if player is running
 				x = playerX - 180;
 			} else if (playerDirection == "right") 
 			{
-				speed = 30;
+				speed *= 1;
 				x = playerX + 180;
 			}
 			y = playerY - 180;

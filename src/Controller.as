@@ -4,6 +4,7 @@ package
 	import flash.display.MovieClip;
 	import flash.events.*;
 	import flash.text.TextField;
+	import flash.utils.Timer;
 	import Game;
 	/**
 	 * ...
@@ -11,6 +12,7 @@ package
 	 */
 	public class Controller extends MovieClip 
  	{
+		private var mainStage:MovieClip;
 		private var speedConstant = 10;
 		private var maxSpeedConstant = 10;
 		private var LeftMoveLimit:Number;
@@ -33,13 +35,15 @@ package
 		private var leftBumping:Boolean = false;
 		private var rightBumping:Boolean = false;
 		private var downBumping:Boolean = false;
+		private var fireBulletDelay:Timer;
 		
-		public function Controller (mainStage:MovieClip,survivor:Survivor) {
+		public function Controller (_mainStage:MovieClip, survivor:Survivor) {
+			fireBulletDelay = new Timer(800, 1);//Delay must be get from the database (gun delay column)
 			LeftMoveLimit = -0;
 			RightMoveLimit = -2745;
 			MovingLeft = false;
 			MovingRight = false;
-			
+			mainStage = _mainStage;
 			scrollingBG = mainStage.scrollingBG_mc;
 			this.survivor = survivor;
 			
@@ -53,22 +57,34 @@ package
 			//Jumping
 			mainStage.jump_btn.addEventListener(TouchEvent.TOUCH_BEGIN, Jump);
 			
-			
-			//Firing
-			mainStage.fire_btn.addEventListener(TouchEvent.TOUCH_BEGIN, function(e:TouchEvent) { 
-				if (survivor.scaleX < 0)
-				{
-					playerDirection = 'left';
-				}
-				else if (survivor.scaleX > 0)
-				{
-					playerDirection = 'right';
-				}
-				bullet = new Bullet(survivor.x - scrollX, survivor.y - ground, playerDirection);
-				scrollingBG.addChild(bullet);
-			});
+			//Initial Fire
+			fireBulletDelay.start();
+			//Delay to Fire again a bullet
+			fireBulletDelay.addEventListener(TimerEvent.TIMER_COMPLETE, function(e:TimerEvent) { 
+				//Firing
+				mainStage.fire_btn.addEventListener(TouchEvent.TOUCH_BEGIN, fireBullet);
+			} );
 			
 			addEventListener(Event.ENTER_FRAME, Loop);
+		}
+		
+		private function fireBullet (e:TouchEvent) {
+			if (survivor.scaleX < 0)
+			{
+				playerDirection = 'left';
+			}
+			else if (survivor.scaleX > 0)
+			{
+				playerDirection = 'right';
+			}
+			bullet = new Bullet(survivor.x - scrollX, survivor.y - ground, playerDirection);
+			scrollingBG.addChild(bullet);
+			
+			//Remove Firing Bullet Event
+			mainStage.fire_btn.removeEventListener(TouchEvent.TOUCH_BEGIN, arguments.callee);
+			
+			//Wait for 1 sec to fire again a bullet
+			fireBulletDelay.start();
 		}
 		
 		public function MoveLeft(e:TouchEvent):void
@@ -171,8 +187,6 @@ package
 			{
 				scrollX -= xSpeed;
 				scrollingBG.x = scrollX;
-				trace("Scroll X: " + scrollX);
-				trace("xSpeed: " + xSpeed);
 			}
 		}
 	}
