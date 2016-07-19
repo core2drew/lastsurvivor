@@ -48,15 +48,15 @@ package
 			hideAllWeaponryPageShop();
 			
 			shop.characterBtn.addEventListener(MouseEvent.CLICK, function (e:MouseEvent) {
+				shopCurrentView = "Character";
 				shopCharacterCurrentPage = 1;
-				resetShopNavEvent();
 				showShopBtns(false);
 				showCharacterPageShop();
 			});
 			
 			shop.weaponryBtn.addEventListener(MouseEvent.CLICK, function (e:MouseEvent) { 
+				shopCurrentView = "Weaponry";
 				shopWeaponryCurrentPage = 1;
-				resetShopNavEvent();
 				showShopBtns(true);
 				showWeaponryPageShop();
 			});
@@ -66,23 +66,19 @@ package
 			
 			//Hide Shop Modal
 			shop.Xbtn.addEventListener(MouseEvent.CLICK, function (e:MouseEvent) {
-				switch (shopCurrentView) 
-				{
-					case "Category":
-						hideAllModal();
-					break;
-					
-					case "Shop":
-						hideShopBtns();
-						hideAllCharacterPageShop();
-						hideAllWeaponryPageShop();
-					break;
+				if (shopCurrentView == "Category") {
+					hideAllModal();
+					shop.Xbtn.removeEventListener(MouseEvent.CLICK, arguments.callee);
+				}
+				else if (shopCurrentView == "Character" || shopCurrentView == "Weaponry") {
+					hideShopBtns();
+					hideAllCharacterPageShop();
+					hideAllWeaponryPageShop();
 				}
 			});
 		}
 		
 		public function showShopBtns (nav:Boolean):void {
-			shopCurrentView = "Shop";
 			//If Nav true show prev next btn
 			if (nav) {
 				shop.prevBtn.visible = true;
@@ -131,12 +127,7 @@ package
 				default:
 			}
 		}
-		
-		public function resetShopNavEvent ():void {
-			shop.prevBtn.removeEventListener(MouseEvent.CLICK, arguments.callee);
-			shop.nextBtn.removeEventListener(MouseEvent.CLICK, arguments.callee);
-		}
-		
+
 		
 		public function showExit ():void {
 			exit.visible = true;
