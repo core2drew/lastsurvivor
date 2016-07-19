@@ -72,7 +72,6 @@ package {
 			zombie = new Zombie(xLocation, 0, direction , survivor, stageWidth);//Creating new Zombie Obj
 			mainStage.scrollingBG_mc.addChild(zombie);
 			zombieList.push(zombie);
-			trace(zombieList.length);
 		}
 
 		public function PauseGame ():void {
