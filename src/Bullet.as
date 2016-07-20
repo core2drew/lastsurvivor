@@ -8,7 +8,7 @@ package  {
 	public class Bullet extends MovieClip {
 		
 		//how quickly the bullet will move
-		private var speed:int = 50;
+		private var speed:int = 70;
 		private var initialX:int;
 		private var deadZombieIndex:int;
 		private var bulletDamage:Number;
@@ -88,7 +88,6 @@ package  {
 				{
 					//Remove Zombie
 					Game.zombieList[i].takeDamage(bulletDamage, i);
-				
 					//Remove the Bullet
 					removeSelf();
 				}
