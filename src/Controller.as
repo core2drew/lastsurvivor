@@ -30,7 +30,7 @@ package
 		private var scrollX:int = 0;
 		private var gravityConstant:Number = 15;
 		private var jumpConstant:Number = -25;
-		private var maxJumpHeight:int = 600;
+		private var maxJumpHeight:int = 650;
 		private var ground:int = 907; //This is the ground of the stage
 		private var leftBumping:Boolean = false;
 		private var rightBumping:Boolean = false;
@@ -104,6 +104,16 @@ package
 			if (survivor.y >= ground)
 			{
 				Jumping = true;
+				survivor.Jump();
+			}
+		}
+		
+		public function Fall():void {
+			Falling = true;
+			Jumping = false;
+			
+			if (Falling) {
+				survivor.Fall();
 			}
 		}
 		
@@ -127,8 +137,11 @@ package
 				}
 				else
 				{
-					xSpeed -= speedConstant;
-					survivor.Walk();
+					if (!Jumping && !Falling)
+					{
+						xSpeed -= speedConstant;
+						survivor.Walk();
+					}
 				}
 			}
 			else if (MovingRight)
@@ -141,8 +154,11 @@ package
 				}
 				else
 				{
-					xSpeed += speedConstant;
-					survivor.Walk();
+					if (!Jumping && !Falling)
+					{
+						xSpeed += speedConstant;
+						survivor.Walk();
+					}
 				}
 			}
 			
@@ -155,8 +171,7 @@ package
 				}
 				else
 				{
-					Falling = true;
-					Jumping = false;
+					Fall();
 				}
 			}
 			else if (Falling)
@@ -169,6 +184,7 @@ package
 				{
 					Jumping = false;
 					Falling = false;
+					survivor.Idle();
 				}
 			}
 			
