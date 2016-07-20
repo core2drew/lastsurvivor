@@ -37,12 +37,24 @@ package
 		}
 		
 		public function Idle ():void {
-			heroBody_mc.gotoAndStop(2);
+			heroBody_mc.gotoAndStop("Idle");
+		}
+		
+		public function Jump ():void {
+			heroBody_mc.gotoAndPlay("Jump");
+		}
+		
+		public function Fall ():void {
+			heroBody_mc.gotoAndPlay("Fall");
 		}
 		
 		public function loop (e:Event):void {
 			if (heroBody_mc.currentFrameLabel === "End") {
 				heroBody_mc.gotoAndStop(20);
+			}
+			
+			if (heroBody_mc.currentFrameLabel === "JumpEnd" || heroBody_mc.currentFrameLabel === "FallEnd") {
+				heroBody_mc.stop();
 			}
 		}
 		
