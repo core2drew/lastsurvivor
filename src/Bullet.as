@@ -8,7 +8,7 @@ package  {
 	public class Bullet extends MovieClip {
 		
 		//how quickly the bullet will move
-		private var speed:int = 100;
+		private var speed:int = 50;
 		private var initialX:int;
 		private var deadZombieIndex:int;
 		private var bulletDamage:Number;
@@ -70,8 +70,8 @@ package  {
 					bulletHitTargetChecker();
 				}
 			}
+
 		}
-		
 		public function removeSelf():void
 		{
 			removeEventListener(Event.ENTER_FRAME, loop); //stop the loop
