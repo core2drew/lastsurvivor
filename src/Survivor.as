@@ -46,7 +46,6 @@ package
 		
 		public function Fall ():void {
 			heroBody_mc.gotoAndPlay("Fall");
-			heroBody_mc.gotoAndStop(2);
 		}
 		
 		public function loop (e:Event):void {

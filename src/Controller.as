@@ -133,13 +133,12 @@ package
 				{
 					MovingLeft = false;
 					survivor.Idle();
-					return
 				}
 				else
 				{
+					xSpeed -= speedConstant;
 					if (!Jumping && !Falling)
 					{
-						xSpeed -= speedConstant;
 						survivor.Walk();
 					}
 				}
@@ -150,13 +149,12 @@ package
 				{
 					MovingRight = false;
 					survivor.Idle();
-					return
 				}
 				else
 				{
+					xSpeed += speedConstant;
 					if (!Jumping && !Falling)
 					{
-						xSpeed += speedConstant;
 						survivor.Walk();
 					}
 				}
