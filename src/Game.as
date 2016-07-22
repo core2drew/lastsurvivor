@@ -18,8 +18,9 @@ package {
 		public static var zombieList:Array = new Array();
 		public static var InGame:Boolean;
 		public var mainStage:MovieClip;
-		public var controller:Controller;
+		public var joystick:JoyStick;
 		public var survivor:Survivor;
+		public var controller:Controller;
 		public var stageWidth:int;
 		public var scrollBGWidth:Number;
 		public var zombieSpawnTimer:Timer;
@@ -36,11 +37,15 @@ package {
 			mainStage.gotoAndStop(3);
 			zombieSpawnTimer = new Timer(5000, 1);
 			zombieSpawnTimer.addEventListener(TimerEvent.TIMER, spawnZombie);
+			joystick = new JoyStick();
 			survivor = new Survivor();
 			controller = new Controller(mainStage, survivor);
 			spawnSurvivor();//Add Survivor to Stage;
 			scrollBGWidth = mainStage.scrollingBG_mc.width;
 			addEventListener(Event.ENTER_FRAME, enterFrame);
+			
+			//Adding Joystick to MainStage
+			mainStage.addChild(joystick);
 		}
 		
 		public function enterFrame (e:Event):void {

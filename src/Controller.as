@@ -6,6 +6,7 @@ package
 	import flash.text.TextField;
 	import flash.utils.Timer;
 	import Game;
+	import JoyStick;
 	/**
 	 * ...
 	 * @author Drew Calupe
