@@ -37,7 +37,7 @@ package
 		private var downBumping:Boolean = false;
 		private var fireBulletDelay:Timer;
 		
-		public function Controller (_mainStage:MovieClip, survivor:Survivor) {
+		public function Controller (_mainStage:MovieClip, _survivor:Survivor) {
 			fireBulletDelay = new Timer(800, 1);//Delay must be get from the database (gun delay column)
 			LeftMoveLimit = -0;
 			RightMoveLimit = -2745;
@@ -45,7 +45,7 @@ package
 			MovingRight = false;
 			mainStage = _mainStage;
 			scrollingBG = mainStage.scrollingBG_mc;
-			this.survivor = survivor;
+			survivor = _survivor;
 			
 			//Movements
 			mainStage.left_btn.addEventListener(TouchEvent.TOUCH_BEGIN, MoveLeft);
@@ -77,7 +77,7 @@ package
 			{
 				playerDirection = 'right';
 			}
-			bullet = new Bullet(survivor.x - scrollX, survivor.y - ground, playerDirection);
+			bullet = new Bullet(survivor.x - scrollX, survivor.y - ground, survivor, playerDirection);
 			scrollingBG.addChild(bullet);
 			
 			//Remove Firing Bullet Event
