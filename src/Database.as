@@ -91,6 +91,11 @@ package
 			
 		}
 		
+		//Survivor
+		public function getCurrentGunDamage(gunID:int) {
+			//return damage
+		}
+		
 		//Sound
 		public function getBGSound ():int {
 			sqlStatement.clearParameters()
