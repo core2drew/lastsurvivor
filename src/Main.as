@@ -26,6 +26,8 @@ package
 	{
 		public static var mainStage:MovieClip;
 		public static var STAGE:Stage;
+		public static var StageWidth:Number;
+		
 		public var DB:Database;
 		public var soundCtrl:SoundController;
 
@@ -66,6 +68,8 @@ package
 			NativeApplication.nativeApplication.addEventListener(Event.DEACTIVATE, handleAppDeactivated, false, 0, true);
 			NativeApplication.nativeApplication.addEventListener(Event.ACTIVATE, handleAppActivated, false, 0, true);
 			STAGE = stage;
+			StageWidth = STAGE.stageWidth;
+			
 			mainStage = this;
 			DB = new Database();
 			modal = new Modal();

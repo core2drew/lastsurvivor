@@ -3,6 +3,7 @@ package
 	import com.greensock.easing.*;
 	import com.greensock.TweenMax;
 	import flash.display.MovieClip;
+	import flash.display.Stage;
 	import flash.events.Event;
 	
 	public class Survivor extends MovieClip
@@ -10,15 +11,17 @@ package
 		
 		public var invulnerable:Boolean;
 		public var survivor:MovieClip;
-		
+		public var mainStage:MovieClip;
 		public function Survivor() 
 		{
 			survivor = this;
 			heroBody_mc.stop();
+			//Change Weapon Temporary
+			heroBody_mc.heroArms_mc.gotoAndStop(1);
 			this.name = "survivor";
-			this.x = 960;
-			this.y = 911;
-			
+			this.x = (Main.StageWidth / 2);
+			trace(Main.StageWidth);
+			this.y = 910;
 			addEventListener(Event.ENTER_FRAME, loop);
 		}
 		

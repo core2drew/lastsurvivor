@@ -13,19 +13,23 @@ package  {
 		private var deadZombieIndex:int;
 		private var bulletDamage:Number;
 		
-		public function Bullet(playerX:int,playerY:int, playerDirection:String) 
+		public function Bullet(survivorX:int, survivorY:int, surviror:MovieClip, playerDirection:String) 
 		{
 			// constructor code
+			var survivorHalfWidth = surviror.width / 2 ;
+			var survivorHalfHeight = surviror.height / 2;
+			
 			if (playerDirection == "left") 
 			{
-				speed *= -1; //speed is faster if player is running
-				x = playerX - 180;
+				speed *= -1;
+				x = survivorX - survivorHalfWidth;
 			} else if (playerDirection == "right") 
 			{
 				speed *= 1;
-				x = playerX + 180;
+				x = survivorX + survivorHalfWidth;
 			}
-			y = playerY - 180;
+			
+			y = survivorY - survivorHalfHeight;
 			
 			initialX = x; //use this to remember the initial spawn point
 			
