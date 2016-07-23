@@ -13,10 +13,10 @@ package
 		private var isTouch:Boolean;
 		private var startX:Number;
 		private var startY:Number;
-		private var touchXPos:Number;
-		private var touchYPos:Number;
 		private var radius:int;
 		private var angle:int;
+		private var xDirection:int;
+		public static var direction:String;
 		
 		public function JoyStick()  {
 			addEventListener(Event.ADDED_TO_STAGE, init);
@@ -24,28 +24,38 @@ package
 		
 		public function init (e:Event):void {
 			_knob = this.knob
-			this.x = 250;
+			this.x = 190;
 			this.y = 770;
 			startX = this.x;
 			startY = this.y;
 			radius = 100;
 			addEventListener(Event.ENTER_FRAME, enterFrame);
-			stage.addEventListener(TouchEvent.TOUCH_BEGIN, onTouch);
-			stage.addEventListener(TouchEvent.TOUCH_END, offTouch);
-			stage.addEventListener(TouchEvent.TOUCH_MOVE, moveTouch);
+			addEventListener(MouseEvent.MOUSE_DOWN, onTouch);
+			stage.addEventListener(MouseEvent.MOUSE_UP, offTouch);
 			removeEventListener(Event.ADDED_TO_STAGE, init);
 		}
 		
 		public function enterFrame (e:Event):void {
+			direction = "idle";
 			if (isTouch) {
-				angle = Math.atan2(touchYPos - startY, touchXPos - startX) / (Math.PI / 180);
+				angle = Math.atan2(root.mouseY - startY, root.mouseX - startX) / (Math.PI / 180);
 				this.rotation = angle;
 				_knob.rotation = -angle;
 				
-				_knob.x = touchXPos;
+				_knob.x = this.mouseX;
 				if (_knob.x > radius ) {
 					_knob.x = radius;
 				}
+				
+				xDirection = Math.round( Math.cos(angle * (Math.PI / 180)) );
+				
+				if (xDirection > 0) {
+					direction = "right";
+				}
+				else if (xDirection < 0) {
+					direction = "left";
+				}
+				trace(direction);
 			}
 			else {
 				//If the joystick is not being touched, return it to the neutral position
@@ -53,17 +63,12 @@ package
 			}
 		}
 		
-		public function onTouch (e:TouchEvent):void  {
+		public function onTouch (e:MouseEvent):void  {
 			isTouch = true;
 		}
 		
-		public function offTouch (e:TouchEvent):void {
+		public function offTouch (e:MouseEvent):void {
 			isTouch = false;
-		}
-		
-		public function moveTouch (e:TouchEvent):void {
-			touchXPos = e.stageX;
-			touchYPos = e.stageY;
 		}
 	}
 }

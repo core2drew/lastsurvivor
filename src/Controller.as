@@ -91,13 +91,13 @@ package
 		public function MoveLeft(e:TouchEvent):void
 		{
 			MovingLeft = true;
-			survivor.TurnLeft();
+			//survivor.TurnLeft();
 		}
 		
 		public function MoveRight(e:TouchEvent):void
 		{
 			MovingRight = true;
-			survivor.TurnRight();
+			//survivor.TurnRight();
 		}
 		
 		public function Jump(e:TouchEvent)
@@ -128,7 +128,7 @@ package
 		public function Loop(e:Event):void
 		{
 			//Player Movement
-			if (MovingLeft)
+			/*if (MovingLeft)
 			{
 				if (scrollX >= LeftMoveLimit)
 				{
@@ -159,6 +159,49 @@ package
 						survivor.Walk();
 					}
 				}
+			}*/
+			
+			if (JoyStick.direction === "left")
+			{
+				survivor.TurnLeft();
+				if (scrollX >= LeftMoveLimit)
+				{
+					MovingLeft = false;
+					survivor.Idle();
+				}
+				else
+				{
+					MovingLeft = true;
+					xSpeed -= speedConstant;
+					if (!Jumping && !Falling)
+					{
+						survivor.Walk();
+					}
+				}
+			}
+			else if (JoyStick.direction === "right")
+			{
+				survivor.TurnRight();
+				if (scrollX <= RightMoveLimit)
+				{
+					MovingRight = false;
+					survivor.Idle();
+				}
+				else
+				{
+					MovingRight = true;
+					xSpeed += speedConstant;
+					if (!Jumping && !Falling)
+					{
+						survivor.Walk();
+					}
+				}
+			}
+			else if (JoyStick.direction === "idle")
+			{
+				MovingLeft = false;
+				MovingRight = false;
+				survivor.Idle();
 			}
 			
 			
