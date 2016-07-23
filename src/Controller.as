@@ -40,7 +40,7 @@ package
 		
 		public function Controller (_mainStage:MovieClip, _survivor:Survivor) {
 			fireBulletDelay = new Timer(800, 1);//Delay must be get from the database (gun delay column)
-			LeftMoveLimit = -0;
+			LeftMoveLimit = 0;
 			RightMoveLimit = -2745;
 			MovingLeft = false;
 			MovingRight = false;
@@ -130,18 +130,22 @@ package
 			//Player Movement
 			/*if (MovingLeft)
 			{
+				
 				if (scrollX >= LeftMoveLimit)
 				{
+					trace("MovingLeft False");
 					MovingLeft = false;
 					survivor.Idle();
 				}
 				else
 				{
+					trace("MovingLeft True");
 					xSpeed -= speedConstant;
 					if (!Jumping && !Falling)
 					{
 						survivor.Walk();
 					}
+					moveScrollBGX()
 				}
 			}
 			else if (MovingRight)
@@ -158,29 +162,35 @@ package
 					{
 						survivor.Walk();
 					}
+					moveScrollBGX()
 				}
 			}*/
 			
+			//JoyStick Pad Condition
 			if (JoyStick.direction === "left")
 			{
+				MovingLeft = true;
 				survivor.TurnLeft();
 				if (scrollX >= LeftMoveLimit)
 				{
+					trace("MovingLeft False");
 					MovingLeft = false;
 					survivor.Idle();
 				}
 				else
 				{
-					MovingLeft = true;
+					trace("MovingLeft True");
 					xSpeed -= speedConstant;
 					if (!Jumping && !Falling)
 					{
 						survivor.Walk();
 					}
+					moveScrollBGX()
 				}
 			}
 			else if (JoyStick.direction === "right")
 			{
+				MovingRight = true;
 				survivor.TurnRight();
 				if (scrollX <= RightMoveLimit)
 				{
@@ -189,12 +199,12 @@ package
 				}
 				else
 				{
-					MovingRight = true;
 					xSpeed += speedConstant;
 					if (!Jumping && !Falling)
 					{
 						survivor.Walk();
 					}
+					moveScrollBGX()
 				}
 			}
 			else if (JoyStick.direction === "idle")
@@ -204,7 +214,7 @@ package
 				survivor.Idle();
 			}
 			
-			
+			//Jumping Condition
 			if (Jumping)
 			{
 				if (survivor.y > maxJumpHeight)
@@ -231,6 +241,9 @@ package
 			}
 			
 			
+		}
+		
+		public function moveScrollBGX() {
 			//Maxspeed
 			if (xSpeed < (maxSpeedConstant * -1))
 			{
@@ -240,12 +253,9 @@ package
 			{
 				xSpeed = maxSpeedConstant;
 			}
-			
-			if (MovingLeft || MovingRight)
-			{
-				scrollX -= xSpeed;
-				scrollingBG.x = scrollX;
-			}
+			//Move Scroll
+			scrollX -= xSpeed;
+			scrollingBG.x = scrollX;
 		}
 	}
 }

@@ -48,14 +48,12 @@ package
 				}
 				
 				xDirection = Math.round( Math.cos(angle * (Math.PI / 180)) );
-				
 				if (xDirection > 0) {
 					direction = "right";
 				}
 				else if (xDirection < 0) {
 					direction = "left";
 				}
-				trace(direction);
 			}
 			else {
 				//If the joystick is not being touched, return it to the neutral position
