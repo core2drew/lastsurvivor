@@ -21,7 +21,7 @@ package
 			this.name = "survivor";
 			this.x = (Main.StageWidth / 2);
 			trace(Main.StageWidth);
-			this.y = 910;
+			this.y = Main.mainStage.scrollingBG_mc.y;
 			addEventListener(Event.ENTER_FRAME, loop);
 		}
 		

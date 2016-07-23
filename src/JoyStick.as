@@ -24,8 +24,8 @@ package
 		
 		public function init (e:Event):void {
 			_knob = this.knob
-			this.x = 190;
-			this.y = 770;
+			this.x = 240;
+			this.y = 875;
 			startX = this.x;
 			startY = this.y;
 			radius = 100;
