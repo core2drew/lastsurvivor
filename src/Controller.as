@@ -75,7 +75,8 @@ package
 			{
 				playerDirection = 'right';
 			}
-			bullet = new Bullet(survivor.x - scrollX, survivor.y - ground, survivor, playerDirection);
+			
+			bullet = new Bullet(scrollX, ground, survivor, playerDirection);
 			scrollingBG.addChild(bullet);
 			
 			//Remove Firing Bullet Event
