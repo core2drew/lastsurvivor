@@ -22,12 +22,12 @@ package  {
 			if (playerDirection == "left") 
 			{
 				speed *= -1;
-				x = survivor.x - survivorHalfWidth;
+				x = (survivor.x - scrollX) - survivorHalfWidth;
 			} 
 			else if (playerDirection == "right") 
 			{
 				speed *= 1;
-				x = survivor.x + survivorHalfWidth;
+				x = (survivor.x - scrollX) + survivorHalfWidth;
 			}
 			
 			y = (survivor.y - ground ) - survivorHalfHeight;
