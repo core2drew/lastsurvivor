@@ -39,7 +39,7 @@ package {
 			zombieSpawnTimer.addEventListener(TimerEvent.TIMER, spawnZombie);
 			joystick = new JoyStick();
 			survivor = new Survivor();
-			controller = new Controller(mainStage, survivor);
+			controller = new Controller(survivor);
 			spawnSurvivor();//Add Survivor to Stage;
 			scrollBGWidth = mainStage.scrollingBG_mc.width;
 			addEventListener(Event.ENTER_FRAME, enterFrame);

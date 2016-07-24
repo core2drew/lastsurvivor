@@ -28,19 +28,19 @@ package
 		private var playerDirection:String;
 		private var xSpeed:int;
 		private var scrollX:int;
-		private var gravityConstant:Number;
-		private var jumpConstant:Number;
+		private var gravityConstant:int;
+		private var jumpConstant:int;
 		private var maxJumpHeight:int;
 		private var ground:int;
 		private var fireBulletDelay:Timer;
 		
-		public function Controller (_mainStage:MovieClip, _survivor:Survivor) {
+		public function Controller (_survivor:Survivor) {
 			speedConstant = 10;
 			maxSpeedConstant = 10
 			xSpeed = 0;
 			scrollX = 0;
-			gravityConstant = 15;
 			jumpConstant = -25;
+			gravityConstant = 20;
 			maxJumpHeight = 445;
 			ground = Main.mainStage.scrollingBG_mc.y; //This is the ground of the scrollBG
 			fireBulletDelay = new Timer(800, 1);//Delay must be get from the database (gun delay column)
@@ -48,7 +48,7 @@ package
 			RightMoveLimit = -2745;
 			MovingLeft = false;
 			MovingRight = false;
-			mainStage = _mainStage;
+			mainStage = Main.mainStage;
 			scrollingBG = mainStage.scrollingBG_mc;
 			survivor = _survivor;
 			
@@ -64,6 +64,7 @@ package
 			} );
 			
 			addEventListener(Event.ENTER_FRAME, Loop);
+			trace(survivor.y);
 		}
 		
 		private function fireBullet (e:TouchEvent) {
@@ -86,151 +87,88 @@ package
 			fireBulletDelay.start();
 		}
 		
-		public function Jump(e:TouchEvent)
-		{
-			if (survivor.y >= ground)
-			{
+		public function Jump (e:TouchEvent) {
+			if (survivor.y >= ground) {
 				Jumping = true;
 				survivor.Jump();
 			}
 		}
 		
 		public function Fall():void {
-			Falling = true;
-			Jumping = false;
-			
 			if (Falling) {
 				survivor.Fall();
 			}
 		}
 		
-		public function StopMoving(e:TouchEvent)
-		{
-			MovingLeft = false;
-			MovingRight = false;
-			survivor.Idle();
-		}
-		
-		public function Loop(e:Event):void
-		{
-			//Player Movement
-			/*if (MovingLeft)
-			{
-				
-				if (scrollX >= LeftMoveLimit)
-				{
-					trace("MovingLeft False");
-					MovingLeft = false;
-					survivor.Idle();
-				}
-				else
-				{
-					trace("MovingLeft True");
-					xSpeed -= speedConstant;
-					if (!Jumping && !Falling)
-					{
-						survivor.Walk();
-					}
-					moveScrollBGX()
-				}
-			}
-			else if (MovingRight)
-			{
-				if (scrollX <= RightMoveLimit)
-				{
-					MovingRight = false;
-					survivor.Idle();
-				}
-				else
-				{
-					xSpeed += speedConstant;
-					if (!Jumping && !Falling)
-					{
-						survivor.Walk();
-					}
-					moveScrollBGX()
-				}
-			}*/
-			
+		public function Loop (e:Event):void {
 			//JoyStick Pad Condition
-			if (JoyStick.direction === "left")
-			{
+			if (JoyStick.direction === "left") {
 				MovingLeft = true;
 				survivor.TurnLeft();
-				if (scrollX >= LeftMoveLimit)
-				{
+				if (scrollX >= LeftMoveLimit) {
 					MovingLeft = false;
 					survivor.Idle();
 				}
-				else
-				{
+				else {
 					xSpeed -= speedConstant;
-					if (!Jumping && !Falling)
-					{
+					if (!Jumping && !Falling) {
 						survivor.Walk();
 					}
 					moveScrollBGX()
 				}
 			}
-			else if (JoyStick.direction === "right")
-			{
+			else if (JoyStick.direction === "right") {
 				MovingRight = true;
 				survivor.TurnRight();
-				if (scrollX <= RightMoveLimit)
-				{
+				if (scrollX <= RightMoveLimit) {
 					MovingRight = false;
 					survivor.Idle();
 				}
-				else
-				{
+				else {
 					xSpeed += speedConstant;
-					if (!Jumping && !Falling)
-					{
+					if (!Jumping && !Falling) {
 						survivor.Walk();
 					}
 					moveScrollBGX()
 				}
 			}
-			else if (JoyStick.direction === "idle")
-			{
-				survivor.Idle();
+			else if (JoyStick.direction === "idle") {
+				//To animate jump when idle status
+				if (!Jumping && !Falling) {
+					survivor.Idle();
+				}
 			}
 			
 			//Jumping Condition
-			if (Jumping)
-			{
-				if (survivor.y > maxJumpHeight)
-				{
+			if (Jumping) {
+				if (survivor.y > maxJumpHeight) {
 					survivor.y += jumpConstant;
 				}
-				else
-				{
+				else {
+					Falling = true;
+					Jumping = false;
 					Fall();
 				}
 			}
-			else if (Falling)
-			{
-				if (survivor.y < ground)
-				{
+			//Falling Condition
+			if (Falling) {
+				if (survivor.y < ground - 30) {
 					survivor.y += gravityConstant;
 				}
-				else
-				{
-					Jumping = false;
+				else {
 					Falling = false;
-					survivor.Idle();
+					Jumping = false;
+					survivor.y = ground
 				}
 			}
 		}
 		
 		public function moveScrollBGX() {
 			//Maxspeed
-			if (xSpeed < (maxSpeedConstant * -1))
-			{
+			if (xSpeed < (maxSpeedConstant * -1)) {
 				xSpeed = (maxSpeedConstant * -1);
 			}
-			else if (xSpeed > maxSpeedConstant)
-			{
+			else if (xSpeed > maxSpeedConstant) {
 				xSpeed = maxSpeedConstant;
 			}
 			//Move Scroll
