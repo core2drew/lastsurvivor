@@ -36,9 +36,31 @@ package
 			hideAllModal();
 		}
 		
+		public function hideAllModal ():void {
+			showing = false;
+			modal.visible = false;
+			pause.visible = false;
+			lockmessage.visible = false;
+			level.visible = false;
+			shop.visible = false;
+			settings.visible = false;
+			exit.visible = false;
+		}
+		
 		public function showModal ():void {
 			modal.showing = true;
 			modal.visible = true;
+		}
+		
+		public function showPause ():void {
+			pause.visible = true;
+			Game.IsPaused = true;
+			pause.resumeBtn.addEventListener(MouseEvent.CLICK, function (e:MouseEvent) {
+				Game.IsPaused = false;
+				pause.resumeBtn.removeEventListener(MouseEvent.CLICK, arguments.callee);
+				hideAllModal();
+			});
+			modal.showModal();
 		}
 		
 		public function showShop ():void {
@@ -161,8 +183,8 @@ package
 			
 			//Hide Level Modal
 			level.XBtn.addEventListener(MouseEvent.CLICK, function (e:MouseEvent) {
-					resetLevelModal();
-					hideAllModal();
+				resetLevelModal();
+				hideAllModal();
 			});
 		}
 		
@@ -241,7 +263,6 @@ package
 							resetLevelModal();
 							hideAllModal();
 							_Game = new Game();
-							_Game.GameInit();
 						});
 					});
 				}
@@ -309,16 +330,6 @@ package
 			settings.XBtn.addEventListener(MouseEvent.CLICK, function (e:MouseEvent) {
 				hideAllModal();
 			});
-		}
-		
-		public function hideAllModal ():void {
-			showing = false;
-			modal.visible = false;
-			lockmessage.visible = false;
-			level.visible = false;
-			shop.visible = false;
-			settings.visible = false;
-			exit.visible = false;
 		}
 	}
 }

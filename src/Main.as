@@ -6,18 +6,19 @@ package
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.events.TouchEvent;
-	import flash.events.KeyboardEvent;
 	import flash.text.TextField;
 	import flash.ui.Keyboard;
 	import flash.ui.Multitouch;
 	import flash.ui.MultitouchInputMode;
 	import flash.desktop.NativeApplication;
+	import flash.events.KeyboardEvent;
 	import flash.media.SoundMixer;
 	import com.greensock.easing.*;
 	import com.greensock.TweenMax;
 	import Database;
 	import Game;
 	import SoundController;
+	import Modal;
 	/**
 	 * ...
 	 * @author Drew Calupe
@@ -69,10 +70,8 @@ package
 			NativeApplication.nativeApplication.addEventListener(Event.ACTIVATE, handleAppActivated, false, 0, true);
 			STAGE = stage;
 			StageWidth = STAGE.stageWidth;
-			
 			mainStage = this;
 			DB = new Database();
-			modal = new Modal();
 			soundCtrl = new SoundController();
 			//Show the starting screen
 			ShowStartingScreen();
@@ -85,9 +84,6 @@ package
 					if (!Game.InGame) {
 						modal.showModal();
 						modal.showExit();
-					}
-					else {
-						//Pause Game and show pause menu (e.g resume,settings,return to main)
 					}
 				} 
 				e.preventDefault();
@@ -157,7 +153,6 @@ package
 		}
 
 		public function MainMenuInit ():void {
-			mainStage.addChild(modal);
 			menuCon = mainStage.menuCon;
 			starCon = mainStage.starCon;
 			coinCon = mainStage.coinCon;
