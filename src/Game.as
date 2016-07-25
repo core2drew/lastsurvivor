@@ -98,7 +98,7 @@ package {
 			ground = mainStage.scrollingBG_mc.y; //This is the ground of the scrollBG
 			reloadDelay = new Timer(800, 1);//Delay must be get from the database (gun delay column)
 			
-			addEventListener(Event.ENTER_FRAME, enterFrame);
+			addEventListener(Event.ENTER_FRAME, loop);
 		}
 		
 		
@@ -155,7 +155,7 @@ package {
 			zombieList.push(zombie);
 		}
 		
-		private function enterFrame (e:Event):void {
+		private function loop (e:Event):void {
 			//Spawing Zombie Condition
 			if (zombieList.length <= 2) {
 				zombieSpawnTimer.start();
@@ -250,20 +250,20 @@ package {
 			mainStage.setChildIndex(mainStage.modal, mainStage.numChildren - 1);
 			mainStage.modal.showPause();
 			//Here Stop All Survivor Bullets, Zombie Moving, etc.
-			removeEventListener(Event.ENTER_FRAME, enterFrame);
-			//Loop if is not Pause
-			addEventListener(Event.ENTER_FRAME, pauseLoop);
+			removeEventListener(Event.ENTER_FRAME, loop);
+			//Checker if GamePause is False;
+			addEventListener(Event.ENTER_FRAME, pauseCheckerLoop);
 		}
 		
 		public function resumeGame ():void {
 			//Resume Game
-			addEventListener(Event.ENTER_FRAME, enterFrame);
+			addEventListener(Event.ENTER_FRAME, loop);
 		}
 		
-		public function pauseLoop(e:Event):void {
+		public function pauseCheckerLoop(e:Event):void {
 			if (!IsPaused) {
 				resumeGame();
-				removeEventListener(Event.ENTER_FRAME, pauseLoop);
+				removeEventListener(Event.ENTER_FRAME, arguments.callee);
 			}
 		}
 	}

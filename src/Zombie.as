@@ -5,6 +5,7 @@
 	import flash.events.*;
 	import com.greensock.easing.*;
 	import com.greensock.TweenMax;
+	import Game;
 	
 	public class Zombie extends MovieClip 
 	{
@@ -29,7 +30,6 @@
 			zombieHitpoints = 100; //must be from database object
 			
 			stop();
-			addEventListener(Event.ENTER_FRAME, loop);
 			this.stageWidth = stageWidth;
 			this.survivor = survivor;
 			this.direction = direction;
@@ -39,6 +39,7 @@
 			zombieBody_mc.stop();
 			zombieLegs_mc.stop();
 			updateDirection();
+			addEventListener(Event.ENTER_FRAME, loop);
         }
 		
 		public function updateDirection ():void {
@@ -55,9 +56,25 @@
         public function loop (e:Event):void {
             //the looping code goes here
 			//actions e.g (walking, attacking, etc.)
+			
+			//Game Pause Condition
+			if (Game.IsPaused) {
+				stopWalking();
+				removeEventListener(Event.ENTER_FRAME, arguments.callee);
+				//Checker if GamePause is False;
+				addEventListener(Event.ENTER_FRAME, pauseCheckerLoop);
+			}
+			
 			playerCollision();
 			playerCurrentPosition();
         }
+		
+		private function pauseCheckerLoop(e:Event):void {
+			if (!Game.IsPaused) {
+				addEventListener(Event.ENTER_FRAME, loop);
+				removeEventListener(Event.ENTER_FRAME, arguments.callee);
+			}
+		}
 		
 		public function takeDamage (damage:Number, currentZombieIndex:int):void {
 			var currentHitpoints = zombieHitpoints -= damage;

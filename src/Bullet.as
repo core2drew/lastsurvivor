@@ -48,6 +48,11 @@ package  {
 		
 		private function loop(event:Event):void
 		{
+			//Game Pause Condition
+			if (Game.IsPaused) {
+				removeEventListener(Event.ENTER_FRAME, arguments.callee);
+			}
+			
 			//looping code goes here
 			x += speed;
 			
@@ -75,8 +80,15 @@ package  {
 					bulletHitTargetChecker();
 				}
 			}
-
 		}
+		
+		private function pauseCheckerLoop(e:Event):void {
+			if (!Game.IsPaused) {
+				addEventListener(Event.ENTER_FRAME, loop);
+				removeEventListener(Event.ENTER_FRAME, arguments.callee);
+			}
+		}
+		
 		public function removeSelf():void
 		{
 			removeEventListener(Event.ENTER_FRAME, loop); //stop the loop
