@@ -8,6 +8,7 @@ package {
 	import flash.events.MouseEvent;
 	import flash.desktop.NativeApplication;
 	import flash.events.KeyboardEvent;
+	import flash.ui.Keyboard;
 	import Main;
 	import JoyStick;
 	import Survivor;
@@ -54,16 +55,13 @@ package {
 			InGame = false;
 			IsPaused = false;
 			GameInit();
-			
-			//Native Device Back Button
-			NativeApplication.nativeApplication.addEventListener(KeyboardEvent.KEY_DOWN, handleBackButton, false, 0, true);
-			//Native Inactive App
-			NativeApplication.nativeApplication.addEventListener(Event.DEACTIVATE, handleAppDeactivated, false, 0, true);
 		}
 		
 		//InGame functions
 		//Call this when click start
 		public function GameInit ():void {
+			NativeApplication.nativeApplication.addEventListener(KeyboardEvent.KEY_UP, handleGameBackButton, false, 0, true);//Native Device Back Button
+			NativeApplication.nativeApplication.addEventListener(Event.DEACTIVATE, handleGameDeactivated, false, 0, true);//Native Inactive App
 			
 			mainStage = Main.mainStage;
 			mainStage.gotoAndStop(3);
@@ -74,10 +72,10 @@ package {
 			zombieSpawnTimer.addEventListener(TimerEvent.TIMER, spawnZombie);
 			joystick = new JoyStick();
 			survivor = new Survivor();
+			spawnSurvivor();//Add Survivor to Stage;
 			mainStage.addChild(joystick);//Adding Joystick to MainStage
 			mainStage.jump_btn.addEventListener(TouchEvent.TOUCH_BEGIN, Jump);//Add Jumping Event
 			mainStage.fire_btn.addEventListener(TouchEvent.TOUCH_BEGIN, fireBullet);//Firing Event
-			spawnSurvivor();//Add Survivor to Stage;
 			
 			/*Controller Init*/
 			speedConstant = 10;
@@ -237,12 +235,25 @@ package {
 		}
 		
 		
-		public function handleBackButton (e:Event):void {
-			pauseGame();
+		public function handleGameBackButton (e:KeyboardEvent):void {
+			trace(e.keyCode);
+			if (e.keyCode == Keyboard.BACK) {
+				trace("test");
+				if (!IsPaused) {
+					pauseGame();
+				}else {
+					trace("test");
+					IsPaused = false;
+				}
+				e.preventDefault();
+				e.stopImmediatePropagation();
+			}
 		}
 		
-		public function handleAppDeactivated (e:Event):void {
-			pauseGame();
+		public function handleGameDeactivated (e:Event):void {
+			if (!IsPaused) {
+				pauseGame();
+			}
 		}
 		
 		public function pauseGame ():void {

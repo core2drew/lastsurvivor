@@ -64,7 +64,6 @@ package
 			removeEventListener(Event.ADDED_TO_STAGE, init);
 			stage.scaleMode = StageScaleMode.EXACT_FIT;
 			Multitouch.inputMode = MultitouchInputMode.TOUCH_POINT;
-			//Native Device Back Button
 			NativeApplication.nativeApplication.addEventListener(KeyboardEvent.KEY_DOWN, handleBackButton, false, 0, true);
 			NativeApplication.nativeApplication.addEventListener(Event.DEACTIVATE, handleAppDeactivated, false, 0, true);
 			NativeApplication.nativeApplication.addEventListener(Event.ACTIVATE, handleAppActivated, false, 0, true);
