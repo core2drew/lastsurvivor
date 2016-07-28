@@ -27,9 +27,7 @@ package
 		public var DB:Database;
 		private var levelsCon:MovieClip = new MovieClip();
 		private var shopCurrentView:String;
-		private var shopCharacterCurrentPage:Number;
-		private var shopWeaponryCurrentPage:Number;
-		
+
 		public function Modal() {
 			modal = this;
 			DB = new Database();
@@ -65,22 +63,18 @@ package
 		
 		public function showShop ():void {
 			shop.visible = true;
-			hideShopBtns();//Hide Nav, Buy, View
-			hideAllCharacterPageShop();
-			hideAllWeaponryPageShop();
+			hideShopBtns();
 			
 			shop.characterBtn.addEventListener(MouseEvent.CLICK, function (e:MouseEvent) {
 				shopCurrentView = "Character";
-				shopCharacterCurrentPage = 1;
 				showShopBtns(false);
-				showCharacterPageShop();
+				showCharacterShop();
 			});
 			
 			shop.weaponryBtn.addEventListener(MouseEvent.CLICK, function (e:MouseEvent) { 
 				shopCurrentView = "Weaponry";
-				shopWeaponryCurrentPage = 1;
 				showShopBtns(true);
-				showWeaponryPageShop();
+				showWeaponryShop();
 			});
 			
 			//TweenMax.fromTo(shop, .8, { x:2607 }, { x:955, ease:Back.easeOut } );
@@ -94,8 +88,6 @@ package
 				}
 				else if (shopCurrentView == "Character" || shopCurrentView == "Weaponry") {
 					hideShopBtns();
-					hideAllCharacterPageShop();
-					hideAllWeaponryPageShop();
 				}
 			});
 		}
@@ -118,38 +110,41 @@ package
 			shop.viewBtn.visible = false;
 			shop.characterBtn.visible = true;
 			shop.weaponryBtn.visible = true;
+			
+			hideAllCharacterShop();
+			hideAllWeaponryShop();
 		}
 		
-		public function hideAllCharacterPageShop ():void {
-			shop.characterShop1_mc.visible = false;
+		public function hideAllCharacterShop ():void {
+			shop.characterShop_mc.visible = false;
 		}
 		
-		public function showCharacterPageShop ():void {
-			hideAllCharacterPageShop();
-			switch (shopCharacterCurrentPage) 
-			{
-				case 1:
-					shop.characterShop1_mc.visible = true;
-				break;
-				default:
+		public function showCharacterShop ():void {
+			shop.characterShop_mc.visible = true;
+		}
+		
+		public function hideAllWeaponryShop ():void {
+			shop.weaponryShop_mc.visible = false;
+		}
+		
+		public function showWeaponryShop ():void {
+			var shopItem:ShopItem;
+			var weaponryShop:MovieClip = shop.weaponryShop_mc;
+			var weaponryArr:Array =  DB.getShopItems(shopCurrentView);//Get items info
+			
+			//Make All WeaponItemContainer hidden
+			for (var a = 0; a < weaponryShop.numChildren; a++) {
+				weaponryShop.getChildAt(a).visible = false;
 			}
-		}
-		
-		public function hideAllWeaponryPageShop ():void {
-			shop.weaponryShop1_mc.visible = false;
-		}
-		
-		public function showWeaponryPageShop ():void {
-			hideAllWeaponryPageShop();
-			switch (shopWeaponryCurrentPage) 
+			
+			for (var i = 0; i < weaponryArr.length; i++)
 			{
-				case 1:
-					shop.weaponryShop1_mc.visible = true;
-				break;
-				default:
+				shopItem = new ShopItem(weaponryShop.getChildAt(i) as MovieClip, weaponryArr[i]);
+				weaponryShop.getChildAt(i).visible = true;
 			}
+			
+			weaponryShop.visible = true;
 		}
-
 		
 		public function showExit ():void {
 			exit.visible = true;

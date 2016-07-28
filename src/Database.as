@@ -24,7 +24,8 @@ package
 		
 		public function getSelectedUser(id:int) {
 			sqlStatement.clearParameters()
-			sqlStatement.text = "SELECT username FROM GameState WHERE id=" + id;
+			sqlStatement.text = "SELECT username FROM GameState WHERE id=@id";
+			sqlStatement.parameters["@id"] = id;
 			sqlStatement.execute();
 			result = sqlStatement.getResult().data;
 			return result[0].username;
@@ -45,7 +46,8 @@ package
 		public function getLevelStars (stage:int) {
 			//Display the current stars of level on selected stage
 			sqlStatement.clearParameters()
-			sqlStatement.text = "SELECT level, stars  FROM Game WHERE stage=" + stage;
+			sqlStatement.text = "SELECT level, stars  FROM Game WHERE stage=@stage";
+			sqlStatement.parameters["@stage"] = stage;
 			sqlStatement.execute();
 			result = sqlStatement.getResult().data;
 			return result;
@@ -94,6 +96,16 @@ package
 		//Survivor
 		public function getCurrentGunDamage(gunID:int) {
 			//return damage
+		}
+		
+		//Shop
+		public function getShopItems(category:String) {
+			sqlStatement.clearParameters()
+			sqlStatement.text = "SELECT * FROM Shop WHERE category=@category";
+			sqlStatement.parameters["@category"] = category;
+			sqlStatement.execute();
+			result = sqlStatement.getResult().data;
+			return result;
 		}
 		
 		//Sound
