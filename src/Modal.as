@@ -27,7 +27,12 @@ package
 		public var DB:Database;
 		private var levelsCon:MovieClip = new MovieClip();
 		private var shopCurrentView:String;
-
+		private var shopItemCurrentPage:int;
+		private var shopItemPageCount:int;
+		private var shopItemDisplayLimit;
+		private var shopItemsCount:int;
+		
+		
 		public function Modal() {
 			modal = this;
 			DB = new Database();
@@ -61,20 +66,25 @@ package
 			modal.showModal();
 		}
 		
+		/*Shop Modal*/
 		public function showShop ():void {
 			shop.visible = true;
-			hideShopBtns();
-			
+			hideShop();
+			shopItemCurrentPage = 1; //Current Page Viewing
 			shop.characterBtn.addEventListener(MouseEvent.CLICK, function (e:MouseEvent) {
 				shopCurrentView = "Character";
-				showShopBtns(false);
-				showCharacterShop();
+				//Get Total Page
+				pageCount();
+				
+				showShopItems();
 			});
 			
 			shop.weaponryBtn.addEventListener(MouseEvent.CLICK, function (e:MouseEvent) { 
 				shopCurrentView = "Weaponry";
-				showShopBtns(true);
-				showWeaponryShop();
+				//Get Total Page
+				pageCount();
+				
+				showShopItems();
 			});
 			
 			//TweenMax.fromTo(shop, .8, { x:2607 }, { x:955, ease:Back.easeOut } );
@@ -87,64 +97,116 @@ package
 					shop.Xbtn.removeEventListener(MouseEvent.CLICK, arguments.callee);
 				}
 				else if (shopCurrentView == "Character" || shopCurrentView == "Weaponry") {
-					hideShopBtns();
+					hideShop();
 				}
 			});
 		}
 		
-		public function showShopBtns (nav:Boolean):void {
-			//If Nav true show prev next btn
-			if (nav) {
-				shop.prevBtn.visible = true;
-				shop.nextBtn.visible = true;
-			}
-			shop.characterBtn.visible = false;
-			shop.weaponryBtn.visible = false;
-		}
-		
-		public function hideShopBtns ():void {
-			shopCurrentView = "Category";
+		public function hideShop ():void {
+			//Hide All Shop Buttons
 			shop.prevBtn.visible = false;
 			shop.nextBtn.visible = false;
 			shop.buyBtn.visible = false;
 			shop.viewBtn.visible = false;
+			shop.shopItems_mc.visible = false;
+			//Show Category
+			shopCurrentView = "Category";
 			shop.characterBtn.visible = true;
 			shop.weaponryBtn.visible = true;
 			
-			hideAllCharacterShop();
-			hideAllWeaponryShop();
+			//Remove All Shop Items Child
+			removeShopItems();
+			
+			//Remove MouseEvent in Navigation
+			removeShopNavEvent();
+		}
+				
+		private function hideShopCategory():void {
+			shop.characterBtn.visible = false;
+			shop.weaponryBtn.visible = false;
 		}
 		
-		public function hideAllCharacterShop ():void {
-			shop.characterShop_mc.visible = false;
-		}
-		
-		public function showCharacterShop ():void {
-			shop.characterShop_mc.visible = true;
-		}
-		
-		public function hideAllWeaponryShop ():void {
-			shop.weaponryShop_mc.visible = false;
-		}
-		
-		public function showWeaponryShop ():void {
+		public function showShopItems ():void {
+			var shopItemYPosition:Number = 2.45
+			var shopItemXPosition:Array = [-273.35, 0, 270];
 			var shopItem:ShopItem;
-			var weaponryShop:MovieClip = shop.weaponryShop_mc;
-			var weaponryArr:Array =  DB.getShopItems(shopCurrentView);//Get items info
+			var shopItemsContainer:MovieClip = shop.shopItems_mc;
+			var shopItemsArr:Array =  new Array();
+			shopItemsArr = DB.getShopItems(shopCurrentView, shopItemCurrentPage) ? DB.getShopItems(shopCurrentView, shopItemCurrentPage) : []; //Get items info condition
 			
-			//Make All WeaponItemContainer hidden
-			for (var a = 0; a < weaponryShop.numChildren; a++) {
-				weaponryShop.getChildAt(a).visible = false;
+			//Hide Category
+			hideShopCategory();
+			
+			//Show Message no Items available
+			if (shopItemsArr.length == 0) {
+				trace("No Items Available");
+				return;
+			}
+			removeShopItems();
+			for (var i = 0; i < shopItemsArr.length; i++) {
+				shopItem = new ShopItem(shopItemsArr[i]);
+				shopItemsContainer.addChild(shopItem);
+				shopItemsContainer.getChildAt(i).x = shopItemXPosition[i];
+				shopItemsContainer.getChildAt(i).y = shopItemYPosition;
 			}
 			
-			for (var i = 0; i < weaponryArr.length; i++)
-			{
-				shopItem = new ShopItem(weaponryShop.getChildAt(i) as MovieClip, weaponryArr[i]);
-				weaponryShop.getChildAt(i).visible = true;
-			}
+			shopItemsContainer.visible = true;
 			
-			weaponryShop.visible = true;
+			showNavigation();
 		}
+		
+		public function showNavigation ():void {
+			shop.nextBtn.visible = false;
+			shop.prevBtn.visible = false;
+			//Condition if what button to be shown
+			if (shopItemPageCount > 1) {
+				shop.nextBtn.visible = true;
+				if (shopItemCurrentPage > 1) {
+					//Currently in page (2,3, etc..)
+					shop.prevBtn.visible = true;
+				}
+				if (shopItemCurrentPage == shopItemPageCount) {
+					//Currently in last page
+					shop.nextBtn.visible =  false;
+				}
+			}
+			shop.nextBtn.addEventListener(MouseEvent.CLICK, nextShopPage);
+			shop.prevBtn.addEventListener(MouseEvent.CLICK, prevShopPage);
+		}
+
+		private function pageCount ():void {
+			//Get the all shop items count
+			shopItemsCount = DB.getShopItemsCount(shopCurrentView);
+			shopItemDisplayLimit = 3;
+			//Get the page count of current category
+			shopItemPageCount = Math.ceil(shopItemsCount / shopItemDisplayLimit);
+			trace("Pages " + shopItemPageCount);
+		}
+		
+		private function nextShopPage (e:MouseEvent):void {
+			shopItemCurrentPage++;
+			showShopItems();
+		}
+		
+		private function prevShopPage (e:MouseEvent):void {
+			shopItemCurrentPage--;
+			showShopItems();
+		}
+		
+		public function removeShopItems ():void {
+			var shopItems:MovieClip = shop.shopItems_mc;
+			if (shopItems.numChildren) {
+				while (shopItems.numChildren > 0) {
+					shopItems.removeChildAt(0);
+				}
+			}	
+		}
+		
+		private function removeShopNavEvent ():void {
+			shop.nextBtn.removeEventListener(MouseEvent.CLICK, nextShopPage);
+			shop.prevBtn.removeEventListener(MouseEvent.CLICK, prevShopPage);
+		}
+		//End of Shop
 		
 		public function showExit ():void {
 			exit.visible = true;

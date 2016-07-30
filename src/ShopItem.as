@@ -1,6 +1,7 @@
 ﻿package  {
 	
 	import flash.display.MovieClip;
+	import flash.events.MouseEvent;
 	import flash.text.TextField;
 	import Database;
 	
@@ -14,17 +15,13 @@
 		private var itemDamage:int;
 		private var shopItemContainer:MovieClip;
 		
-		public function ShopItem(_shopItemContainer:MovieClip, itemDetails:Object) {
+		public function ShopItem(itemDetails:Object) {
 			//Shop Item Details
 			frameToShow = itemDetails.frame;
 			itemName = itemDetails.name;
 			itemPrice = itemDetails.price;
 			itemDescription = itemDetails.description;
-			shopItemContainer = _shopItemContainer;
-			shopItemContainer.itemText.text = itemName;
-			
-			
+			this.itemText.text = itemName;
 		}
 	}
-	
 }

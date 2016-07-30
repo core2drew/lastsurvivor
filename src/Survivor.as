@@ -35,6 +35,9 @@ package
 		}
 		
 		public function Walk ():void {
+			if (heroBody_mc.currentFrameLabel === "WalkEnd") {
+				heroBody_mc.gotoAndPlay("WalkLoop");
+			}
 			heroBody_mc.play();
 		}
 		

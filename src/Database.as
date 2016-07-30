@@ -99,13 +99,23 @@ package
 		}
 		
 		//Shop
-		public function getShopItems(category:String) {
+		public function getShopItems(category:String, currentPage:int) {
+			sqlStatement.clearParameters()
+			sqlStatement.text = "SELECT * FROM Shop WHERE category=@category AND page=@page";
+			sqlStatement.parameters["@category"] = category;
+			sqlStatement.parameters["@page"] = currentPage;
+			sqlStatement.execute();
+			result = sqlStatement.getResult().data;
+			return result;
+		}
+		
+		public function getShopItemsCount(category:String):int {
 			sqlStatement.clearParameters()
 			sqlStatement.text = "SELECT * FROM Shop WHERE category=@category";
 			sqlStatement.parameters["@category"] = category;
 			sqlStatement.execute();
 			result = sqlStatement.getResult().data;
-			return result;
+			return result.length;
 		}
 		
 		//Sound
