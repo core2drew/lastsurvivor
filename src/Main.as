@@ -19,6 +19,7 @@ package
 	import Game;
 	import SoundController;
 	import Modal;
+	import Helper;
 	/**
 	 * ...
 	 * @author Drew Calupe
@@ -149,8 +150,10 @@ package
 			removeEventListener(MouseEvent.CLICK, arguments.callee);
 			gotoAndStop(2);
 			MainMenuInit();
+			//Temporary
+			Game.UserID = 1;
 		}
-
+		
 		public function MainMenuInit ():void {
 			menuCon = mainStage.menuCon;
 			starCon = mainStage.starCon;
@@ -159,12 +162,16 @@ package
 			map = mainStage.map;
 			
 			userCon.user_txt.text = DB.getSelectedUser(1);//Temporary param(It must be dynamic param);
-			coinCon.currentCoins_txt.text = formatCost(DB.getCoins().toString(), 0, "", 0);//Get current coins of the current user
+			coinCon.currentCoins_txt.text = Helper.formatCost(DB.getCoins().toString(), 0, "", 0);//Get current coins of the current user
 			starCon.maxStars_txt.text = DB.getMaxStar();//Get max stars of the game
 			starCon.currentStars_txt.text = DB.getStars();//Get current stars of current user
 			
 			menuCon.addEventListener(MouseEvent.CLICK, menuItemClicked);
 			MapInit();
+		}
+		
+		public static function updateCoins (itemPrice:int):void {
+			mainStage.coinCon.currentCoins_txt.text = parseInt(mainStage.coinCon.currentCoins_txt.text.replace(",","")) - itemPrice;
 		}
 		
 		private function MapInit ():void {
@@ -250,31 +257,6 @@ package
 					break;
 				}
 			}
-		}
-
-		//Currency Format
-		public function formatCost (v:String, decimal_places:int = 2, currency_symbol:String = "", placement:int = 0) {
-			v = String(Number(v).toFixed(decimal_places));
-			var result:String = new String();
-			if(decimal_places == 0){
-			}else{
-				result = v.substr(-1-decimal_places);
-				v = v.substr(0, v.length-1-decimal_places);
-			}
-			while( v.length > 3 ){
-				result = "," + v.substr(-3) + result;
-				v = v.substr(0, v.length-3);
-			}
-			if(v.length > 0){
-				if(placement == 0){
-					result = currency_symbol + " " + v + result;
-				}else if(placement == 1){
-					result = v + result + " " + currency_symbol;
-				}else{
-					result = v + result;
-				}
-			}
-			return result;
 		}
 	}
 }

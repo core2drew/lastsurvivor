@@ -6,6 +6,7 @@ package
 	import flash.data.SQLStatement;
 	import flash.data.SQLResult;
 	import flash.errors.SQLError;
+	import Game;
 	/**
 	 * ...
 	 * @author Drew Calupe
@@ -116,6 +117,15 @@ package
 			sqlStatement.execute();
 			result = sqlStatement.getResult().data;
 			return result.length;
+		}
+		
+		//Buy Item Update the current coin
+		public function buyShopItem(price:int):void {
+			sqlStatement.clearParameters();
+			sqlStatement.text = "UPDATE GameState SET current_coin = current_coin - @price WHERE id=@id";
+			sqlStatement.parameters["@id"] = Game.UserID;
+			sqlStatement.parameters["@price"] = price;
+			sqlStatement.execute();
 		}
 		
 		//Sound
