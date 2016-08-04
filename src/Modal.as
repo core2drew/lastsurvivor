@@ -15,6 +15,7 @@ package
 	import Database;
 	import SoundController;
 	import Game;
+	import Main;
 	
 	/**
 	 * ...
@@ -26,7 +27,8 @@ package
 		public var showing:Boolean;
 		public var DB:Database;
 		private var levelsCon:MovieClip = new MovieClip();
-		private var shopCurrentView:String;
+		public static var shopCurrentView:String;
+		public static var shopPickCategory:String;
 		private var shopItemCurrentPage:int;
 		private var shopItemPageCount:int;
 		private var shopItemDisplayLimit;
@@ -48,6 +50,8 @@ package
 			shop.visible = false;
 			settings.visible = false;
 			exit.visible = false;
+			
+			shopPickCategory = "";
 		}
 		
 		public function showModal ():void {
@@ -55,6 +59,7 @@ package
 			modal.visible = true;
 		}
 		
+		//Pause Modal
 		public function showPause ():void {
 			pause.visible = true;
 			Game.IsPaused = true;
@@ -65,11 +70,18 @@ package
 			});
 			modal.showModal();
 		}
-		
+		//End of Pause Modal
+
 		/*Shop Modal*/
 		public function showShop ():void {
 			shop.visible = true;
 			hideShop();
+			hideAllItemInfo();
+			hideShopMessage();
+			
+			//TweenMax.fromTo(shop, .8, { x:2607 }, { x:955, ease:Back.easeOut } );
+			modal.showModal();
+			
 			shopItemCurrentPage = 1; //Current Page Viewing
 			shop.characterBtn.addEventListener(MouseEvent.CLICK, function (e:MouseEvent) {
 				shopCurrentView = "Character";
@@ -87,43 +99,100 @@ package
 				showShopItems();
 			});
 			
-			//TweenMax.fromTo(shop, .8, { x:2607 }, { x:955, ease:Back.easeOut } );
-			modal.showModal();
-			
-			//Hide Shop Modal
+		
+			//Close Shop Modal
 			shop.Xbtn.addEventListener(MouseEvent.CLICK, function (e:MouseEvent) {
 				if (shopCurrentView == "Category") {
 					hideAllModal();
 					shop.Xbtn.removeEventListener(MouseEvent.CLICK, arguments.callee);
 				}
+				//Close Character or Weaponry Shop
 				else if (shopCurrentView == "Character" || shopCurrentView == "Weaponry") {
 					hideShop();
 				}
+				//Close Show Info
+				else if (shopCurrentView == "ShowInfo") {
+					showNavigation();
+					hideAllItemInfo();
+					//Show Items
+					shop.shopItems_mc.visible = true;
+				}
 			});
+			
+			//Buy Item Event
+			shop.buyBtn.addEventListener(MouseEvent.CLICK, function (e:MouseEvent) {
+				var currentCoin:int = DB.getCoins();
+				var itemPrice:int;
+				
+				
+				if (shopPickCategory == "Character") {
+					
+				}
+				else if (shopPickCategory == "Weaponry") {
+					itemPrice = parseInt(shop.weaponInfo_mc.price_txt.text.replace(",", ""));
+				}
+				
+				//Buying Item Conditon
+				if (currentCoin > itemPrice) {
+					DB.buyShopItem(itemPrice);
+					Main.updateCoins(itemPrice);
+					//Update Weaponry Table
+				}
+				else {
+					//Show Message that is "You don't have enough coins"
+					showShopMessage("You don't have enough coins. Play more to buy this Weapon");
+				}
+			} );
 		}
 		
 		public function hideShop ():void {
-			//Hide All Shop Buttons
-			shop.prevBtn.visible = false;
-			shop.nextBtn.visible = false;
-			shop.buyBtn.visible = false;
-			shop.viewBtn.visible = false;
-			shop.shopItems_mc.visible = false;
+			//Remove MouseEvent in Navigation
+			removeShopNavEvent();
+			
+			//Hide Shop Item Navigation
+			hideNavigation();
+			
+			//Hide Shop Items
+			hideShopItems();
+			
 			//Show Category
+			showShopCategory();
+		}
+		
+		public function hideShopMessage ():void {
+			shop.shopMsg.visible = false;
+			shop.shopMsg.message_txt.text = "";
+		}
+		
+		public function showShopMessage (msg:String):void {
+			shop.shopMsg.visible = true;
+			shop.shopMsg.message_txt.text = msg;
+			shop.shopMsg.CloseBtn.addEventListener(MouseEvent.CLICK, function(e:MouseEvent):void {
+				shop.shopMsg.CloseBtn.removeEventListener(MouseEvent.CLICK, arguments.callee);
+				hideShopMessage();
+			});
+		}
+		
+		private function showShopCategory ():void {
 			shopCurrentView = "Category";
 			shop.characterBtn.visible = true;
 			shop.weaponryBtn.visible = true;
-			
-			//Remove All Shop Items Child
-			removeShopItems();
-			
-			//Remove MouseEvent in Navigation
-			removeShopNavEvent();
 		}
-				
+		
 		private function hideShopCategory():void {
 			shop.characterBtn.visible = false;
 			shop.weaponryBtn.visible = false;
+		}
+
+		public function hideShopItems ():void {
+			//Go back to items page 1
+			shopItemCurrentPage = 1;
+			
+			//Remove Shop Items
+			removeShopItems();
+			
+			//Hide ShopItems
+			shop.shopItems_mc.visible  = false;
 		}
 		
 		public function showShopItems ():void {
@@ -134,15 +203,18 @@ package
 			var shopItemsArr:Array =  new Array();
 			shopItemsArr = DB.getShopItems(shopCurrentView, shopItemCurrentPage) ? DB.getShopItems(shopCurrentView, shopItemCurrentPage) : []; //Get items info condition
 			
-			//Hide Category
-			hideShopCategory();
-			
 			//Show Message no Items available
 			if (shopItemsArr.length == 0) {
 				trace("No Items Available");
 				return;
 			}
+			
+			//Hide Category
+			hideShopCategory();
+			
+			//Remove Items
 			removeShopItems();
+			
 			for (var i = 0; i < shopItemsArr.length; i++) {
 				shopItem = new ShopItem(shopItemsArr[i]);
 				shopItemsContainer.addChild(shopItem);
@@ -150,14 +222,39 @@ package
 				shopItemsContainer.getChildAt(i).y = shopItemYPosition;
 			}
 			
+			//Show Items
+			shop.shopItems_mc.visible = true;
+			
 			shopItemsContainer.visible = true;
 			
 			showNavigation();
 		}
 		
+		public function removeShopItems ():void {
+			var shopItems:MovieClip = shop.shopItems_mc;
+			if (shopItems.numChildren) {
+				while (shopItems.numChildren > 0) {
+					shopItems.removeChildAt(0);
+				}
+			}	
+		}
+		
+		//Hide Item Info
+		private function hideAllItemInfo ():void {
+			//Hide ItemInfo
+			shopCurrentView = (shopPickCategory != "" ? shopPickCategory : shopCurrentView);
+			shop.weaponInfo_mc.visible = false;
+			hideBuyItemBtn();
+		}
+		//Hide Buy Item Btn
+		private function hideBuyItemBtn ():void {
+			shop.buyBtn.visible = false;
+		}
+		
 		public function showNavigation ():void {
 			shop.nextBtn.visible = false;
 			shop.prevBtn.visible = false;
+			
 			//Condition if what button to be shown
 			if (shopItemPageCount > 1) {
 				shop.nextBtn.visible = true;
@@ -166,21 +263,20 @@ package
 					shop.prevBtn.visible = true;
 				}
 				if (shopItemCurrentPage == shopItemPageCount) {
-					//Currently in last page
 					shop.nextBtn.visible =  false;
 				}
 			}
-			shop.nextBtn.addEventListener(MouseEvent.CLICK, nextShopPage);
-			shop.prevBtn.addEventListener(MouseEvent.CLICK, prevShopPage);
+			
+			if (!shop.nextBtn.hasEventListener(MouseEvent.CLICK) && !shop.prevBtn.hasEventListener(MouseEvent.CLICK)) {
+				shop.nextBtn.addEventListener(MouseEvent.CLICK, nextShopPage);
+				shop.prevBtn.addEventListener(MouseEvent.CLICK, prevShopPage);
+			}
 		}
-
-		private function pageCount ():void {
-			//Get the all shop items count
-			shopItemsCount = DB.getShopItemsCount(shopCurrentView);
-			shopItemDisplayLimit = 3;
-			//Get the page count of current category
-			shopItemPageCount = Math.ceil(shopItemsCount / shopItemDisplayLimit);
-			trace("Pages " + shopItemPageCount);
+		
+		private function hideNavigation ():void {
+			//Hide All Shop Buttons
+			shop.prevBtn.visible = false;
+			shop.nextBtn.visible = false;
 		}
 		
 		private function nextShopPage (e:MouseEvent):void {
@@ -193,19 +289,19 @@ package
 			showShopItems();
 		}
 		
-		public function removeShopItems ():void {
-			var shopItems:MovieClip = shop.shopItems_mc;
-			if (shopItems.numChildren) {
-				while (shopItems.numChildren > 0) {
-					shopItems.removeChildAt(0);
-				}
-			}	
-		}
-		
 		private function removeShopNavEvent ():void {
 			shop.nextBtn.removeEventListener(MouseEvent.CLICK, nextShopPage);
 			shop.prevBtn.removeEventListener(MouseEvent.CLICK, prevShopPage);
 		}
+				
+		private function pageCount ():void {
+			//Get the all shop items count
+			shopItemsCount = DB.getShopItemsCount(shopCurrentView);
+			shopItemDisplayLimit = 3;
+			//Get the page count of current category
+			shopItemPageCount = Math.ceil(shopItemsCount / shopItemDisplayLimit);
+		}
+		
 		//End of Shop
 		
 		public function showExit ():void {
@@ -223,7 +319,6 @@ package
 				hideAllModal();
 			});
 		}
-		
 		
 		public function showLevel (title:String, selectedStage:int):void {
 			level.visible = true;
