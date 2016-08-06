@@ -6,6 +6,7 @@ package
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.media.Sound;
+	import flash.text.TextField;
 	import flash.ui.Multitouch;
 	import flash.ui.MultitouchInputMode;
 	import flash.desktop.NativeApplication;
@@ -121,22 +122,47 @@ package
 			
 			//Buy Item Event
 			shop.buyBtn.addEventListener(MouseEvent.CLICK, function (e:MouseEvent) {
-				var currentCoin:int = DB.getCoins();
-				var itemPrice:int;
-				
-				
-				if (shopPickCategory == "Character") {
-					
-				}
-				else if (shopPickCategory == "Weaponry") {
-					itemPrice = parseInt(shop.weaponInfo_mc.price_txt.text.replace(",", ""));
-				}
+				var userID:int = Game.UserID;
+				var itemID:int = int(shop.itemID_txt.text);
+				var itemPrice:int = parseInt(shop.price_txt.text.replace(",", ""));
+				var itemName:String; 
+				var bullet:int;
+				var currentCoin:int;
+				var currentBullet:int;
+				var checkWeaponry:int;
+				var bulletTxt:String;
 				
 				//Buying Item Conditon
+				currentCoin = DB.getCoins();
 				if (currentCoin > itemPrice) {
-					DB.buyShopItem(itemPrice);
+					DB.buyShopItem(itemPrice, userID);
 					Main.updateCoins(itemPrice);
-					//Update Weaponry Table
+					
+					if (shopPickCategory == "Character") {
+					
+					}
+					
+					else if (shopPickCategory == "Weaponry") {
+						itemName = shop.weaponInfo_mc.gunDisplay_mc.weapon_txt.text;
+						
+						bulletTxt = shop.weaponInfo_mc.bullet_txt.text;
+						bullet = int(bulletTxt.substring(0, bulletTxt.indexOf("/")));
+						
+						//Update Weaponry Table
+						checkWeaponry = DB.checkWeaponry(userID, itemID);
+						if (checkWeaponry > 0) {
+							//Just Add the bullets of the bought weapon
+							//Bullet limit = 999 the excess will be void
+							DB.updateBulletsWeaponry(userID, itemID, bullet);
+						} else {
+							//Add the weapon to weaponry table with bullets
+							DB.addToWeaponry(userID, itemID, itemName, bullet);
+						}
+						
+						//Update bullet_txt current bullet
+						currentBullet = DB.getCurrentBullet(userID, itemID);
+						shop.weaponInfo_mc.bullet_txt.text = String(bullet) + "/" + String(currentBullet);
+					}
 				}
 				else {
 					//Show Message that is "You don't have enough coins"

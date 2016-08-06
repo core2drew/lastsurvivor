@@ -90,16 +90,29 @@ package
 			//Available Zombie for Current Level/Current Stage
 		}
 		
+		
+		
+		/********************************* ACHIEVEMENT **************************************/
+		
 		public function getAchievementList () {
 			
 		}
 		
-		//Survivor
+		/********************************* END OF ACHIEVEMENT **************************************/
+		
+		
+		/********************************* SURVIVOR **************************************/
+		
 		public function getCurrentGunDamage(gunID:int) {
 			//return damage
 		}
 		
-		//Shop
+		/********************************* END OF SURVIVOR **************************************/
+		
+		
+		
+		/********************************* SHOP **************************************/
+		
 		public function getShopItems(category:String, currentPage:int) {
 			sqlStatement.clearParameters()
 			sqlStatement.text = "SELECT * FROM Shop WHERE category=@category AND page=@page";
@@ -120,15 +133,64 @@ package
 		}
 		
 		//Buy Item Update the current coin
-		public function buyShopItem(price:int):void {
+		public function buyShopItem(price:int, userID:int):void {
 			sqlStatement.clearParameters();
 			sqlStatement.text = "UPDATE GameState SET current_coin = current_coin - @price WHERE id=@id";
-			sqlStatement.parameters["@id"] = Game.UserID;
+			sqlStatement.parameters["@id"] = userID;
 			sqlStatement.parameters["@price"] = price;
 			sqlStatement.execute();
 		}
 		
-		//Sound
+		/********************************* END OF SHOP **************************************/
+		
+		
+		
+		/********************************* WEAPONRY **************************************/
+		
+		public function checkWeaponry (userID:int, weaponID:int) {
+			sqlStatement.clearParameters()
+			sqlStatement.text = "SELECT * FROM Weaponry WHERE user_id=@userID AND weapon_id=@weaponID";
+			sqlStatement.parameters["@userID"] = userID;
+			sqlStatement.parameters["@weaponID"] = weaponID;
+			sqlStatement.execute();
+			result = sqlStatement.getResult().data;
+			return result.length;
+		}
+		
+		public function addToWeaponry (userID:int, weaponID:int, weaponName:String, bullets:int) {
+			sqlStatement.clearParameters()
+			sqlStatement.text = "INSERT INTO Weaponry (user_id, weapon_id, weapon_name, bullets) VALUES (@userID, @weaponID, @weaponName, @bullets)";
+			sqlStatement.parameters["@userID"] = userID;
+			sqlStatement.parameters["@weaponID"] = weaponID;
+			sqlStatement.parameters["@weaponName"] = weaponName;
+			sqlStatement.parameters["@bullets"] = bullets;
+			sqlStatement.execute();
+		}
+		
+		public function updateBulletsWeaponry (userID:int, weaponID:int, bullets:int):void {
+			sqlStatement.clearParameters();
+			sqlStatement.text = "UPDATE Weaponry SET bullets = bullets + @bullets WHERE user_id=@userID AND weapon_id=@weaponID";
+			sqlStatement.parameters["@userID"] = userID;
+			sqlStatement.parameters["@weaponID"] = weaponID;
+			sqlStatement.parameters["@bullets"] = bullets;
+			sqlStatement.execute();
+		}
+		
+		public function getCurrentBullet (userID:int, weaponID:int):int {
+			sqlStatement.clearParameters()
+			sqlStatement.text = "SELECT bullets FROM Weaponry WHERE user_id=@userID AND weapon_id=@weaponID";
+			sqlStatement.parameters["@userID"] = userID;
+			sqlStatement.parameters["@weaponID"] = weaponID;
+			sqlStatement.execute();
+			result = sqlStatement.getResult().data;
+			return result[0].bullets;
+		}
+		
+		/********************************* END OF WEAPONRY **************************************/
+		
+		
+		
+		/********************************* SOUND **************************************/
 		public function getBGSound ():int {
 			sqlStatement.clearParameters()
 			sqlStatement.text = "SELECT bg_sound FROM Settings";
@@ -158,6 +220,6 @@ package
 			sqlStatement.parameters["@status"] = status;
 			sqlStatement.execute();
 		}
-		
+		/********************************* END OF SOUND **************************************/
 	}
 }
