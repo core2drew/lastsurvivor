@@ -154,7 +154,12 @@ package
 			sqlStatement.parameters["@weaponID"] = weaponID;
 			sqlStatement.execute();
 			result = sqlStatement.getResult().data;
-			return result.length;
+			if (result) {
+				return result.length;
+			}
+			else {
+				return 0;
+			}
 		}
 		
 		public function addToWeaponry (userID:int, weaponID:int, weaponName:String, bullets:int) {
@@ -176,14 +181,19 @@ package
 			sqlStatement.execute();
 		}
 		
-		public function getCurrentBullet (userID:int, weaponID:int):int {
+		public function getCurrentBullet (userID:int, weaponID:int) {
 			sqlStatement.clearParameters()
 			sqlStatement.text = "SELECT bullets FROM Weaponry WHERE user_id=@userID AND weapon_id=@weaponID";
 			sqlStatement.parameters["@userID"] = userID;
 			sqlStatement.parameters["@weaponID"] = weaponID;
 			sqlStatement.execute();
 			result = sqlStatement.getResult().data;
-			return result[0].bullets;
+			if (result) {
+				return result[0].bullets;
+			}
+			else {
+				return 0;
+			}
 		}
 		
 		/********************************* END OF WEAPONRY **************************************/
