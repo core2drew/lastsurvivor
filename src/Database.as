@@ -107,16 +107,21 @@ package
 			//return damage
 		}
 		
-		/********************************* END OF SURVIVOR **************************************/
+		/********************************* END OF SURVIVOR ************************************/
 		
 		
-		
-		/********************************* SHOP **************************************/
+		/********************************* WEAPON SHOP AND UPGRADE SHOP **************************************/
 		
 		public function getShopItems(category:String, currentPage:int) {
 			sqlStatement.clearParameters()
-			sqlStatement.text = "SELECT * FROM Shop WHERE category=@category AND page=@page";
-			sqlStatement.parameters["@category"] = category;
+			
+			if (category == "Weaponry") {
+				sqlStatement.text = "SELECT * FROM WeaponShop WHERE page=@page";
+			}
+			else if (category == "Character") {
+				sqlStatement.text = "SELECT * FROM UpgradeShop WHERE page=@page";
+			}
+			
 			sqlStatement.parameters["@page"] = currentPage;
 			sqlStatement.execute();
 			result = sqlStatement.getResult().data;
@@ -125,32 +130,42 @@ package
 		
 		public function getShopItemsCount(category:String):int {
 			sqlStatement.clearParameters()
-			sqlStatement.text = "SELECT * FROM Shop WHERE category=@category";
-			sqlStatement.parameters["@category"] = category;
-			sqlStatement.execute();
-			result = sqlStatement.getResult().data;
+			if (category == "Weaponry") {
+				sqlStatement.text = "SELECT * FROM WeaponShop";
+				sqlStatement.execute();
+				result = sqlStatement.getResult().data;
+			}
+			else if (category == "Character") {
+				sqlStatement.text = "SELECT * FROM UpgradeShop";
+				sqlStatement.execute();
+				result = sqlStatement.getResult().data;
+			}
+			
 			return result.length;
 		}
 		
 		//Buy Item Update the current coin
-		public function buyShopItem(price:int, userID:int):void {
+		public function buyShopItem(price:int):void {
 			sqlStatement.clearParameters();
-			sqlStatement.text = "UPDATE GameState SET current_coin = current_coin - @price WHERE id=@id";
-			sqlStatement.parameters["@id"] = userID;
+			sqlStatement.text = "UPDATE GameState SET current_coin = current_coin - @price";
 			sqlStatement.parameters["@price"] = price;
 			sqlStatement.execute();
 		}
 		
-		/********************************* END OF SHOP **************************************/
-		
+		/********************************* END OF WEAPON SHOP AND UPGRADE SHOP **************************************/
+
+		/********************************* UPGRADES **************************************/
+		public function getCurrentUpgradeLevel () {
+			
+		}
+		/********************************* END OF UPGRADE *******************************/
 		
 		
 		/********************************* WEAPONRY **************************************/
 		
-		public function checkWeaponry (userID:int, weaponID:int) {
+		public function checkWeaponry (weaponID:int) {
 			sqlStatement.clearParameters()
-			sqlStatement.text = "SELECT * FROM Weaponry WHERE user_id=@userID AND weapon_id=@weaponID";
-			sqlStatement.parameters["@userID"] = userID;
+			sqlStatement.text = "SELECT * FROM Weaponry WHERE  weapon_id=@weaponID";
 			sqlStatement.parameters["@weaponID"] = weaponID;
 			sqlStatement.execute();
 			result = sqlStatement.getResult().data;
@@ -162,29 +177,26 @@ package
 			}
 		}
 		
-		public function addToWeaponry (userID:int, weaponID:int, weaponName:String, bullets:int) {
+		public function addToWeaponry (weaponID:int, weaponName:String, bullets:int) {
 			sqlStatement.clearParameters()
-			sqlStatement.text = "INSERT INTO Weaponry (user_id, weapon_id, weapon_name, bullets) VALUES (@userID, @weaponID, @weaponName, @bullets)";
-			sqlStatement.parameters["@userID"] = userID;
+			sqlStatement.text = "INSERT INTO Weaponry (weapon_id, weapon_name, bullets) VALUES (@weaponID, @weaponName, @bullets)";
 			sqlStatement.parameters["@weaponID"] = weaponID;
 			sqlStatement.parameters["@weaponName"] = weaponName;
 			sqlStatement.parameters["@bullets"] = bullets;
 			sqlStatement.execute();
 		}
 		
-		public function updateBulletsWeaponry (userID:int, weaponID:int, bullets:int):void {
+		public function updateBulletsWeaponry (weaponID:int, bullets:int):void {
 			sqlStatement.clearParameters();
-			sqlStatement.text = "UPDATE Weaponry SET bullets = bullets + @bullets WHERE user_id=@userID AND weapon_id=@weaponID";
-			sqlStatement.parameters["@userID"] = userID;
+			sqlStatement.text = "UPDATE Weaponry SET bullets = bullets + @bullets WHERE weapon_id=@weaponID";
 			sqlStatement.parameters["@weaponID"] = weaponID;
 			sqlStatement.parameters["@bullets"] = bullets;
 			sqlStatement.execute();
 		}
 		
-		public function getCurrentBullet (userID:int, weaponID:int) {
+		public function getCurrentBullet (weaponID:int) {
 			sqlStatement.clearParameters()
-			sqlStatement.text = "SELECT bullets FROM Weaponry WHERE user_id=@userID AND weapon_id=@weaponID";
-			sqlStatement.parameters["@userID"] = userID;
+			sqlStatement.text = "SELECT bullets FROM Weaponry WHERE weapon_id=@weaponID";
 			sqlStatement.parameters["@weaponID"] = weaponID;
 			sqlStatement.execute();
 			result = sqlStatement.getResult().data;

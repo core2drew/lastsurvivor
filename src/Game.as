@@ -19,7 +19,6 @@ package {
 	 * @author Drew Calupe
 	 */
 	public class Game extends MovieClip {
-		public static var UserID:int;
 		public static var zombieList:Array = new Array();
 		public static var InGame:Boolean;
 		public static var IsPaused:Boolean;

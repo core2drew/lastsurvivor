@@ -17,8 +17,10 @@
 		private var itemName:String;
 		private var itemPrice:int;
 		private var itemBullets:String;
-		private var itemReload:int;
 		private var itemDamage:int;
+		private var itemReload:int;
+		private var itemLevel:int;
+		private var itemUpgrades:Array;
 		private var currentBullet:String;
 
 		public function ShopItem(itemDetails:Object) {
@@ -27,6 +29,7 @@
 		}
 		
 		public function init(e:Event = null):void {
+			stop();
 			DB = new Database();
 			shopModal = this.parent.parent as MovieClip;
 			
@@ -38,37 +41,52 @@
 			itemBullets = itemDetails.bullets;
 			itemDamage = itemDetails.damage;
 			itemReload = itemDetails.reload;
-			
+			itemLevel = itemDetails.level;
+			itemUpgrades = String(itemDetails.upgrades).split(",");
+			//Shop Item Display and Text
 			this.itemText.text = itemName;
-			
+			this.gotoAndStop(frameToShow);
 			addEventListener(MouseEvent.CLICK, showItemInfo);
 		}
 		
 		
 		public function showItemInfo(e:MouseEvent):void {
+			hideShopNav();
+			
 			Modal.shopPickCategory = Modal.shopCurrentView;
 			Modal.shopCurrentView = "ShowInfo"
 			
 			//Hide Shop Items
-			shopModal.shopItems_mc.visible = false;
+			shopModal.shopItemContainer_mc.visible = false;
 			
-			hideShopNav();
+			//Show Item Display
+			shopModal.itemDisplay_mc.visible = true;
 			
-			//Shop Global Container
+			//Full Item Info Display
+			shopModal.itemDisplay_mc.gotoAndStop(frameToShow);
+			shopModal.itemDisplay_mc.item_txt.text = itemName;
+			
+			//Full Item  Global Container
 			shopModal.itemID_txt.text = itemID;
 			shopModal.price_txt.text = Helper.formatCost(itemPrice.toString(), 0, "", 0);
 			
 			//Show ItemInfo
 			if (Modal.shopPickCategory == "Character") {
-				//Show Character Info
+				//Show Character Upgrade Info
+				shopModal.upgradeInfo_mc.visible = true;
+				shopModal.upgradeInfo_mc.currentLevel_txt = itemLevel;
+				
+				shopModal.upgradeInfo_mc.upgradeIcon_mc.stop();
+				shopModal.upgradeInfo_mc.upgradeIcon_mc.gotoAndStop(frameToShow);
+				
+				shopModal.upgradeInfo_mc.price_txt.text = Helper.formatCost(itemPrice.toString(),0,"",0);
 			}
 			else if (Modal.shopPickCategory == "Weaponry") {
+				//Show Weapon Item Info
 				shopModal.weaponInfo_mc.visible = true;
-				shopModal.itemID_txt.text = itemID;
-				shopModal.weaponInfo_mc.gunDisplay_mc.weapon_txt.text = itemName;
 				shopModal.weaponInfo_mc.damage_txt.text = itemDamage;
 				//Bullet Info
-				currentBullet = String(DB.getCurrentBullet(Game.UserID, itemID));
+				currentBullet = String(DB.getCurrentBullet(itemID));
 				shopModal.weaponInfo_mc.bullet_txt.text = itemBullets + "/" + currentBullet
 				
 				shopModal.weaponInfo_mc.reload_txt.text = itemReload + " sec";

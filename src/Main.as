@@ -150,8 +150,6 @@ package
 			removeEventListener(MouseEvent.CLICK, arguments.callee);
 			gotoAndStop(2);
 			MainMenuInit();
-			//Temporary
-			Game.UserID = 1;
 		}
 		
 		public function MainMenuInit ():void {
