@@ -1,4 +1,5 @@
-package {
+package
+{
 	import flash.display.MovieClip;
 	import flash.display.Stage;
 	import flash.events.Event;
@@ -55,11 +56,13 @@ package {
 			GameInit();
 		}
 		
-		//InGame functions
+		//InGame Init
 		//Call this when click start
 		public function GameInit ():void {
-			NativeApplication.nativeApplication.addEventListener(KeyboardEvent.KEY_UP, handleGameBackButton, false, 0, true);//Native Device Back Button
-			NativeApplication.nativeApplication.addEventListener(Event.DEACTIVATE, handleGameDeactivated, false, 0, true);//Native Inactive App
+			//Native Device Back Button Event
+			NativeApplication.nativeApplication.addEventListener(KeyboardEvent.KEY_UP, handleGameBackButton, false, 0, true);
+			//Inactive App in user Device Event
+			NativeApplication.nativeApplication.addEventListener(Event.DEACTIVATE, handleGameDeactivated, false, 0, true);
 			
 			mainStage = Main.mainStage;
 			mainStage.gotoAndStop(3);
@@ -76,8 +79,8 @@ package {
 			mainStage.fire_btn.addEventListener(TouchEvent.TOUCH_BEGIN, fireBullet);//Firing Event
 			
 			/*Controller Init*/
-			speedConstant = 10;
-			maxSpeedConstant = 10;
+			speedConstant = 20; //Character Speed
+			maxSpeedConstant = speedConstant;
 			LeftMoveLimit = 0;
 			RightMoveLimit = -2745;
 			MovingLeft = false;
@@ -93,11 +96,8 @@ package {
 			maxJumpHeight = 445;
 			ground = mainStage.scrollingBG_mc.y; //This is the ground of the scrollBG
 			reloadDelay = new Timer(800, 1);//Delay must be get from the database (gun delay column)
-			
 			addEventListener(Event.ENTER_FRAME, loop);
 		}
-		
-		
 		
 		private function fireBullet (e:TouchEvent) {
 			if (survivor.scaleX < 0)
@@ -232,15 +232,12 @@ package {
 			scrollingBG.x = scrollX;
 		}
 		
-		
 		public function handleGameBackButton (e:KeyboardEvent):void {
 			trace(e.keyCode);
 			if (e.keyCode == Keyboard.BACK) {
-				trace("test");
 				if (!IsPaused) {
 					pauseGame();
 				}else {
-					trace("test");
 					IsPaused = false;
 				}
 				e.preventDefault();

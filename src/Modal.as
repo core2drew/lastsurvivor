@@ -62,7 +62,7 @@
 			modal.visible = true;
 		}
 		
-		//Pause Modal
+		/***************************************** PAUSE MODAL *******************************************/
 		public function showPause ():void {
 			pause.visible = true;
 			Game.IsPaused = true;
@@ -73,7 +73,7 @@
 			});
 			modal.showModal();
 		}
-		//End of Pause Modal
+		/***************************************** END OF PAUSE MODAL *******************************************/
 
 		/********************************** SHOP MODAL *********************************************/
 		public function showShop ():void {
@@ -85,7 +85,7 @@
 			
 			//TweenMax.fromTo(shop, .8, { x:2607 }, { x:955, ease:Back.easeOut } );
 			modal.showModal();
-			
+		
 			shopItemCurrentPage = 1; //Current Page Viewing
 			shop.characterBtn.addEventListener(MouseEvent.CLICK, function (e:MouseEvent) {
 				shopCurrentView = "Character";
@@ -117,61 +117,19 @@
 				else if (shopCurrentView == "ShowInfo") {
 					showNavigation();
 					hideAllShopItemInfo();
+					
+					var buyWeaponUpgradeBtn:MovieClip = shop.getChildByName("buyWeaponUpgradeBtn") as MovieClip
+					//Remove the buyWeaponUpgradeBtn at modal to refresh the event
+					if (shop.contains(buyWeaponUpgradeBtn)) {
+						shop.removeChild(buyWeaponUpgradeBtn);
+					}
+					
 					//Show Items
 					shop.shopItemContainer_mc.visible = true;
 				}
 			});
-			
-			//Buy Item Event
-			shop.buyBtn.addEventListener(MouseEvent.CLICK, function (e:MouseEvent) {
-				var itemID:int = int(shop.itemID_txt.text);
-				var itemPrice:int = parseInt(shop.price_txt.text.replace(",", ""));
-				var itemName:String; 
-				var bullet:int;
-				var currentCoin:int;
-				var currentBullet:int;
-				var checkWeaponry:int;
-				var bulletTxt:String;
-				
-				//Buying Item Conditon
-				currentCoin = DB.getCoins();
-				if (currentCoin > itemPrice) {
-					DB.buyShopItem(itemPrice);
-					Main.updateCoins(itemPrice);
-					
-					if (shopPickCategory == "Character") {
-					
-					}
-					else if (shopPickCategory == "Weaponry") {
-						itemName = shop.itemDisplay_mc.item_txt.text;
-						
-						bulletTxt = shop.weaponInfo_mc.bullet_txt.text;
-						bullet = int(bulletTxt.substring(0, bulletTxt.indexOf("/")));
-						
-						//Update Weaponry Table
-						checkWeaponry = DB.checkWeaponry(itemID);
-						if (checkWeaponry > 0) {
-							//Just Add the bullets of the bought weapon
-							//Bullet limit = 999 the excess will be void
-							DB.updateBulletsWeaponry(itemID, bullet);
-						} else {
-							//Add the weapon to weaponry table with bullets
-							DB.addToWeaponry(itemID, itemName, bullet);
-						}
-						
-						//Update bullet_txt current bullet
-						currentBullet = DB.getCurrentBullet(itemID);
-						shop.weaponInfo_mc.bullet_txt.text = String(bullet) + "/" + String(currentBullet);
-					}
-				}
-				else {
-					//Show Message that is "You don't have enough coins"
-					showShopMessage("You don't have enough coins. Play more to buy this Weapon");
-				}
-			} );
 		}
 		
-		//Shop Initial View and Events
 		public function shopInit ():void {
 			//Remove MouseEvent in Navigation
 			removeShopNavEvent();
@@ -190,15 +148,6 @@
 		public function hideShopMessage ():void {
 			shop.shopMsg.visible = false;
 			shop.shopMsg.message_txt.text = "";
-		}
-		
-		public function showShopMessage (msg:String):void {
-			shop.shopMsg.visible = true;
-			shop.shopMsg.message_txt.text = msg;
-			shop.shopMsg.CloseBtn.addEventListener(MouseEvent.CLICK, function(e:MouseEvent):void {
-				shop.shopMsg.CloseBtn.removeEventListener(MouseEvent.CLICK, arguments.callee);
-				hideShopMessage();
-			});
 		}
 		
 		private function showShopCategory ():void {
@@ -237,7 +186,7 @@
 			shopItemYPosition = 2.45;
 			shopItemXPosition = [-273.35, 0, 270];
 			shopItemsContainer = shop.shopItemContainer_mc;
-			shopItemsArr = DB.getShopItems(shopCurrentView, shopItemCurrentPage) ? DB.getShopItems(shopCurrentView, shopItemCurrentPage) : []; //Get items info condition
+			shopItemsArr = DB.getShopItems(shopCurrentView, shopItemCurrentPage) !== "" ? DB.getShopItems(shopCurrentView, shopItemCurrentPage) : []; //Get items info condition
 			
 			//Show Message no Items available
 			if (shopItemsArr.length == 0) {
@@ -245,7 +194,6 @@
 				//Show Message modal if ever...
 				return;
 			}
-			
 			
 			for (var i = 0; i < shopItemsArr.length; i++) {
 				shopItem = new ShopItem(shopItemsArr[i]);
@@ -278,11 +226,6 @@
 			shop.upgradeInfo_mc.visible = false;
 			shop.weaponInfo_mc.visible = false;
 			shop.itemDisplay_mc.visible = false;
-			hideBuyShopItemBtn();
-		}
-		
-		private function hideBuyShopItemBtn ():void {
-			shop.buyBtn.visible = false;
 		}
 		
 		public function showNavigation ():void {
@@ -336,6 +279,7 @@
 		
 		/********************************** END OF SHOP *********************************************/
 		
+		/********************************** SHOW EXIT MODAL *****************************************/
 		public function showExit ():void {
 			exit.visible = true;
 			//TweenMax.fromTo(exit, .8, { x:2607 }, { x:955, ease:Back.easeOut } );
@@ -351,6 +295,9 @@
 				hideAllModal();
 			});
 		}
+		/********************************** END OF SHOW EXIT MODAL *****************************************/
+		
+		/******************************** SELECT LEVEL MODAL *******************************************/
 		
 		public function showLevel (title:String, selectedStage:int):void {
 			level.visible = true;
@@ -361,7 +308,8 @@
 			modal.showModal();
 			//Change stage title
 			level.title_txt.text = title;
-			//level.startBtn.visible = false;
+			//Start Button
+			level.startBtn.visible = false;
 			
 			//TweenMax.fromTo(level, .8, { x:2607 }, { x:955, ease:Back.easeOut } );
 			
@@ -440,9 +388,10 @@
 					level_btn.addEventListener(MouseEvent.CLICK, function(e:MouseEvent) {
 						var curTarget:MovieClip = e.currentTarget as MovieClip;
 						resetLevelModal();
-						//level.startBtn.visible = true;
+						level.startBtn.visible = true;
 						curTarget.filters = [myGlow];
-						//Start Game
+						
+						//Start Level
 						level.startBtn.addEventListener(MouseEvent.CLICK, function(e:MouseEvent) { 
 							resetLevelModal();
 							hideAllModal();
@@ -465,6 +414,10 @@
 				hideAllModal();
 			});
 		}
+		
+		/**************************** END OF SELECT LEVEL MODAL *******************************************/
+		
+		/************************************** SETTINGS MODAL **************************************/
 		
 		public function showSettings (DB:Database,_currentView:String):void {
 			var bgSound:int = DB.getBGSound();
@@ -515,5 +468,6 @@
 				hideAllModal();
 			});
 		}
+		/************************************** END OF SETTINGS MODAL **************************************/
 	}
 }

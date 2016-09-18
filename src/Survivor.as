@@ -24,6 +24,25 @@ package
 			addEventListener(Event.ENTER_FRAME, loop);
 		}
 		
+		public function loop (e:Event):void {
+			//Game Pause Condition
+			if (Game.IsPaused) {
+				heroBody_mc.stop();
+				removeEventListener(Event.ENTER_FRAME, arguments.callee);
+				//Checker if GamePause is False;
+				addEventListener(Event.ADDED_TO_STAGE, pauseCheckerLoop);
+			}
+			
+			if (heroBody_mc.currentFrameLabel === "End") {
+				heroBody_mc.gotoAndStop(20);
+			}
+			
+			if (heroBody_mc.currentFrameLabel === "JumpEnd" || heroBody_mc.currentFrameLabel === "FallEnd") {
+				heroBody_mc.stop();
+			}
+		}
+		
+		
 		public function TurnRight():void
 		{
 			this.scaleX = 1;
@@ -52,25 +71,7 @@ package
 		public function Fall ():void {
 			heroBody_mc.gotoAndPlay("Fall");
 		}
-		
-		public function loop (e:Event):void {
-			//Game Pause Condition
-			if (Game.IsPaused) {
-				heroBody_mc.stop();
-				removeEventListener(Event.ENTER_FRAME, arguments.callee);
-				//Checker if GamePause is False;
-				addEventListener(Event.ADDED_TO_STAGE, pauseCheckerLoop);
-			}
-			
-			if (heroBody_mc.currentFrameLabel === "End") {
-				heroBody_mc.gotoAndStop(20);
-			}
-			
-			if (heroBody_mc.currentFrameLabel === "JumpEnd" || heroBody_mc.currentFrameLabel === "FallEnd") {
-				heroBody_mc.stop();
-			}
-		}
-		
+
 		private function pauseCheckerLoop(e:Event):void {
 			if (!Game.IsPaused) {
 				heroBody_mc.play();

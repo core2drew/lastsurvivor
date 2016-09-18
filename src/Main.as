@@ -168,6 +168,7 @@ package
 			MapInit();
 		}
 		
+		//Update Coin Container
 		public static function updateCoins (itemPrice:int):void {
 			mainStage.coinCon.currentCoins_txt.text = parseInt(mainStage.coinCon.currentCoins_txt.text.replace(",","")) - itemPrice;
 		}
@@ -187,6 +188,7 @@ package
 			map.stage1.gotoAndStop(2);
 		}
 		
+		//Menu Buttons
 		public function menuItemClicked (e:MouseEvent):void {
 			switch (e.target.name) {
 				case "shopBtn":
@@ -209,6 +211,7 @@ package
 			};
 		}
 		
+		//Map Stages Buttons
 		public function mapStageClicked (e:MouseEvent):void {
 			if (e.target.currentFrame == 2) {
 				switch (e.target.name) { 

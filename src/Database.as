@@ -1,4 +1,4 @@
-package 
+﻿package 
 {
 	import flash.data.SQLConnection;
 	import flash.filesystem.File;
@@ -24,7 +24,7 @@ package
 		}
 		
 		public function getSelectedUser(id:int) {
-			sqlStatement.clearParameters()
+			sqlStatement.clearParameters();
 			sqlStatement.text = "SELECT username FROM GameState WHERE id=@id";
 			sqlStatement.parameters["@id"] = id;
 			sqlStatement.execute();
@@ -33,7 +33,7 @@ package
 		}
 		
 		public function getCurrentStage () {
-			sqlStatement.clearParameters()
+			sqlStatement.clearParameters();
 			sqlStatement.text = "SELECT current_stage FROM GameState";
 			sqlStatement.execute();
 			result = sqlStatement.getResult().data;
@@ -46,7 +46,7 @@ package
 		
 		public function getLevelStars (stage:int) {
 			//Display the current stars of level on selected stage
-			sqlStatement.clearParameters()
+			sqlStatement.clearParameters();
 			sqlStatement.text = "SELECT level, stars  FROM Game WHERE stage=@stage";
 			sqlStatement.parameters["@stage"] = stage;
 			sqlStatement.execute();
@@ -63,7 +63,7 @@ package
 		}
 		
 		public function getCoins ():int {
-			sqlStatement.clearParameters()
+			sqlStatement.clearParameters();
 			sqlStatement.text = "SELECT current_coin FROM GameState";
 			sqlStatement.execute();
 			result = sqlStatement.getResult().data;
@@ -71,7 +71,7 @@ package
 		}
 		
 		public function getMaxStar ():int{
-			sqlStatement.clearParameters()
+			sqlStatement.clearParameters();
 			sqlStatement.text = "SELECT max_star FROM GameState";
 			sqlStatement.execute();
 			result = sqlStatement.getResult().data;
@@ -79,7 +79,7 @@ package
 		}
 		
 		public function getStars ():int {
-			sqlStatement.clearParameters()
+			sqlStatement.clearParameters();
 			sqlStatement.text = "SELECT current_star FROM GameState";
 			sqlStatement.execute();
 			result = sqlStatement.getResult().data;
@@ -110,10 +110,12 @@ package
 		/********************************* END OF SURVIVOR ************************************/
 		
 		
-		/********************************* WEAPON SHOP AND UPGRADE SHOP **************************************/
+		/*****************************************************************************************/
+		/********************************* WEAPON SHOP AND UPGRADE SHOP **************************/
+		/*****************************************************************************************/
 		
 		public function getShopItems(category:String, currentPage:int) {
-			sqlStatement.clearParameters()
+			sqlStatement.clearParameters();
 			
 			if (category == "Weaponry") {
 				sqlStatement.text = "SELECT * FROM WeaponShop WHERE page=@page";
@@ -129,7 +131,7 @@ package
 		}
 		
 		public function getShopItemsCount(category:String):int {
-			sqlStatement.clearParameters()
+			sqlStatement.clearParameters();
 			if (category == "Weaponry") {
 				sqlStatement.text = "SELECT * FROM WeaponShop";
 				sqlStatement.execute();
@@ -153,18 +155,40 @@ package
 		}
 		
 		/********************************* END OF WEAPON SHOP AND UPGRADE SHOP **************************************/
-
-		/********************************* UPGRADES **************************************/
-		public function getCurrentUpgradeLevel () {
-			
+		
+		/*****************************************************************************************/
+		/********************************* CHARACTER STATUS **************************************/
+		/*****************************************************************************************/
+		public function getCurrentCharacterStatus () {
+			sqlStatement.clearParameters();
+			sqlStatement.text = "SELECT * FROM Character";
+			sqlStatement.execute();
+			result = sqlStatement.getResult().data;
+			return result;//select only the first row
 		}
-		/********************************* END OF UPGRADE *******************************/
+		
+		public function upgradeCharacterStatus(column:String, stats:int) {
+			sqlStatement.clearParameters();
+			sqlStatement.text = "UPDATE Character SET @column = @value";
+			sqlStatement.parameters["@column"] = column;
+			sqlStatement.parameters["@value"] = stats;
+			sqlStatement.execute();
+		}
+		
+		public function updateUpgradeShopLevel(id:int, level:int) {
+			sqlStatement.clearParameters();
+			sqlStatement.text = "UPDATE UpgradeShop SET level = @level WHERE id = @id";
+			sqlStatement.parameters["@id"] = id;
+			sqlStatement.parameters["@level"] = level;
+			sqlStatement.execute();
+		}
+		/********************************* END OF CHARACTER STATUS *******************************/
 		
 		
 		/********************************* WEAPONRY **************************************/
 		
 		public function checkWeaponry (weaponID:int) {
-			sqlStatement.clearParameters()
+			sqlStatement.clearParameters();
 			sqlStatement.text = "SELECT * FROM Weaponry WHERE  weapon_id=@weaponID";
 			sqlStatement.parameters["@weaponID"] = weaponID;
 			sqlStatement.execute();
@@ -178,7 +202,7 @@ package
 		}
 		
 		public function addToWeaponry (weaponID:int, weaponName:String, bullets:int) {
-			sqlStatement.clearParameters()
+			sqlStatement.clearParameters();
 			sqlStatement.text = "INSERT INTO Weaponry (weapon_id, weapon_name, bullets) VALUES (@weaponID, @weaponName, @bullets)";
 			sqlStatement.parameters["@weaponID"] = weaponID;
 			sqlStatement.parameters["@weaponName"] = weaponName;
@@ -195,7 +219,7 @@ package
 		}
 		
 		public function getCurrentBullet (weaponID:int) {
-			sqlStatement.clearParameters()
+			sqlStatement.clearParameters();
 			sqlStatement.text = "SELECT bullets FROM Weaponry WHERE weapon_id=@weaponID";
 			sqlStatement.parameters["@weaponID"] = weaponID;
 			sqlStatement.execute();
