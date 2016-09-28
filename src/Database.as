@@ -6,6 +6,7 @@
 	import flash.data.SQLStatement;
 	import flash.data.SQLResult;
 	import flash.errors.SQLError;
+	import flash.net.Responder;
 	import Game;
 	/**
 	 * ...
@@ -23,10 +24,26 @@
 			sqlStatement.sqlConnection = sqlConn;
 		}
 		
-		public function getSelectedUser(id:int) {
+		/************************* USER ******************************/
+		
+		public function checkUserUser() {
 			sqlStatement.clearParameters();
-			sqlStatement.text = "SELECT username FROM GameState WHERE id=@id";
-			sqlStatement.parameters["@id"] = id;
+			sqlStatement.text = "SELECT 1 FROM GameState";
+			sqlStatement.execute();
+			result = sqlStatement.getResult().data;
+			return result;
+		}
+		
+		public function setNewUser(username:String) {
+			sqlStatement.clearParameters();
+			sqlStatement.text = "INSERT INTO GameState (username) VALUES (@username)";
+			sqlStatement.parameters["@username"] = username;
+			sqlStatement.execute();
+		}
+		
+		public function getSelectedUser() {
+			sqlStatement.clearParameters();
+			sqlStatement.text = "SELECT username FROM GameState";
 			sqlStatement.execute();
 			result = sqlStatement.getResult().data;
 			return result[0].username;
@@ -42,24 +59,6 @@
 		
 		public function getCurrentLevel () {
 			
-		}
-		
-		public function getLevelStars (stage:int) {
-			//Display the current stars of level on selected stage
-			sqlStatement.clearParameters();
-			sqlStatement.text = "SELECT level, stars  FROM Game WHERE stage=@stage";
-			sqlStatement.parameters["@stage"] = stage;
-			sqlStatement.execute();
-			result = sqlStatement.getResult().data;
-			return result;
-		}
-		
-		public function getSelectedUserName() {
-			
-		}
-		
-		public function getCurrentAvatar () {
-		
 		}
 		
 		public function getCoins ():int {
@@ -85,12 +84,32 @@
 			result = sqlStatement.getResult().data;
 			return result[0].current_star;
 		}
+		/************************* END USER *************************/
+		
+		
+		/************************ GAME *******************************/
 		
 		public function getZombieList () {
 			//Available Zombie for Current Level/Current Stage
 		}
 		
+		/************************ END GAME *******************************/
 		
+		
+		/************************ MAP ******************************/
+		
+		
+		public function getLevelStars (stage:int) {
+			//Display the current stars of level on selected stage
+			sqlStatement.clearParameters();
+			sqlStatement.text = "SELECT level, stars  FROM Game WHERE stage=@stage";
+			sqlStatement.parameters["@stage"] = stage;
+			sqlStatement.execute();
+			result = sqlStatement.getResult().data;
+			return result;
+		}
+
+		/*********************** END OF MAP ************************/
 		
 		/********************************* ACHIEVEMENT **************************************/
 		
@@ -159,6 +178,7 @@
 		/*****************************************************************************************/
 		/********************************* CHARACTER STATUS **************************************/
 		/*****************************************************************************************/
+		
 		public function getCurrentCharacterStatus () {
 			sqlStatement.clearParameters();
 			sqlStatement.text = "SELECT * FROM Character";
@@ -169,9 +189,22 @@
 		
 		public function upgradeCharacterStatus(column:String, stats:int) {
 			sqlStatement.clearParameters();
-			sqlStatement.text = "UPDATE Character SET @column = @value";
-			sqlStatement.parameters["@column"] = column;
-			sqlStatement.parameters["@value"] = stats;
+			switch (column) 
+			{
+				case "health":
+					sqlStatement.text = "UPDATE Character SET health = @value";
+					sqlStatement.parameters["@value"] = stats;
+				break;
+				case "armor":
+					sqlStatement.text = "UPDATE Character SET armor = @value";
+					sqlStatement.parameters["@value"] = stats;
+				break;
+				case "gun_slot":
+					sqlStatement.text = "UPDATE Character SET gun_slot = @value";
+					sqlStatement.parameters["@value"] = stats;
+				break;
+				default:
+			}
 			sqlStatement.execute();
 		}
 		

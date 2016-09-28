@@ -60,9 +60,9 @@ package
 		//Call this when click start
 		public function GameInit ():void {
 			//Native Device Back Button Event
-			NativeApplication.nativeApplication.addEventListener(KeyboardEvent.KEY_UP, handleGameBackButton, false, 0, true);
+			//NativeApplication.nativeApplication.addEventListener(KeyboardEvent.KEY_UP, handleGameBackButton, false, 0, true);
 			//Inactive App in user Device Event
-			NativeApplication.nativeApplication.addEventListener(Event.DEACTIVATE, handleGameDeactivated, false, 0, true);
+			//NativeApplication.nativeApplication.addEventListener(Event.DEACTIVATE, handleGameDeactivated, false, 0, true);
 			
 			mainStage = Main.mainStage;
 			mainStage.gotoAndStop(3);
@@ -79,7 +79,7 @@ package
 			mainStage.fire_btn.addEventListener(TouchEvent.TOUCH_BEGIN, fireBullet);//Firing Event
 			
 			/*Controller Init*/
-			speedConstant = 20; //Character Speed
+			speedConstant = 8; //Character Speed (illusion only)
 			maxSpeedConstant = speedConstant;
 			LeftMoveLimit = 0;
 			RightMoveLimit = -2745;
@@ -91,8 +91,8 @@ package
 			playerDirection = "";
 			xSpeed = 0;
 			scrollX = 0;
-			gravityConstant = 20;
-			jumpConstant = -25;
+			gravityConstant = 30;
+			jumpConstant = -35;
 			maxJumpHeight = 445;
 			ground = mainStage.scrollingBG_mc.y; //This is the ground of the scrollBG
 			reloadDelay = new Timer(800, 1);//Delay must be get from the database (gun delay column)

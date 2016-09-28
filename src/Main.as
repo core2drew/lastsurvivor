@@ -51,6 +51,9 @@ package
 		//Map Stage Container
 		public var map:MovieClip;
 		
+		//User Check if there is already a user
+		private var checkUser;
+		
 		public function Main () {
 			stop();
 			if (stage) {
@@ -73,6 +76,10 @@ package
 			mainStage = this;
 			DB = new Database();
 			soundCtrl = new SoundController();
+			
+			//User checker if there is a already a user
+			checkUser = DB.checkUserUser();
+			
 			//Show the starting screen
 			ShowStartingScreen();
 		}
@@ -137,17 +144,35 @@ package
 						ease:Circ.easeIn,
 						onComplete:function () {
 							TweenMax.to(ss.last_mc, 0.8, { delay:1, alpha:1 } );
-							TweenMax.to(ss.survivor_mc, 0.8, { delay:2, alpha:1 } );
+							TweenMax.to(ss.survivor_mc, 0.8, { 
+								delay:2, 
+								alpha:1, 
+								onComplete:function() {
+									TweenMax.to(touchscreenstart_mc, 1, { alpha:1, yoyo:true, repeat: -1 } );
+									startscreen_mc.addEventListener(MouseEvent.CLICK, ScreenTouched);
+								}
+							});
 						}
 					});
 				}
 			});
-			TweenMax.to(touchscreenstart_mc, 1, { alpha:1, yoyo:true, repeat: -1 } );
-			addEventListener(MouseEvent.CLICK, ScreenTouched);
+			
+			if (checkUser)
+			{
+				TweenMax.to(touchscreenstart_mc, 1, { alpha:1, yoyo:true, repeat: -1 } );
+				startscreen_mc.addEventListener(MouseEvent.CLICK, ScreenTouched);
+			}
 		}
 		
 		public function ScreenTouched (e:MouseEvent):void {
+			checkUser = DB.checkUserUser();
+			if (!checkUser) {
+				modal.showNewUser();
+				return;
+			}
+			
 			removeEventListener(MouseEvent.CLICK, arguments.callee);
+			TweenMax.killAll(false, true, false);
 			gotoAndStop(2);
 			MainMenuInit();
 		}
@@ -159,18 +184,18 @@ package
 			userCon = mainStage.userCon;
 			map = mainStage.map;
 			
-			userCon.user_txt.text = DB.getSelectedUser(1);//Temporary param(It must be dynamic param);
+			userCon.user_txt.text = DB.getSelectedUser();//Temporary param(It must be dynamic param);
 			coinCon.currentCoins_txt.text = Helper.formatCost(DB.getCoins().toString(), 0, "", 0);//Get current coins of the current user
 			starCon.maxStars_txt.text = DB.getMaxStar();//Get max stars of the game
 			starCon.currentStars_txt.text = DB.getStars();//Get current stars of current user
-			
+				
 			menuCon.addEventListener(MouseEvent.CLICK, menuItemClicked);
 			MapInit();
 		}
 		
 		//Update Coin Container
 		public static function updateCoins (itemPrice:int):void {
-			mainStage.coinCon.currentCoins_txt.text = parseInt(mainStage.coinCon.currentCoins_txt.text.replace(",","")) - itemPrice;
+			mainStage.coinCon.currentCoins_txt.text = Helper.formatCost(String(parseInt(mainStage.coinCon.currentCoins_txt.text.replace(",","")) - itemPrice), 0, "", 0);
 		}
 		
 		private function MapInit ():void {

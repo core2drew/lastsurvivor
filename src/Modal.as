@@ -36,7 +36,7 @@
 		private var shopItemPageCount:int;
 		private var shopItemDisplayLimit;
 		private var shopItemsCount:int;
-		
+		private var shopItemsArr:Array =  new Array();
 		
 		public function Modal() {
 			modal = this;
@@ -50,6 +50,7 @@
 			pause.visible = false;
 			lockmessage.visible = false;
 			level.visible = false;
+			newUser.visible = false;
 			shop.visible = false;
 			settings.visible = false;
 			exit.visible = false;
@@ -75,70 +76,108 @@
 		}
 		/***************************************** END OF PAUSE MODAL *******************************************/
 
+		/********************************** NEW USER MODAL *****************************************/
+		
+		public function showNewUser():void {
+			var rex:RegExp = /[\s\r\n]+/gim;
+			var str:String;
+			newUser.visible = true;
+			
+			//TweenMax.fromTo(newUser, .8, { x:2607 }, { x:955, ease:Back.easeOut } );
+			modal.showModal();
+			
+			newUser.newUser_txt.addEventListener(Event.CHANGE, function(e:Event){
+				str = newUser.newUser_txt.text.toUpperCase();
+				str = str.replace(rex, '');
+				newUser.newUser_txt.text = str;
+			});
+			
+			newUser.okBtn.addEventListener(MouseEvent.CLICK, function (e:MouseEvent) {
+				DB.setNewUser(str);
+				hideAllModal();
+				newUser.okBtn.removeEventListener(MouseEvent.CLICK, arguments.callee);
+			});
+		}
+		
+		/********************************** END OF NEW USER MODAL *********************************/
+		
+		
 		/********************************** SHOP MODAL *********************************************/
 		public function showShop ():void {
 			shop.visible = true;
-			shopInit();
 			
-			hideAllShopItemInfo();
-			hideShopMessage();
+			shopInit();
 			
 			//TweenMax.fromTo(shop, .8, { x:2607 }, { x:955, ease:Back.easeOut } );
 			modal.showModal();
-		
-			shopItemCurrentPage = 1; //Current Page Viewing
+			
+			 //Current Page Viewing
+			shopItemCurrentPage = 1;
+			
 			shop.characterBtn.addEventListener(MouseEvent.CLICK, function (e:MouseEvent) {
 				shopCurrentView = "Character";
 				
-				pageCount();//Get Total Page
+				//Get Total Page
+				pageCount();
 				
+				//Show Upgrades Items
 				showShopItems();
 			});
 			
 			shop.weaponryBtn.addEventListener(MouseEvent.CLICK, function (e:MouseEvent) { 
 				shopCurrentView = "Weaponry";
 				
-				pageCount();//Get Total Page
+				//Get Total Page
+				pageCount();
 				
+				//Show Weapons Items
 				showShopItems();
 			});
 			
-			//Close Shop Modal
 			shop.Xbtn.addEventListener(MouseEvent.CLICK, function (e:MouseEvent) {
+				
+				//Close Shop Modal
 				if (shopCurrentView == "Category") {
 					hideAllModal();
 					shop.Xbtn.removeEventListener(MouseEvent.CLICK, arguments.callee);
 				}
+				
 				//Close Character/Weaponry Shop
 				else if (shopCurrentView == "Character" || shopCurrentView == "Weaponry") {
 					shopInit();
 				}
+				
 				//Close Show Info - Showing Full Item/Upgrade details
 				else if (shopCurrentView == "ShowInfo") {
+					
+					//Show Prev/Next Navigation if needed base on condition
 					showNavigation();
-					hideAllShopItemInfo();
 					
-					var buyWeaponUpgradeBtn:MovieClip = shop.getChildByName("buyWeaponUpgradeBtn") as MovieClip
+					//Hide Shop Item Full Info
+					hideShopItemFullInfo();
+					
 					//Remove the buyWeaponUpgradeBtn at modal to refresh the event
-					if (shop.contains(buyWeaponUpgradeBtn)) {
-						shop.removeChild(buyWeaponUpgradeBtn);
-					}
+					removeBuyWeaponUpgradeBtnEvent();
 					
-					//Show Items
-					shop.shopItemContainer_mc.visible = true;
+					//Generate Updated Show Items
+					showShopItems();
 				}
 			});
 		}
 		
 		public function shopInit ():void {
+			
+			//Hide Shop Message Modal
+			hideShopMessage();
+			
 			//Remove MouseEvent in Navigation
 			removeShopNavEvent();
 			
-			//Hide Shop Item Navigation
-			hideNavigation();
-			
 			//Hide Shop Items
 			hideShopItems();
+			
+			//Hide All Shop Item Full Info
+			hideShopItemFullInfo();
 			
 			//Show Category
 			showShopCategory();
@@ -162,6 +201,10 @@
 		}
 
 		public function hideShopItems ():void {
+			
+			//Hide Shop Item Navigation
+			hideNavigation();
+			
 			//Go back to items page 1
 			shopItemCurrentPage = 1;
 			
@@ -176,38 +219,47 @@
 			var shopItemYPosition:Number;
 			var shopItemXPosition:Array;
 			var shopItem:ShopItem;
-			var shopItemsContainer:MovieClip;
-			var shopItemsArr:Array =  new Array();
 			
-			hideShopCategory();//Hide Category
+			shopItemsArr =  new Array();
 			
-			removeShopAllItems();//Remove Items (Reset the Shop Item Container)
+			//Hide Categorys
+			hideShopCategory();
 			
+			//Remove All Items (Reset the Shop Item Container)
+			removeShopAllItems();
+			
+			//Each Shop Items Positioning (X,Y)
 			shopItemYPosition = 2.45;
-			shopItemXPosition = [-273.35, 0, 270];
-			shopItemsContainer = shop.shopItemContainer_mc;
+			shopItemXPosition = [ -273.35, 0, 270];
+			
+			//Get Shop Items Full Info Object
 			shopItemsArr = DB.getShopItems(shopCurrentView, shopItemCurrentPage) !== "" ? DB.getShopItems(shopCurrentView, shopItemCurrentPage) : []; //Get items info condition
 			
 			//Show Message no Items available
 			if (shopItemsArr.length == 0) {
-				trace("No Items Available");
 				//Show Message modal if ever...
+				trace("No Items Available");
 				return;
 			}
 			
-			for (var i = 0; i < shopItemsArr.length; i++) {
-				shopItem = new ShopItem(shopItemsArr[i]);
-				shopItemsContainer.addChild(shopItem);
-				shopItemsContainer.getChildAt(i).x = shopItemXPosition[i];
-				shopItemsContainer.getChildAt(i).y = shopItemYPosition;
+			//Generate Updated Shop Item Full Info
+			else {
+				
+				for (var i = 0; i < shopItemsArr.length; i++) {
+					shopItem = new ShopItem(shopItemsArr[i]);
+					shop.shopItemContainer_mc.addChild(shopItem);
+					shop.shopItemContainer_mc.getChildAt(i).x = shopItemXPosition[i];
+					shop.shopItemContainer_mc.getChildAt(i).y = shopItemYPosition;
+					shop.shopItemContainer_mc.getChildAt(i).addEventListener(MouseEvent.CLICK,function(){
+						hideShopItems();
+					});
+				}
+				
+				shop.shopItemContainer_mc.visible = true;
+				
+				//Show Prev/Next Navigation if needed base on condition
+				showNavigation();
 			}
-			
-			//Show Items
-			shop.shopItemContainer_mc.visible = true;
-			
-			shopItemsContainer.visible = true;
-			
-			showNavigation();
 		}
 		
 		public function removeShopAllItems ():void {
@@ -220,11 +272,15 @@
 		}
 		
 		//Hide All Shop Item Full Info
-		private function hideAllShopItemInfo ():void {
+		private function hideShopItemFullInfo ():void {
 			//Hide ItemInfo
 			shopCurrentView = (shopPickCategory != "" ? shopPickCategory : shopCurrentView);
+			
+			//Shop Item Full Info Container
 			shop.upgradeInfo_mc.visible = false;
 			shop.weaponInfo_mc.visible = false;
+			
+			//Display Image for Shop Item Full Info
 			shop.itemDisplay_mc.visible = false;
 		}
 		
@@ -258,11 +314,15 @@
 		
 		private function nextShopPage (e:MouseEvent):void {
 			shopItemCurrentPage++;
+			
+			//Generate Updated Show Items
 			showShopItems();
 		}
 		
 		private function prevShopPage (e:MouseEvent):void {
 			shopItemCurrentPage--;
+			
+			//Generate Updated Show Items
 			showShopItems();
 		}
 		
@@ -277,25 +337,21 @@
 			shopItemPageCount = Math.ceil(shopItemsCount / shopItemDisplayLimit);//Get the page count of current category
 		}
 		
-		/********************************** END OF SHOP *********************************************/
-		
-		/********************************** SHOW EXIT MODAL *****************************************/
-		public function showExit ():void {
-			exit.visible = true;
-			//TweenMax.fromTo(exit, .8, { x:2607 }, { x:955, ease:Back.easeOut } );
-			modal.showModal();
-			
-			//Exit the Game
-			exit.yesBtn.addEventListener(MouseEvent.CLICK, function () {
-				NativeApplication.nativeApplication.exit();
-			});
-			
-			//Hide Exit Modal
-			exit.noBtn.addEventListener(MouseEvent.CLICK, function (e:MouseEvent) {
-				hideAllModal();
-			});
+		//Remove the buyWeaponUpgradeBtn at modal to refresh the event
+		private function removeBuyWeaponUpgradeBtnEvent() {
+			try {
+				var buyWeaponUpgradeBtn:MovieClip = shop.getChildByName("buyWeaponUpgradeBtn") as MovieClip
+				if (shop.contains(buyWeaponUpgradeBtn)) {
+					shop.removeChild(buyWeaponUpgradeBtn);
+				}
+			}
+			catch (err:Error) {
+				//Do nothing for now...
+				//trace(err.message);
+			}
 		}
-		/********************************** END OF SHOW EXIT MODAL *****************************************/
+		
+		/********************************** END OF SHOP *********************************************/
 		
 		/******************************** SELECT LEVEL MODAL *******************************************/
 		
@@ -469,5 +525,24 @@
 			});
 		}
 		/************************************** END OF SETTINGS MODAL **************************************/
+		
+				
+		/********************************** SHOW EXIT MODAL *****************************************/
+		public function showExit ():void {
+			exit.visible = true;
+			//TweenMax.fromTo(exit, .8, { x:2607 }, { x:955, ease:Back.easeOut } );
+			modal.showModal();
+			
+			//Exit the Game
+			exit.yesBtn.addEventListener(MouseEvent.CLICK, function () {
+				NativeApplication.nativeApplication.exit();
+			});
+			
+			//Hide Exit Modal
+			exit.noBtn.addEventListener(MouseEvent.CLICK, function (e:MouseEvent) {
+				hideAllModal();
+			});
+		}
+		/********************************** END OF SHOW EXIT MODAL *****************************************/
 	}
 }
