@@ -77,9 +77,6 @@ package
 			DB = new Database();
 			soundCtrl = new SoundController();
 			
-			//User checker if there is a already a user
-			checkUser = DB.checkUserUser();
-			
 			//Show the starting screen
 			ShowStartingScreen();
 		}
@@ -100,17 +97,20 @@ package
 		
 		public function handleAppActivated (e:Event):void {
 			//Turn On Sound
-			//SoundController.playBGSound(DB.getBGSound(), "Main");
+			SoundController.playBGSound(DB.getBGSound(), "Main");
 		}
 		
 		public function handleAppDeactivated (e:Event):void {
 			//Pause game and Turn off sound
-			//SoundController.stopAllSounds();
+			SoundController.stopAllSounds();
 		}
 
 		public function ShowStartingScreen ():void {
 			var ss = startscreen_mc;//ss meaning start screen;
-			//SoundController.playBGSound(DB.getBGSound(),"Main");//Play Sound for Map
+			SoundController.playBGSound(DB.getBGSound(),"Main");//Play Sound for Map
+			
+			//User checker if there is a already a user
+			checkUser = DB.checkUserUser();
 			
 			ss.y = 472;
 			ss.moon_mc.y = -170;
@@ -134,6 +134,7 @@ package
 					TweenMax.to(ss.cloud2_mc, 10, {bezierThrough:[ { alpha: 1 }, { alpha:0 } ], repeat: -1 } );
 				}
 			});
+			
 			TweenMax.to(ss, 4, {
 				delay:1.5, 
 				y:141.7, 
@@ -148,8 +149,11 @@ package
 								delay:2, 
 								alpha:1, 
 								onComplete:function() {
-									TweenMax.to(touchscreenstart_mc, 1, { alpha:1, yoyo:true, repeat: -1 } );
-									startscreen_mc.addEventListener(MouseEvent.CLICK, ScreenTouched);
+									if (!checkUser)
+									{
+										TweenMax.to(touchscreenstart_mc, 1, { alpha:1, yoyo:true, repeat: -1 } );
+										startscreen_mc.addEventListener(MouseEvent.CLICK, ScreenTouched);
+									}
 								}
 							});
 						}
@@ -224,8 +228,8 @@ package
 					modal.showSettings(DB,"Main");
 				break;
 				
-				case "creditsBtn":
-					
+				case "helpBtn":
+					modal.showTutorial();
 				break;
 				
 				case "exitBtn":

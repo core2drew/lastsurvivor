@@ -53,8 +53,8 @@
 			newUser.visible = false;
 			shop.visible = false;
 			settings.visible = false;
+			tutorial.visible = false;
 			exit.visible = false;
-			
 			shopPickCategory = "";
 		}
 		
@@ -82,6 +82,7 @@
 			var rex:RegExp = /[\s\r\n]+/gim;
 			var str:String;
 			newUser.visible = true;
+			hideNewUserMessage ();
 			
 			//TweenMax.fromTo(newUser, .8, { x:2607 }, { x:955, ease:Back.easeOut } );
 			modal.showModal();
@@ -93,10 +94,31 @@
 			});
 			
 			newUser.okBtn.addEventListener(MouseEvent.CLICK, function (e:MouseEvent) {
-				DB.setNewUser(str);
-				hideAllModal();
-				newUser.okBtn.removeEventListener(MouseEvent.CLICK, arguments.callee);
+				if(newUser.newUser_txt.length <= 2)
+				{
+					newUser.newUserMsg.visible = true;
+					newUser.newUserMsg.message_txt.text = "Minimum of 3 characters is required and Maximum of 8 characters only"
+					
+					newUser.newUserMsg.CloseBtn.addEventListener(MouseEvent.CLICK, function(e:MouseEvent) { 
+						hideNewUserMessage();
+						newUser.newUserMsg.CloseBtn.removeEventListener(MouseEvent.CLICK, arguments.callee);
+					});
+					
+					return;
+				}
+				
+				if (newUser.newUser_txt.length >= 3) {
+					DB.setNewUser(str);
+					hideAllModal();
+					newUser.okBtn.removeEventListener(MouseEvent.CLICK, arguments.callee);
+					return;
+				}
 			});
+		}
+		
+		//Hide Shop Message Modal
+		public function hideNewUserMessage ():void {
+			newUser.newUserMsg.visible = false;
 		}
 		
 		/********************************** END OF NEW USER MODAL *********************************/
@@ -134,12 +156,12 @@
 				showShopItems();
 			});
 			
-			shop.Xbtn.addEventListener(MouseEvent.CLICK, function (e:MouseEvent) {
+			shop.XBtn.addEventListener(MouseEvent.CLICK, function (e:MouseEvent) {
 				
 				//Close Shop Modal
 				if (shopCurrentView == "Category") {
 					hideAllModal();
-					shop.Xbtn.removeEventListener(MouseEvent.CLICK, arguments.callee);
+					shop.XBtn.removeEventListener(MouseEvent.CLICK, arguments.callee);
 				}
 				
 				//Close Character/Weaponry Shop
@@ -373,6 +395,7 @@
 			level.XBtn.addEventListener(MouseEvent.CLICK, function (e:MouseEvent) {
 				resetLevelModal();
 				hideAllModal();
+				level.XBtn.removeEventListener(MouseEvent.CLICK, arguments.callee);
 			});
 		}
 		
@@ -468,6 +491,7 @@
 			//Hide unlock Modal
 			lockmessage.XBtn.addEventListener(MouseEvent.CLICK, function (e:MouseEvent) {
 				hideAllModal();
+				lockmessage.XBtn.removeEventListener(MouseEvent.CLICK, arguments.callee);
 			});
 		}
 		
@@ -522,11 +546,43 @@
 			//Hide unlock Modal
 			settings.XBtn.addEventListener(MouseEvent.CLICK, function (e:MouseEvent) {
 				hideAllModal();
+				settings.XBtn.removeEventListener(MouseEvent.CLICK, arguments.callee);
 			});
 		}
 		/************************************** END OF SETTINGS MODAL **************************************/
 		
-				
+		/************************************** TUTORIAL MODAL **************************************/
+		
+		public function showTutorial ():void
+		{
+			tutorial.visible = true;
+			//TweenMax.fromTo(tutorial, .8, { x:2607 }, { x:955, ease:Back.easeOut } );
+			modal.showModal();
+			
+			tutorial.steps.gotoAndStop(1);
+			
+			tutorial.nav.prev_btn.addEventListener(MouseEvent.CLICK, prevSlide);
+			tutorial.nav.next_btn.addEventListener(MouseEvent.CLICK, nextSlide);
+			
+			//Close the Tutorial Modal
+			tutorial.XBtn.addEventListener(MouseEvent.CLICK, function (e:MouseEvent) {
+				hideAllModal();
+				tutorial.nav.prev_btn.removeEventListener(MouseEvent.CLICK, prevSlide);
+				tutorial.nav.next_btn.removeEventListener(MouseEvent.CLICK, nextSlide);
+				tutorial.XBtn.removeEventListener(MouseEvent.CLICK, arguments.callee);
+			});
+		}
+		
+		private function prevSlide(e:MouseEvent) {
+			tutorial.steps.prevFrame();
+		}
+		
+		private function nextSlide(e:MouseEvent) {
+			tutorial.steps.nextFrame();
+		}
+		
+		/************************************** END OF SETTINGS MODAL **************************************/
+		
 		/********************************** SHOW EXIT MODAL *****************************************/
 		public function showExit ():void {
 			exit.visible = true;
@@ -541,6 +597,7 @@
 			//Hide Exit Modal
 			exit.noBtn.addEventListener(MouseEvent.CLICK, function (e:MouseEvent) {
 				hideAllModal();
+				exit.XBtn.removeEventListener(MouseEvent.CLICK, arguments.callee);
 			});
 		}
 		/********************************** END OF SHOW EXIT MODAL *****************************************/

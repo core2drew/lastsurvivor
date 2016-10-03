@@ -26,7 +26,7 @@
             // constructor code
             x = xLocation;
             y = yLocation;
-			zombieSpeed = 1; ; //must be from database object
+			zombieSpeed = 10; ; //must be from database object
 			zombieHitpoints = 100; //must be from database object
 			
 			stop();
