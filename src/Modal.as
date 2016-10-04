@@ -14,7 +14,7 @@
 	import com.greensock.TweenMax;
 	import flash.filters.*; 
 	import Database;
-	import SoundController;
+	import Settings;
 	import Game;
 	import Main;
 	
@@ -520,12 +520,12 @@
 				if (bgSound) {
 					settings.bgmusic_cb.check.visible = false;
 					DB.updateBGSound(0);
-					SoundController.stopBGSounds();
+					Settings.stopBGSounds();
 				}
 				else {
 					settings.bgmusic_cb.check.visible = true;
 					DB.updateBGSound(1);
-					SoundController.playBGSound(DB.getBGSound(),currentView);
+					Settings.playBGSound(DB.getBGSound(),currentView);
 				}
 				
 				bgSound = DB.getBGSound()

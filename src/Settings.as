@@ -8,12 +8,12 @@ package
 	 * ...
 	 * @author Drew Calupe
 	 */
-	public class SoundController extends MovieClip
+	public class Settings extends MovieClip
 	{
 		public static var menuChannel:SoundChannel;
 		public static var menuSound:Sound;
 		
-		public function SoundController()
+		public function Settings()
 		{
 			//SFX Vars
 			menuSound = new MenuSound();

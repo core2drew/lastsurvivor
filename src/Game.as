@@ -60,9 +60,10 @@ package
 		//Call this when click start
 		public function GameInit ():void {
 			//Native Device Back Button Event
-			NativeApplication.nativeApplication.addEventListener(KeyboardEvent.KEY_UP, handleGameBackButton, false, 0, true);
+			//NativeApplication.nativeApplication.addEventListener(KeyboardEvent.KEY_UP, handleGameBackButton, false, 0, true);
+			
 			//Inactive App in user Device Event
-			NativeApplication.nativeApplication.addEventListener(Event.DEACTIVATE, handleGameDeactivated, false, 0, true);
+			//NativeApplication.nativeApplication.addEventListener(Event.DEACTIVATE, handleGameDeactivated, false, 0, true);
 			
 			mainStage = Main.mainStage;
 			mainStage.gotoAndStop(3);
@@ -92,7 +93,7 @@ package
 			xSpeed = 0;
 			scrollX = 0;
 			gravityConstant = 15;
-			jumpConstant = -20;
+			jumpConstant = -25;
 			maxJumpHeight = 380;
 			ground = mainStage.scrollingBG_mc.y; //This is the ground of the scrollBG
 			reloadDelay = new Timer(800, 1);//Delay must be get from the database (gun delay column)
@@ -219,7 +220,6 @@ package
 					maxSpeedConstant = 12;
 				}
 			}
-			trace(speedConstant);
 		}
 		
 		public function moveScrollBGX() {
@@ -236,7 +236,6 @@ package
 		}
 		
 		public function handleGameBackButton (e:KeyboardEvent):void {
-			trace(e.keyCode);
 			if (e.keyCode == Keyboard.BACK) {
 				if (!IsPaused) {
 					pauseGame();

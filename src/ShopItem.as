@@ -241,8 +241,6 @@
 					//Update UpgradeShop Table
 					DB.updateUpgradeShopLevel(itemID, itemUpgradeLevelIndex);
 					
-					trace(itemPrice);
-					
 					checkIfMaxUpgradeLevel();
 				}
 				else if (Modal.shopPickCategory == "Weaponry") {

@@ -17,7 +17,7 @@ package
 	import com.greensock.TweenMax;
 	import Database;
 	import Game;
-	import SoundController;
+	import Settings;
 	import Modal;
 	import Helper;
 	/**
@@ -31,7 +31,6 @@ package
 		public static var StageWidth:Number;
 		
 		public var DB:Database;
-		public var soundCtrl:SoundController;
 
 		//Menu Container
 		public var menuCon:MovieClip;
@@ -75,7 +74,6 @@ package
 			StageWidth = STAGE.stageWidth;
 			mainStage = this;
 			DB = new Database();
-			soundCtrl = new SoundController();
 			
 			//Show the starting screen
 			ShowStartingScreen();
@@ -97,17 +95,17 @@ package
 		
 		public function handleAppActivated (e:Event):void {
 			//Turn On Sound
-			SoundController.playBGSound(DB.getBGSound(), "Main");
+			//SoundController.playBGSound(DB.getBGSound(), "Main");
 		}
 		
 		public function handleAppDeactivated (e:Event):void {
 			//Pause game and Turn off sound
-			SoundController.stopAllSounds();
+			//SoundController.stopAllSounds();
 		}
 
 		public function ShowStartingScreen ():void {
 			var ss = startscreen_mc;//ss meaning start screen;
-			SoundController.playBGSound(DB.getBGSound(),"Main");//Play Sound for Map
+			//SoundController.playBGSound(DB.getBGSound(),"Main");//Play Sound for Map
 			
 			//User checker if there is a already a user
 			checkUser = DB.checkUserUser();
