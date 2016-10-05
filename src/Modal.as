@@ -469,16 +469,18 @@
 						resetLevelModal();
 						level.startBtn.visible = true;
 						curTarget.filters = [myGlow];
-						
-						//Start Level
-						level.startBtn.addEventListener(MouseEvent.CLICK, function(e:MouseEvent) { 
-							resetLevelModal();
-							hideAllModal();
-							_Game = new Game();
-						});
 					});
 				}
+				
+				//Start Level
+				level.startBtn.addEventListener(MouseEvent.CLICK, startGameLevel);
 			}
+		}
+		
+		private function startGameLevel(e:MouseEvent) {
+			resetLevelModal();
+			hideAllModal();
+			_Game = new Game();
 		}
 		
 		public function showLockMessage (title:String):void {

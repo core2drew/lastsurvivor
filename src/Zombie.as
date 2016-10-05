@@ -3,6 +3,7 @@
 	import flash.display.MovieClip;
 	import flash.display.Stage;
 	import flash.events.*;
+	import flash.utils.*;
 	import com.greensock.easing.*;
 	import com.greensock.TweenMax;
 	import Game;
@@ -21,13 +22,18 @@
 		private var zombieLifeBar_mc:MovieClip;
 		private var zombieBody_mc:MovieClip;
 		private var zombieLegs_mc:MovieClip;
+		private var zombieUpdateDirectionDelay:int;
 		
 		public function Zombie (xLocation:int, yLocation:int, direction:String, survivor:Survivor, stageWidth:int) {
             // constructor code
             x = xLocation;
             y = yLocation;
-			zombieSpeed = 10; ; //must be from database object
-			zombieHitpoints = 100; //must be from database object
+			
+			//must be from database data
+			zombieSpeed = 10; ;
+			zombieHitpoints = 100;
+			zombieUpdateDirectionDelay =  4;
+			
 			
 			stop();
 			this.stageWidth = stageWidth;

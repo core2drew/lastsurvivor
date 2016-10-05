@@ -38,7 +38,7 @@ package
 		public function enterFrame (e:Event):void {
 			direction = "idle";
 			if (isTouch) {
-				angle = Math.atan2(root.mouseY - startY, root.mouseX - startX) / (Math.PI / 180);
+				angle = Math.atan2(0, root.mouseX - startX) / (Math.PI / 180);
 				this.rotation = angle;
 				_knob.rotation = -angle;
 				

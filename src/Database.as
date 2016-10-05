@@ -26,17 +26,17 @@
 		
 		/************************* USER ******************************/
 		
-		public function checkUserUser() {
+		public function checkUserUser():Boolean {
 			sqlStatement.clearParameters();
-			sqlStatement.text = "SELECT 1 FROM GameState";
+			sqlStatement.text = "SELECT new_user FROM GameState";
 			sqlStatement.execute();
 			result = sqlStatement.getResult().data;
-			return result;
+			return Boolean(result[0].new_user);
 		}
 		
 		public function setNewUser(username:String) {
 			sqlStatement.clearParameters();
-			sqlStatement.text = "INSERT INTO GameState (username) VALUES (@username)";
+			sqlStatement.text = "UPDATE GameState SET username = @username, new_user = 1";
 			sqlStatement.parameters["@username"] = username;
 			sqlStatement.execute();
 		}
@@ -83,6 +83,10 @@
 			sqlStatement.execute();
 			result = sqlStatement.getResult().data;
 			return result[0].current_star;
+		}
+		
+		public function resetGame():void {
+			//Reset User Info
 		}
 		/************************* END USER *************************/
 		

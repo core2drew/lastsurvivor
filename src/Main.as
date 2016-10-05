@@ -75,6 +75,11 @@ package
 			mainStage = this;
 			DB = new Database();
 			
+			//User checker if there is a already a user
+			checkUser = DB.checkUserUser();
+			
+			mainStage.newUser_txt.text = checkUser;
+			
 			//Show the starting screen
 			ShowStartingScreen();
 		}
@@ -106,9 +111,6 @@ package
 		public function ShowStartingScreen ():void {
 			var ss = startscreen_mc;//ss meaning start screen;
 			//SoundController.playBGSound(DB.getBGSound(),"Main");//Play Sound for Map
-			
-			//User checker if there is a already a user
-			checkUser = DB.checkUserUser();
 			
 			ss.y = 472;
 			ss.moon_mc.y = -170;

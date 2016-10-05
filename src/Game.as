@@ -74,7 +74,8 @@ package
 			zombieSpawnTimer.addEventListener(TimerEvent.TIMER, spawnZombie);
 			joystick = new JoyStick();
 			survivor = new Survivor();
-			spawnSurvivor();//Add Survivor to Stage;
+			mainStage.addChild(survivor);
+			//spawnSurvivor();//Add Survivor to Stage;
 			mainStage.addChild(joystick);//Adding Joystick to MainStage
 			mainStage.jump_btn.addEventListener(TouchEvent.TOUCH_BEGIN, Jump);//Add Jumping Event
 			mainStage.fire_btn.addEventListener(TouchEvent.TOUCH_BEGIN, fireBullet);//Firing Event
@@ -92,8 +93,8 @@ package
 			playerDirection = "";
 			xSpeed = 0;
 			scrollX = 0;
-			gravityConstant = 15;
-			jumpConstant = -25;
+			gravityConstant = 17;
+			jumpConstant = -27;
 			maxJumpHeight = 380;
 			ground = mainStage.scrollingBG_mc.y; //This is the ground of the scrollBG
 			reloadDelay = new Timer(800, 1);//Delay must be get from the database (gun delay column)
