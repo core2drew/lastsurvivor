@@ -13,6 +13,7 @@ package
 	import Main;
 	import JoyStick;
 	import Survivor;
+	import CharacterStat;
 	import Zombie;
 	import Bullet;
 	/**
@@ -26,6 +27,7 @@ package
 		public var mainStage:MovieClip;
 		public var joystick:JoyStick;
 		public var survivor:Survivor;
+		public var characterStat:CharacterStat;
 		public var bullet:Bullet;
 		public var stageWidth:int;
 		public var scrollBGWidth:Number;
@@ -74,9 +76,12 @@ package
 			zombieSpawnTimer.addEventListener(TimerEvent.TIMER, spawnZombie);
 			joystick = new JoyStick();
 			survivor = new Survivor();
-			mainStage.addChild(survivor);
-			//spawnSurvivor();//Add Survivor to Stage;
-			mainStage.addChild(joystick);//Adding Joystick to MainStage
+			characterStat = new CharacterStat();
+			
+			addSurvivor();//Add Survivor to Stage;
+			addCharacterStat();//Add CharacterStat to Stage
+			addJoyStick();//Adding Joystick to MainStage
+			
 			mainStage.jump_btn.addEventListener(TouchEvent.TOUCH_BEGIN, Jump);//Add Jumping Event
 			mainStage.fire_btn.addEventListener(TouchEvent.TOUCH_BEGIN, fireBullet);//Firing Event
 			
@@ -128,8 +133,16 @@ package
 			}
 		}
 		
-		public function spawnSurvivor ():void {
+		public function addJoyStick ():void {
+			mainStage.addChild(joystick);
+		}
+		
+		public function addSurvivor ():void {
 			mainStage.addChild(survivor);
+		}
+		
+		public function addCharacterStat ():void {
+			mainStage.addChild(characterStat);
 		}
 		
 		public function spawnZombie (e:TimerEvent):void {

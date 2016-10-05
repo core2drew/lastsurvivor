@@ -91,18 +91,18 @@
 				switch (itemDetails.name) 
 				{
 					case "Health":
-						currentSelectedStat = characterStatus[0].health;
-						shopModal.upgradeInfo_mc.currentStat_txt.text = characterStatus[0].health;
+						currentSelectedStat = characterStatus.health;
+						shopModal.upgradeInfo_mc.currentStat_txt.text = characterStatus.health;
 					break;
 					
 					case "Armor":
-						currentSelectedStat = characterStatus[0].armor;
-						shopModal.upgradeInfo_mc.currentStat_txt.text = characterStatus[0].armor;
+						currentSelectedStat = characterStatus.armor;
+						shopModal.upgradeInfo_mc.currentStat_txt.text = characterStatus.armor;
 					break;
 					
 					case "Gun Slot":
-						currentSelectedStat = characterStatus[0].gun_slot;
-						shopModal.upgradeInfo_mc.currentStat_txt.text = characterStatus[0].gun_slot;
+						currentSelectedStat = characterStatus.gun_slot;
+						shopModal.upgradeInfo_mc.currentStat_txt.text = characterStatus.gun_slot;
 					break;
 					
 					default:
@@ -194,7 +194,7 @@
 							//Get All Character Stats
 							characterStatus = DB.getCurrentCharacterStatus();
 							
-							currentSelectedStat = characterStatus[0].health;
+							currentSelectedStat = characterStatus.health;
 						break;
 						
 						case "Armor":
@@ -206,7 +206,7 @@
 							//Get All Character Stats
 							characterStatus = DB.getCurrentCharacterStatus();
 							
-							currentSelectedStat = characterStatus[0].armor;
+							currentSelectedStat = characterStatus.armor;
 						break;
 						
 						case "Gun Slot":
@@ -218,7 +218,7 @@
 							//Get All Character Stats
 							characterStatus = DB.getCurrentCharacterStatus();
 							
-							currentSelectedStat = characterStatus[0].gun_slot;
+							currentSelectedStat = characterStatus.gun_slot;
 						break;
 						default:
 					}

@@ -188,7 +188,7 @@
 			sqlStatement.text = "SELECT * FROM Character";
 			sqlStatement.execute();
 			result = sqlStatement.getResult().data;
-			return result;//select only the first row
+			return result[0];//select only the first row
 		}
 		
 		public function upgradeCharacterStatus(column:String, stats:int) {
@@ -273,7 +273,7 @@
 		
 		
 		
-		/********************************* SOUND **************************************/
+		/********************************* SETTINGS **************************************/
 		public function getBGSound ():int {
 			sqlStatement.clearParameters()
 			sqlStatement.text = "SELECT bg_sound FROM Settings";
@@ -303,6 +303,6 @@
 			sqlStatement.parameters["@status"] = status;
 			sqlStatement.execute();
 		}
-		/********************************* END OF SOUND **************************************/
+		/********************************* END OF SETTINGS **************************************/
 	}
 }

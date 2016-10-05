@@ -12,6 +12,7 @@ package
 		public var invulnerable:Boolean;
 		public var survivor:MovieClip;
 		public var mainStage:MovieClip;
+		
 		public function Survivor() 
 		{
 			survivor = this;
@@ -84,6 +85,7 @@ package
 			//Invulnerable for 5secs
 			if (!invulnerable) {
 				invulnerable = true;
+				mainStage.healthBarContainer_mc.healthBar.mask.scaleX -= 1;
 				TweenMax.fromTo(survivor, .5, { alpha:1 }, { alpha:0, repeat:5, ease:Linear.easeNone , onComplete:function() {
 					invulnerable = false;
 					survivor.alpha = 1;
