@@ -83,9 +83,8 @@
 		}
 		
 		public function takeDamage (damage:Number, currentZombieIndex:int):void {
-			var currentHitpoints = zombieHitpoints -= damage;
-			zombieHitpoints = currentHitpoints;
-			zombieLifeBar_mc.bar_mc.scaleX = (currentHitpoints / 100);
+			zombieHitpoints -= damage;
+			zombieLifeBar_mc.bar_mc.scaleX = (zombieHitpoints / 100);
 			if (zombieHitpoints <= 0) {
 				Game.zombieList.splice(currentZombieIndex, 1);
 				Main.mainStage.kills_mc.kill_txt.text = String( Number(Main.mainStage.kills_mc.kill_txt.text) + 1 );

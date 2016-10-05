@@ -5,6 +5,7 @@ package
 	import flash.display.MovieClip;
 	import flash.display.Stage;
 	import flash.events.Event;
+	import CharacterStat;
 	
 	public class Survivor extends MovieClip
 	{
@@ -12,16 +13,25 @@ package
 		public var invulnerable:Boolean;
 		public var survivor:MovieClip;
 		public var mainStage:MovieClip;
-		
+		private var characterStat:CharacterStat;
+				
 		public function Survivor() 
 		{
 			survivor = this;
 			heroBody_mc.stop();
+			
 			//Change Weapon Temporary
 			heroBody_mc.heroArms_mc.gotoAndStop(1);
+			
+			mainStage = Main.mainStage;
+			
 			this.name = "survivor";
 			this.x = (Main.StageWidth / 2);
-			this.y = Main.mainStage.scrollingBG_mc.y;
+			this.y = mainStage.scrollingBG_mc.y;
+			
+			characterStat = new CharacterStat();
+			addCharacterStat();
+			
 			addEventListener(Event.ENTER_FRAME, loop);
 		}
 		
@@ -72,7 +82,11 @@ package
 		public function Fall ():void {
 			heroBody_mc.gotoAndPlay("Fall");
 		}
-
+		
+		public function addCharacterStat ():void {
+			mainStage.addChild(characterStat);
+		}
+		
 		private function pauseCheckerLoop(e:Event):void {
 			if (!Game.IsPaused) {
 				heroBody_mc.play();
@@ -85,7 +99,7 @@ package
 			//Invulnerable for 5secs
 			if (!invulnerable) {
 				invulnerable = true;
-				mainStage.healthBarContainer_mc.healthBar.mask.scaleX -= 1;
+				characterStat.takeDamage(10);
 				TweenMax.fromTo(survivor, .5, { alpha:1 }, { alpha:0, repeat:5, ease:Linear.easeNone , onComplete:function() {
 					invulnerable = false;
 					survivor.alpha = 1;

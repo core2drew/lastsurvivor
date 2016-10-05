@@ -11,7 +11,6 @@ package
 		private var healthPoints:int;
 		private var armorPoints:int;
 		
-		
 		public function CharacterStat() 
 		{
 			addEventListener(Event.ADDED_TO_STAGE, init);
@@ -25,6 +24,11 @@ package
 			this.y = 80;
 			healthPoints = db.getCurrentCharacterStatus().health;
 			armorPoints = db.getCurrentCharacterStatus().armor;
+		}
+		
+		public function takeDamage (damage:Number) {
+			healthPoints -= damage;
+			healthBarContainer_mc.healthBar.mask.scaleX = (healthPoints / 100);
 		}
 	}
 }
