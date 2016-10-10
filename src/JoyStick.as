@@ -16,30 +16,37 @@ package
 		private var radius:int;
 		private var angle:int;
 		private var xDirection:int;
-		public static var direction:String;
+		public var direction:String;
 		
 		public function JoyStick()  {
-			addEventListener(Event.ADDED_TO_STAGE, init);
+			if (stage) {
+				init();
+			}
+			else {
+				addEventListener(Event.ADDED_TO_STAGE, init);
+			}
 		}
 		
-		public function init (e:Event):void {
-			_knob = this.knob
-			this.x = 240;
-			this.y = 875;
-			startX = this.x;
-			startY = this.y;
+		public function init (e:Event = null):void {
+			removeEventListener(Event.ADDED_TO_STAGE, init);
+			
+			hide();
+			_knob = knob
+			x = 240;
+			y = 875;
+			startX = x;
+			startY = y;
 			radius = 100;
 			addEventListener(Event.ENTER_FRAME, enterFrame);
 			addEventListener(MouseEvent.MOUSE_DOWN, onTouch);
 			stage.addEventListener(MouseEvent.MOUSE_UP, offTouch);
-			removeEventListener(Event.ADDED_TO_STAGE, init);
 		}
 		
 		public function enterFrame (e:Event):void {
 			direction = "idle";
 			if (isTouch) {
 				angle = Math.atan2(0, root.mouseX - startX) / (Math.PI / 180);
-				this.rotation = angle;
+				rotation = angle;
 				_knob.rotation = -angle;
 				
 				_knob.x = this.mouseX;
@@ -67,6 +74,14 @@ package
 		
 		public function offTouch (e:MouseEvent):void {
 			isTouch = false;
+		}
+		
+		public function show() {
+			visible = true;
+		}
+		
+		public function hide() {
+			visible = false;
 		}
 	}
 }

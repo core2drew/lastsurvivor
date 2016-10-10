@@ -23,30 +23,43 @@
 		private var zombieBody_mc:MovieClip;
 		private var zombieLegs_mc:MovieClip;
 		private var zombieUpdateDirectionDelay:int;
+		private var main:Main;
 		
-		public function Zombie (xLocation:int, yLocation:int, direction:String, survivor:Survivor, stageWidth:int) {
-            // constructor code
+		public function Zombie (main:Main, xLocation:int, yLocation:int, direction:String, survivor:Survivor, stageWidth:int) {
+            this.main = main;
+			
             x = xLocation;
             y = yLocation;
+			
+			this.stageWidth = stageWidth;
+			this.survivor = survivor;
+			this.direction = direction;
+			
+			if (stage) {
+				init();
+			}
+			else {
+				addEventListener(Event.ADDED_TO_STAGE, init);
+			}
+        }
+		
+		public function init(e:Event = null) {
+			removeEventListener(Event.ADDED_TO_STAGE, init);
 			
 			//must be from database data
 			zombieSpeed = 10; ;
 			zombieHitpoints = 100;
 			zombieUpdateDirectionDelay =  4;
 			
-			
 			stop();
-			this.stageWidth = stageWidth;
-			this.survivor = survivor;
-			this.direction = direction;
 			zombieBody_mc = this.body_mc;
 			zombieLegs_mc = this.legs_mc;
 			zombieLifeBar_mc = this.lifebar_mc;
 			zombieBody_mc.stop();
 			zombieLegs_mc.stop();
 			updateDirection();
-			addEventListener(Event.ENTER_FRAME, loop);
-        }
+			addEventListener(Event.ENTER_FRAME, loop);	
+		}
 		
 		public function updateDirection ():void {
 			if (direction == 'left') {
@@ -87,7 +100,6 @@
 			zombieLifeBar_mc.bar_mc.scaleX = (zombieHitpoints / 100);
 			if (zombieHitpoints <= 0) {
 				Game.zombieList.splice(currentZombieIndex, 1);
-				Main.mainStage.kills_mc.kill_txt.text = String( Number(Main.mainStage.kills_mc.kill_txt.text) + 1 );
 				removeSelf();
 			}
 		}
@@ -152,48 +164,6 @@
 			
 			//Zombie Body Animation
 			animateWalkingBody();
-			
-			//Zombie Legs Animation
-			/*TweenMax.to(zombieLegs_mc, 3,
-			{ 
-				frame:90, 
-				onUpdate:function() 
-				{
-					if (zombieLegs_mc.currentLabel == "Forward" && walkingBool == true)
-					{
-						if (direction == "left")
-						{
-							x += -0.3;
-						}
-						else if (direction == "right")
-						{
-							x += 0.3;
-						}
-					}
-				},
-				onComplete:function()
-				{
-					if (walkingBool)
-					{
-						zombieLegs_mc.gotoAndStop(30);
-						walking();
-					}
-				},
-				ease:Linear.easeNone
-			});
-			
-			//Zombie Body and Arm Animation
-			TweenMax.to(zombieBody_mc, 3, { 
-				frame:90,
-				onComplete:function()
-				{
-					if (walkingBool)
-					{
-						zombieBody_mc.gotoAndStop(30);
-					}
-				},
-				ease:Linear.easeNone
-			});*/
 		}
 		
 		//Stop Zombie

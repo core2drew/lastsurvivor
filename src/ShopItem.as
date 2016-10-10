@@ -11,6 +11,7 @@
 	
 	public class ShopItem extends MovieClip {
 		private var DB:Database;
+		private var main:Main;
 		private var shopModal:MovieClip;
 		private var itemDetails:Object;
 		private var itemID:int;
@@ -25,15 +26,23 @@
 		private var itemUpgrades:Array = new Array();
 		private var buyUpgrade_btn:MovieClip
 		private var updatePriceArr:Array;
-		private var characterStatus:Array;
+		private var characterStatus:Object;
 		private var currentSelectedStat:int;
 		
-		public function ShopItem(itemDetails:Object) {
+		public function ShopItem(itemDetails:Object, main:Main) {
 			this.itemDetails = itemDetails;
-			addEventListener(Event.ADDED_TO_STAGE, init);
+			this.main = main;
+			
+			if (stage) {
+				init();
+			}
+			else {
+				addEventListener(Event.ADDED_TO_STAGE, init);
+			}
 		}
 		
 		public function init(e:Event = null):void {
+			removeEventListener(Event.ADDED_TO_STAGE, init);
 			stop();
 			
 			DB = new Database();
@@ -233,7 +242,7 @@
 					}
 					
 					//Update the Coin Container
-					Main.updateCoins(itemPrice);
+					main.updateCoins(itemPrice);
 					
 					//Update the Game State Coin
 					DB.buyShopItem(itemPrice);

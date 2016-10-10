@@ -10,11 +10,9 @@ package
 	import flash.desktop.NativeApplication;
 	import flash.events.KeyboardEvent;
 	import flash.ui.Keyboard;
-	import Main;
-	import JoyStick;
-	import Survivor;
 	import Zombie;
 	import Bullet;
+	
 	/**
 	 * ...
 	 * @author Drew Calupe
@@ -23,118 +21,91 @@ package
 		public static var zombieList:Array = new Array();
 		public static var InGame:Boolean;
 		public static var IsPaused:Boolean;
+		
+		public var main:Main;
 		public var mainStage:MovieClip;
+		public var scrollBG:ScrollingBackground;
 		public var joystick:JoyStick;
 		public var survivor:Survivor;
-		public var bullet:Bullet;
+		public var survivorStat:SurvivorStat;
+		public var gameControls:GameControls;
 		public var stageWidth:int;
 		public var scrollBGWidth:Number;
 		public var zombieSpawnTimer:Timer;
+		public var survivorDied:Boolean;
 		
 		/*Controller Variables*/
-		private var speedConstant:Number;
-		private var maxSpeedConstant:Number;
-		private var LeftMoveLimit:Number;
-		private var RightMoveLimit:Number;
-		private var MovingLeft:Boolean;
-		private var MovingRight:Boolean;
-		private var Jumping:Boolean;
-		private var Falling:Boolean;
-		private var scrollingBG:MovieClip;
-		private var playerDirection:String;
-		private var xSpeed:int;
-		private var scrollX:int;
-		private var gravityConstant:int;
-		private var jumpConstant:int;
-		private var maxJumpHeight:int;
-		private var ground:int;
-		private var reloadDelay:Timer;
+		public var speedConstant:Number;
+		public var maxSpeedConstant:Number;
+		public var leftMoveLimit:Number;
+		public var rightMoveLimit:Number;
+		public var movingLeft:Boolean;
+		public var movingRight:Boolean;
+		public var jumping:Boolean;
+		public var falling:Boolean;
+		public var playerDirection:String;
+		public var xSpeed:int;
+		public var scrollX:int;
+		public var gravityConstant:int;
+		public var jumpConstant:int;
+		public var maxJumpHeight:int;
+		public var ground:int;
 
-		public function Game () {
+		public function Game (main:Main) {
+			this.main = main;
 			InGame = false;
 			IsPaused = false;
-			GameInit();
 		}
 		
-		//InGame Init
-		//Call this when click start
 		public function GameInit ():void {
+			InGame = true;
+			survivorDied = false;
+			
+			mainStage = main.mainStage;
+			scrollBG = main.scrollBG;
+			survivor = main.survivor;
+			survivorStat = main.survivorStat;
+			joystick = main.joystick;
+			gameControls = main.gameControls;
+			
 			//Native Device Back Button Event
 			//NativeApplication.nativeApplication.addEventListener(KeyboardEvent.KEY_UP, handleGameBackButton, false, 0, true);
 			
 			//Inactive App in user Device Event
 			//NativeApplication.nativeApplication.addEventListener(Event.DEACTIVATE, handleGameDeactivated, false, 0, true);
 			
-			mainStage = Main.mainStage;
-			mainStage.gotoAndStop(3);
-			InGame = true;
-			stageWidth = Main.STAGE.stageWidth;
-			scrollBGWidth = mainStage.scrollingBG_mc.width;
+			main.hideMenuInit();
+			showGameUI();
+			
+			stageWidth = main._stage.stageWidth;
+			scrollBGWidth = scrollBG.width;
+			
 			zombieSpawnTimer = new Timer(5000, 1);
 			zombieSpawnTimer.addEventListener(TimerEvent.TIMER, spawnZombie);
-			joystick = new JoyStick();
-			survivor = new Survivor();
-			
-			addSurvivor();//Add Survivor to Stage;
-			addJoyStick();//Adding Joystick to MainStage
-			
-			mainStage.jump_btn.addEventListener(TouchEvent.TOUCH_BEGIN, Jump);//Add Jumping Event
-			mainStage.fire_btn.addEventListener(TouchEvent.TOUCH_BEGIN, fireBullet);//Firing Event
 			
 			/*Controller Init*/
-			speedConstant = 12; //Character Speed (illusion only)
+			speedConstant = 15; //Character Speed (illusion only)
 			maxSpeedConstant = speedConstant;
-			LeftMoveLimit = 0;
-			RightMoveLimit = -2745;
-			MovingLeft = false;
-			MovingRight = false;
-			Jumping = false;
-			Falling = false;
-			scrollingBG = mainStage.scrollingBG_mc;
+			leftMoveLimit = 0;
+			rightMoveLimit = -2745;
+			movingLeft = false;
+			movingRight = false;
+			jumping = false;
+			falling = false;
 			playerDirection = "";
 			xSpeed = 0;
 			scrollX = 0;
-			gravityConstant = 17;
+			gravityConstant = 20;
 			jumpConstant = -27;
 			maxJumpHeight = 380;
-			ground = mainStage.scrollingBG_mc.y; //This is the ground of the scrollBG
-			reloadDelay = new Timer(800, 1);//Delay must be get from the database (gun delay column)
+			ground = scrollBG.y; //This is the ground of the scrollBG
 			addEventListener(Event.ENTER_FRAME, loop);
 		}
 		
-		private function fireBullet (e:TouchEvent) {
-			if (survivor.scaleX < 0)
-			{
-				playerDirection = 'left';
-			}
-			else if (survivor.scaleX > 0)
-			{
-				playerDirection = 'right';
-			}
-			
-			bullet = new Bullet(scrollX, ground, survivor, playerDirection);
-			scrollingBG.addChild(bullet);
-		}
-		
-		private function Jump (e:TouchEvent) {
-			if (survivor.y >= ground) {
-				Jumping = true;
-				survivor.Jump();
-			}
-		}
-		
 		private function Fall():void {
-			if (Falling) {
+			if (falling) {
 				survivor.Fall();
 			}
-		}
-		
-		public function addJoyStick ():void {
-			mainStage.addChild(joystick);
-		}
-		
-		public function addSurvivor ():void {
-			mainStage.addChild(survivor);
 		}
 		
 		public function spawnZombie (e:TimerEvent):void {
@@ -153,82 +124,87 @@ package
 				direction = "left";
 			}
 			
-			zombie = new Zombie(xLocation, 0, direction , survivor, stageWidth);//Creating new Zombie Obj
-			mainStage.scrollingBG_mc.addChild(zombie);
+			zombie = new Zombie(main, xLocation, 0, direction , survivor, stageWidth);//Creating new Zombie Obj
+			scrollBG.addChild(zombie);
 			zombieList.push(zombie);
 		}
 		
 		private function loop (e:Event):void {
-			//Spawing Zombie Condition
-			if (zombieList.length <= 2) {
-				zombieSpawnTimer.start();
-			}
-			
-			//JoyStick Pad Condition
-			if (JoyStick.direction === "left") {
-				MovingLeft = true;
-				survivor.TurnLeft();
-				if (scrollX >= LeftMoveLimit) {
-					MovingLeft = false;
-					survivor.Idle();
+			if (!survivorDied) {
+				//Spawing Zombie Condition
+				if (zombieList.length <= 2) {
+					zombieSpawnTimer.start();
 				}
-				else {
-					xSpeed -= speedConstant;
-					if (!Jumping && !Falling) {
-						survivor.Walk();
+				
+				//JoyStick Pad Condition
+				if (joystick.direction === "left") {
+					movingLeft = true;
+					survivor.TurnLeft();
+					if (scrollX >= leftMoveLimit) {
+						movingLeft = false;
+						survivor.Idle();
 					}
-					moveScrollBGX()
-				}
-			}
-			else if (JoyStick.direction === "right") {
-				MovingRight = true;
-				survivor.TurnRight();
-				if (scrollX <= RightMoveLimit) {
-					MovingRight = false;
-					survivor.Idle();
-				}
-				else {
-					xSpeed += speedConstant;
-					if (!Jumping && !Falling) {
-						survivor.Walk();
+					else {
+						xSpeed -= speedConstant;
+						if (!jumping && !falling) {
+							survivor.Walk();
+						}
+						moveScrollBGX()
 					}
-					moveScrollBGX()
+				}
+				else if (joystick.direction === "right") {
+					movingRight = true;
+					survivor.TurnRight();
+					if (scrollX <= rightMoveLimit) {
+						movingRight = false;
+						survivor.Idle();
+					}
+					else {
+						xSpeed += speedConstant;
+						if (!jumping && !falling) {
+							survivor.Walk();
+						}
+						moveScrollBGX()
+					}
+				}
+				else if (joystick.direction === "idle") {
+					//To animate jump when idle status
+					if (!jumping && !falling) {
+						survivor.Idle();
+					}
+				}
+				
+				//jumping Condition
+				if (jumping) {
+					if (survivor.y > maxJumpHeight) {
+						survivor.y += jumpConstant;
+						maxSpeedConstant = 17;
+					}
+					else {
+						falling = true;
+						jumping = false;
+						Fall();
+					}
+				}
+				//falling Condition
+				if (falling) {
+					if (survivor.y < ground - 30) {
+						survivor.y += gravityConstant;
+					}
+					else {
+						falling = false;
+						jumping = false;
+						survivor.y = ground
+						maxSpeedConstant = 12;
+					}
 				}
 			}
-			else if (JoyStick.direction === "idle") {
-				//To animate jump when idle status
-				if (!Jumping && !Falling) {
-					survivor.Idle();
-				}
-			}
-			
-			//Jumping Condition
-			if (Jumping) {
-				if (survivor.y > maxJumpHeight) {
-					survivor.y += jumpConstant;
-					maxSpeedConstant = 17;
-				}
-				else {
-					Falling = true;
-					Jumping = false;
-					Fall();
-				}
-			}
-			//Falling Condition
-			if (Falling) {
-				if (survivor.y < ground - 30) {
-					survivor.y += gravityConstant;
-				}
-				else {
-					Falling = false;
-					Jumping = false;
-					survivor.y = ground
-					maxSpeedConstant = 12;
-				}
+			else {
+				zombieSpawnTimer.stop();
 			}
 		}
 		
-		public function moveScrollBGX() {
+		public function moveScrollBGX():void {
 			//Maxspeed
 			if (xSpeed < (maxSpeedConstant * -1)) {
 				xSpeed = (maxSpeedConstant * -1);
@@ -238,7 +214,7 @@ package
 			}
 			//Move ScrollBG
 			scrollX -= xSpeed;
-			scrollingBG.x = scrollX;
+			scrollBG.x = scrollX;
 		}
 		
 		public function handleGameBackButton (e:KeyboardEvent):void {
@@ -279,6 +255,29 @@ package
 				resumeGame();
 				removeEventListener(Event.ENTER_FRAME, arguments.callee);
 			}
+		}
+		
+		public function gameOver():void {
+			hideGameUI();
+			InGame = false;
+			IsPaused = false;
+			main.loadingScreen.showLoadingScreen();
+		}
+		
+		public function showGameUI():void {
+			scrollBG.show();
+			survivor.show();
+			survivorStat.displayStat();
+			joystick.show();
+			gameControls.show();	
+		}
+		
+		public function hideGameUI():void {
+			scrollBG.hide();
+			survivor.hide();
+			survivor.survivorStat.hide();
+			joystick.hide();
+			gameControls.hide();	
 		}
 	}
 }

@@ -13,20 +13,19 @@
 	import com.greensock.easing.*;
 	import com.greensock.TweenMax;
 	import flash.filters.*; 
-	import Database;
 	import Settings;
-	import Game;
-	import Main;
 	
 	/**
 	 * ...
 	 * @author Drew Calupe
 	 */
 	public class Modal extends MovieClip {
-		public var _Game:Game;
-		public var modal:MovieClip;
+		private var _Game:Game;
+		private var main:Main;
+		private var game:Game;
+		private var db:Database;
+		private var modal:MovieClip;
 		public var showing:Boolean;
-		public var DB:Database;
 		private var levelsCon:MovieClip = new MovieClip();
 		public static var shopCurrentView:String;
 		public static var shopPickCategory:String;
@@ -38,10 +37,24 @@
 		private var shopItemsCount:int;
 		private var shopItemsArr:Array =  new Array();
 		
-		public function Modal() {
+		public function Modal(main:Main) {
+			this.main = main;
 			modal = this;
-			DB = new Database();
+			
+			if (stage) {
+				init();
+			}
+			else {
+				addEventListener(Event.ADDED_TO_STAGE, init);
+			}
+		}
+		
+		public function init(e:Event = null):void {
+			removeEventListener(Event.ADDED_TO_STAGE, init);
 			hideAllModal();
+			
+			game = main.game;
+			db = main.db;
 		}
 		
 		public function hideAllModal ():void {
@@ -108,7 +121,7 @@
 				}
 				
 				if (newUser.newUser_txt.length >= 3) {
-					DB.setNewUser(str);
+					db.setNewUser(str);
 					hideAllModal();
 					newUser.okBtn.removeEventListener(MouseEvent.CLICK, arguments.callee);
 					return;
@@ -255,7 +268,7 @@
 			shopItemXPosition = [ -273.35, 0, 270];
 			
 			//Get Shop Items Full Info Object
-			shopItemsArr = DB.getShopItems(shopCurrentView, shopItemCurrentPage) !== "" ? DB.getShopItems(shopCurrentView, shopItemCurrentPage) : []; //Get items info condition
+			shopItemsArr = db.getShopItems(shopCurrentView, shopItemCurrentPage) !== "" ? db.getShopItems(shopCurrentView, shopItemCurrentPage) : []; //Get items info condition
 			
 			//Show Message no Items available
 			if (shopItemsArr.length == 0) {
@@ -268,7 +281,7 @@
 			else {
 				
 				for (var i = 0; i < shopItemsArr.length; i++) {
-					shopItem = new ShopItem(shopItemsArr[i]);
+					shopItem = new ShopItem(shopItemsArr[i], main);
 					shop.shopItemContainer_mc.addChild(shopItem);
 					shop.shopItemContainer_mc.getChildAt(i).x = shopItemXPosition[i];
 					shop.shopItemContainer_mc.getChildAt(i).y = shopItemYPosition;
@@ -354,7 +367,7 @@
 		}
 				
 		private function pageCount ():void {
-			shopItemsCount = DB.getShopItemsCount(shopCurrentView);//Get the all shop items count
+			shopItemsCount = db.getShopItemsCount(shopCurrentView);//Get the all shop items count
 			shopItemDisplayLimit = 3;
 			shopItemPageCount = Math.ceil(shopItemsCount / shopItemDisplayLimit);//Get the page count of current category
 		}
@@ -417,7 +430,7 @@
 		
 		private function levelBtnEvent (selectedStage:int):void {
 			var myGlow:GlowFilter = new GlowFilter(); 
-			var stageLeveldata:Array = DB.getLevelStars(selectedStage)
+			var stageLeveldata:Array = db.getLevelStars(selectedStage)
 			
 			//Yellow Glow
 			myGlow.inner = false; 
@@ -473,14 +486,19 @@
 				}
 				
 				//Start Level
-				level.startBtn.addEventListener(MouseEvent.CLICK, startGameLevel);
+				level.startBtn.addEventListener(MouseEvent.CLICK, startGame);
 			}
 		}
 		
-		private function startGameLevel(e:MouseEvent) {
+		private function startGame(e:MouseEvent):void {
+			main.user.hide();
+			main.stars.hide();
+			main.coins.hide();
+			
 			resetLevelModal();
 			hideAllModal();
-			_Game = new Game();
+			
+			game.GameInit();
 		}
 		
 		public function showLockMessage (title:String):void {
@@ -501,9 +519,9 @@
 		
 		/************************************** SETTINGS MODAL **************************************/
 		
-		public function showSettings (DB:Database,_currentView:String):void {
-			var bgSound:int = DB.getBGSound();
-			var SFX:int = DB.getSFX();
+		public function showSettings (db:Database,_currentView:String):void {
+			var bgSound:int = db.getBGSound();
+			var SFX:int = db.getSFX();
 			var currentView:String = _currentView;
 			
 			settings.visible = true;
@@ -521,28 +539,28 @@
 			settings.bgmusic_cb.addEventListener(MouseEvent.CLICK, function (e:MouseEvent) { 
 				if (bgSound) {
 					settings.bgmusic_cb.check.visible = false;
-					DB.updateBGSound(0);
+					db.updateBGSound(0);
 					Settings.stopBGSounds();
 				}
 				else {
 					settings.bgmusic_cb.check.visible = true;
-					DB.updateBGSound(1);
-					Settings.playBGSound(DB.getBGSound(),currentView);
+					db.updateBGSound(1);
+					Settings.playBGSound(db.getBGSound(),currentView);
 				}
 				
-				bgSound = DB.getBGSound()
+				bgSound = db.getBGSound()
 			});
 			
 			settings.sfx_cb.addEventListener(MouseEvent.CLICK, function (e:MouseEvent) { 
 				if (SFX) {
 					settings.sfx_cb.check.visible = false;
-					DB.updateSFX(0);
+					db.updateSFX(0);
 				}
 				else {
 					settings.sfx_cb.check.visible = true;
-					DB.updateSFX(1);
+					db.updateSFX(1);
 				}
-				SFX = DB.getSFX();
+				SFX = db.getSFX();
 			});
 			
 			//Hide unlock Modal
@@ -599,7 +617,7 @@
 			//Hide Exit Modal
 			exit.noBtn.addEventListener(MouseEvent.CLICK, function (e:MouseEvent) {
 				hideAllModal();
-				exit.XBtn.removeEventListener(MouseEvent.CLICK, arguments.callee);
+				exit.noBtn.removeEventListener(MouseEvent.CLICK, arguments.callee);
 			});
 		}
 		/********************************** END OF SHOW EXIT MODAL *****************************************/

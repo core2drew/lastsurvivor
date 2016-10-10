@@ -1,11 +1,11 @@
-package 
+﻿package 
 {
 	import com.greensock.easing.*;
 	import com.greensock.TweenMax;
 	import flash.display.MovieClip;
 	import flash.display.Stage;
 	import flash.events.Event;
-	import CharacterStat;
+	import SurvivorStat;
 	
 	public class Survivor extends MovieClip
 	{
@@ -13,24 +13,34 @@ package
 		public var invulnerable:Boolean;
 		public var survivor:MovieClip;
 		public var mainStage:MovieClip;
-		private var characterStat:CharacterStat;
+		public var survivorStat:SurvivorStat;
+		private var main:Main;
 				
-		public function Survivor() 
+		public function Survivor(main:Main) 
 		{
-			survivor = this;
+			this.main = main;
+			
+			if (stage) {
+				init();
+			}
+			else {
+				addEventListener(Event.ADDED_TO_STAGE, init);
+			}
+		}
+		
+		public function init(e:Event = null):void {
+			removeEventListener(Event.ADDED_TO_STAGE, init);
+			
+			hide();
+			mainStage = main.mainStage;
+			this.survivorStat = main.survivorStat;
+			
 			heroBody_mc.stop();
+			heroBody_mc.heroArms_mc.gotoAndStop(1);//Change Weapon Temporary
 			
-			//Change Weapon Temporary
-			heroBody_mc.heroArms_mc.gotoAndStop(1);
-			
-			mainStage = Main.mainStage;
-			
-			this.name = "survivor";
-			this.x = (Main.StageWidth / 2);
-			this.y = mainStage.scrollingBG_mc.y;
-			
-			characterStat = new CharacterStat();
-			addCharacterStat();
+			name = "survivor";
+			x = (main.stageWidth / 2);
+			y = main.scrollBG.y;
 			
 			addEventListener(Event.ENTER_FRAME, loop);
 		}
@@ -56,12 +66,12 @@ package
 		
 		public function TurnRight():void
 		{
-			this.scaleX = 1;
+			scaleX = 1;
 		}
 		
 		public function TurnLeft():void
 		{
-			this.scaleX = -1;
+			scaleX = -1;
 		}
 		
 		public function Walk ():void {
@@ -83,10 +93,6 @@ package
 			heroBody_mc.gotoAndPlay("Fall");
 		}
 		
-		public function addCharacterStat ():void {
-			mainStage.addChild(characterStat);
-		}
-		
 		private function pauseCheckerLoop(e:Event):void {
 			if (!Game.IsPaused) {
 				heroBody_mc.play();
@@ -98,13 +104,21 @@ package
 		public function Attacked ():void {
 			//Invulnerable for 5secs
 			if (!invulnerable) {
-				invulnerable = true;
-				characterStat.takeDamage(10);
-				TweenMax.fromTo(survivor, .5, { alpha:1 }, { alpha:0, repeat:5, ease:Linear.easeNone , onComplete:function() {
-					invulnerable = false;
-					survivor.alpha = 1;
+				//invulnerable = true;
+				survivorStat.takeDamage(10);//Temporary zombie damage
+				TweenMax.fromTo(this, .5, { alpha:1 }, { alpha:0, repeat:5, ease:Linear.easeNone , onComplete:function() {
+					//invulnerable = false;
+					alpha = 1;
 				} });
 			}
+		}
+		
+		public function show() {
+			visible = true;
+		}
+		
+		public function hide() {
+			visible = false;
 		}
 	}
 }
