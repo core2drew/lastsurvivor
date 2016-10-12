@@ -20,7 +20,6 @@
 	 * @author Drew Calupe
 	 */
 	public class Modal extends MovieClip {
-		private var _Game:Game;
 		private var main:Main;
 		private var game:Game;
 		private var db:Database;
@@ -51,6 +50,7 @@
 		
 		public function init(e:Event = null):void {
 			removeEventListener(Event.ADDED_TO_STAGE, init);
+			
 			hideAllModal();
 			
 			game = main.game;
@@ -79,9 +79,8 @@
 		/***************************************** PAUSE MODAL *******************************************/
 		public function showPause ():void {
 			pause.visible = true;
-			Game.IsPaused = true;
 			pause.resumeBtn.addEventListener(MouseEvent.CLICK, function (e:MouseEvent) {
-				Game.IsPaused = false;
+				game.resume();
 				pause.resumeBtn.removeEventListener(MouseEvent.CLICK, arguments.callee);
 				hideAllModal();
 			});
@@ -439,7 +438,7 @@
 			myGlow.blurY = 15; 
 			myGlow.alpha = 0.5;
 			
-			//Loop for button level
+			//loop for button level
 			for (var i = 0; i < levelsCon.numChildren; i++) {
 				var level_btn:MovieClip = levelsCon.getChildAt(i) as MovieClip;
 				var firstLevel:MovieClip = levelsCon.getChildAt(0) as MovieClip;
@@ -491,9 +490,7 @@
 		}
 		
 		private function startGame(e:MouseEvent):void {
-			main.user.hide();
-			main.stars.hide();
-			main.coins.hide();
+			main.hideMainMenu();
 			
 			resetLevelModal();
 			hideAllModal();

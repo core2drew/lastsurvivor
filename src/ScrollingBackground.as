@@ -29,6 +29,9 @@
 		public function hide():void {
 			visible = false;
 		}
+		
+		public function reset():void {
+			x = 0;
+		}
 	}
-	
 }

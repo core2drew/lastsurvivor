@@ -30,6 +30,12 @@
 			y = 105.6;
 		}
 		
+		//Update Coin Container
+		public function updateCoins (itemPrice:int):void {
+			currentCoins_txt.text = Helper.formatCost(String(parseInt(currentCoins_txt.text.replace(",", "")) - itemPrice), 0, "", 0);
+			db.buyShopItem(itemPrice);//Update the Game State Coin
+		}
+		
 		public function displayCoin():void {
 			visible = true;
 			currentCoins_txt.text = Helper.formatCost(db.getCoins().toString(), 0, "", 0);

@@ -48,7 +48,7 @@
 			x = 1065;
 			y = 125;
 						
-			loadingScreenTimer = new Timer(3000, 1);
+			loadingScreenTimer = new Timer(5000, 1);
 			loadingScreenTimer.addEventListener(TimerEvent.TIMER, showMainMenu);
 		}
 		
@@ -132,7 +132,7 @@
 			TweenMax.killAll(false, true, false);
 			
 			hide();
-			main.MainMenuInit();
+			main.showMainMenu();
 		}
 		
 		public function showLoadingScreen():void {
@@ -149,14 +149,14 @@
 		
 		public function showMainMenu(e:TimerEvent):void {
 			hide();
-			main.MainMenuInit();
+			main.showMainMenu();
 		}
 		
-		public function show() {
+		public function show():void {
 			this.visible = true;
 		}
 		
-		public function hide() {
+		public function hide():void {
 			this.visible = false;
 		}
 	}

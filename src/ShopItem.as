@@ -241,14 +241,9 @@
 						itemUpgradeLevel = itemUpgradeLevelIndex + 1
 					}
 					
-					//Update the Coin Container
-					main.updateCoins(itemPrice);
+					main.coins.updateCoins(itemPrice);//Update the Coin Container
 					
-					//Update the Game State Coin
-					DB.buyShopItem(itemPrice);
-					
-					//Update UpgradeShop Table
-					DB.updateUpgradeShopLevel(itemID, itemUpgradeLevelIndex);
+					DB.updateUpgradeShopLevel(itemID, itemUpgradeLevelIndex);//Update UpgradeShop Table
 					
 					checkIfMaxUpgradeLevel();
 				}

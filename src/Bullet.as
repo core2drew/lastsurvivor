@@ -12,12 +12,30 @@ package  {
 		private var initialX:int;
 		private var deadZombieIndex:int;
 		private var bulletDamage:Number;
+		private var survivorHalfWidth;
+		private var survivorHalfHeight;
+		private var scrollX:int;
+		private var ground:int;
+		private var playerDirection:String;
+		private var main:Main;
+		private var game:Game;
+		private var survivor:Survivor;
+		private var gameControls:GameControls;
+		private var joyStick:JoyStick;
 		
-		public function Bullet(scrollX:int, ground:int, survivor:MovieClip, playerDirection:String) 
+		public function Bullet(main:Main, playerDirection:String) 
 		{
-			// constructor code
-			var survivorHalfWidth = survivor.width / 2 ;
-			var survivorHalfHeight = survivor.height / 2;
+			this.main = main;
+			game = main.game;
+			survivor = main.survivor;
+			joyStick = main.joystick;
+			gameControls = main.gameControls;
+			
+			scrollX = joyStick.scrollX;
+			ground = gameControls.ground;
+			
+			survivorHalfWidth = survivor.width / 2 ;
+			survivorHalfHeight = survivor.height / 2;
 			
 			if (playerDirection == "left") 
 			{
@@ -38,21 +56,15 @@ package  {
 			addEventListener(Event.ENTER_FRAME, loop);
 			
 			//Temporary Params
-			bulletTypes("Pistol");
+			setBulletDamage(10);
 		}
 		
-		public function bulletTypes (gun:String):void {
-			//Change Bullets depend on what weapon survivor use
-			bulletDamage = 10;
+		public function setBulletDamage (damage:int):void {
+			bulletDamage = damage;//Change Bullets depend on what weapon damage
 		}
 		
 		private function loop(event:Event):void
 		{
-			//Game Pause Condition
-			if (Game.IsPaused) {
-				removeEventListener(Event.ENTER_FRAME, arguments.callee);
-			}
-			
 			//looping code goes here
 			x += speed;
 			
@@ -82,11 +94,12 @@ package  {
 			}
 		}
 		
-		private function pauseCheckerLoop(e:Event):void {
-			if (!Game.IsPaused) {
-				addEventListener(Event.ENTER_FRAME, loop);
-				removeEventListener(Event.ENTER_FRAME, arguments.callee);
-			}
+		private function pause():void {
+			removeEventListener(Event.ENTER_FRAME, loop);
+		}
+		
+		public function resume():void {
+			addEventListener(Event.ENTER_FRAME, loop);
 		}
 		
 		public function removeSelf():void
@@ -99,12 +112,12 @@ package  {
 		
 		public function bulletHitTargetChecker():void 
 		{
-			for (var i:int = 0; i < Game.zombieList.length; i++)
+			for (var i:int = 0; i < game.zombieArr.length; i++)
 			{
-				if (this.hitTestObject(Game.zombieList[i] as MovieClip))
+				if (this.hitTestObject(game.zombieArr[i] as MovieClip))
 				{
 					//Remove Zombie
-					Game.zombieList[i].takeDamage(bulletDamage, i);
+					game.zombieArr[i].takeDamage(bulletDamage, i);
 					//Remove the Bullet
 					removeSelf();
 				}

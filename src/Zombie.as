@@ -23,10 +23,13 @@
 		private var zombieBody_mc:MovieClip;
 		private var zombieLegs_mc:MovieClip;
 		private var zombieUpdateDirectionDelay:int;
+		private var currentZombieIndex:int;
 		private var main:Main;
+		private var game:Game;
 		
 		public function Zombie (main:Main, xLocation:int, yLocation:int, direction:String, survivor:Survivor, stageWidth:int) {
             this.main = main;
+			game = main.game;
 			
             x = xLocation;
             y = yLocation;
@@ -75,38 +78,22 @@
         public function loop (e:Event):void {
             //the looping code goes here
 			//actions e.g (walking, attacking, etc.)
-			
-			//Game Pause Condition
-			if (Game.IsPaused) {
-				stopWalking();
-				removeEventListener(Event.ENTER_FRAME, arguments.callee);
-				//Checker if GamePause is False;
-				addEventListener(Event.ENTER_FRAME, pauseCheckerLoop);
-			}
-			
 			playerCollision();
 			playerCurrentPosition();
         }
-		
-		private function pauseCheckerLoop(e:Event):void {
-			if (!Game.IsPaused) {
-				addEventListener(Event.ENTER_FRAME, loop);
-				removeEventListener(Event.ENTER_FRAME, arguments.callee);
-			}
-		}
 		
 		public function takeDamage (damage:Number, currentZombieIndex:int):void {
 			zombieHitpoints -= damage;
 			zombieLifeBar_mc.bar_mc.scaleX = (zombieHitpoints / 100);
 			if (zombieHitpoints <= 0) {
-				Game.zombieList.splice(currentZombieIndex, 1);
+				game.zombieArr.splice(currentZombieIndex, 1);
 				removeSelf();
 			}
 		}
 		
 		//Remove Zombie
         public function removeSelf ():void {
-            removeEventListener(Event.ENTER_FRAME, loop); //stop the loop
+            pause();
             this.parent.removeChild(this); //tell this object's "parent object" to remove this object
         }
 		
@@ -149,11 +136,7 @@
 				zombieBody_mc.gotoAndPlay(91);
 			}
 			
-			survivor.Attacked();
-		}
-		
-		public function zombieLifeBar ():void {
-			
+			survivor.attacked();
 		}
 		
 		//Walking Zombie
@@ -205,6 +188,15 @@
 				direction = 'right';
 			}
 			updateDirection();
+		}
+		
+		public function pause():void {
+			stopWalking();
+			removeEventListener(Event.ENTER_FRAME, loop);
+		}
+		
+		public function resume() {
+			addEventListener(Event.ENTER_FRAME, loop);
 		}
 	}
 }

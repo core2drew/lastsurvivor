@@ -55,7 +55,6 @@ package
 		public var stars:Stars;
 		public var coins:Coins;
 		public var gameAlreadyStarted:Boolean;
-		public var checkUser;
 		
 		public function Main () {
 			stop();
@@ -82,7 +81,7 @@ package
 			scrollBG = new ScrollingBackground();
 			survivorStat = new SurvivorStat(this);
 			survivor = new Survivor(this);
-			joystick = new JoyStick();
+			joystick = new JoyStick(this);
 			gameControls = new GameControls(this);
 			game = new Game(this);
 			loadingScreen = new LoadingScreen(this);
@@ -93,10 +92,10 @@ package
 			stars = new Stars(this);
 			coins = new Coins(this);
 			
+			mainStage.addChild(scrollBG);
 			mainStage.addChild(loadingScreen);
 			mainStage.addChild(menu);
 			mainStage.addChild(map);
-			mainStage.addChild(scrollBG);
 			mainStage.addChild(user);
 			mainStage.addChild(stars);
 			mainStage.addChild(coins);
@@ -105,7 +104,6 @@ package
 			mainStage.addChild(joystick);
 			mainStage.addChild(gameControls);
 			mainStage.addChild(modal);
-			mainStage.setChildIndex(modal, mainStage.numChildren - 1);
 			
 			_stage.scaleMode = StageScaleMode.EXACT_FIT;
 			Multitouch.inputMode = MultitouchInputMode.TOUCH_POINT;
@@ -120,7 +118,7 @@ package
 		public function handleBackButton (e:KeyboardEvent):void {
 			if (e.keyCode == Keyboard.BACK) {
 				if (!modal.showing) {
-					if (!Game.InGame) {
+					if (!game.isInGame) {
 						modal.showModal();
 						modal.showExit();
 					}
@@ -138,8 +136,7 @@ package
 			//SoundController.stopAllSounds();//Pause game and Turn off sound
 		}
 		
-		public function MainMenuInit ():void {
-			gotoAndStop(2);
+		public function showMainMenu ():void {
 			menu.show();
 			map.show();
 			user.displayUser();
@@ -147,17 +144,12 @@ package
 			coins.displayCoin();
 		}
 		
-		public function hideMenuInit():void {
+		public function hideMainMenu():void {
 			menu.hide();
 			map.hide();
 			user.hide();
 			stars.hide();
 			coins.hide();
-		}
-		
-		//Update Coin Container
-		public function updateCoins (itemPrice:int):void {
-			mainStage.coinCon.currentCoins_txt.text = Helper.formatCost(String(parseInt(mainStage.coinCon.currentCoins_txt.text.replace(",","")) - itemPrice), 0, "", 0);
 		}
 	}
 }

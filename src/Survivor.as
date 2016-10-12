@@ -10,14 +10,12 @@
 	public class Survivor extends MovieClip
 	{
 		
-		public var invulnerable:Boolean;
-		public var survivor:MovieClip;
-		public var mainStage:MovieClip;
-		public var survivorStat:SurvivorStat;
+		private var invulnerable:Boolean;
 		private var main:Main;
-				
-		public function Survivor(main:Main) 
-		{
+		private var survivor:MovieClip;
+		private var survivorStat:SurvivorStat;
+		
+		public function Survivor(main:Main) {
 			this.main = main;
 			
 			if (stage) {
@@ -32,7 +30,6 @@
 			removeEventListener(Event.ADDED_TO_STAGE, init);
 			
 			hide();
-			mainStage = main.mainStage;
 			this.survivorStat = main.survivorStat;
 			
 			heroBody_mc.stop();
@@ -46,13 +43,6 @@
 		}
 		
 		public function loop (e:Event):void {
-			//Game Pause Condition
-			if (Game.IsPaused) {
-				heroBody_mc.stop();
-				removeEventListener(Event.ENTER_FRAME, arguments.callee);
-				//Checker if GamePause is False;
-				addEventListener(Event.ADDED_TO_STAGE, pauseCheckerLoop);
-			}
 			
 			if (heroBody_mc.currentFrameLabel === "End") {
 				heroBody_mc.gotoAndStop(20);
@@ -63,14 +53,11 @@
 			}
 		}
 		
-		
-		public function TurnRight():void
-		{
+		public function TurnRight():void {
 			scaleX = 1;
 		}
 		
-		public function TurnLeft():void
-		{
+		public function TurnLeft():void {
 			scaleX = -1;
 		}
 		
@@ -93,31 +80,35 @@
 			heroBody_mc.gotoAndPlay("Fall");
 		}
 		
-		private function pauseCheckerLoop(e:Event):void {
-			if (!Game.IsPaused) {
-				heroBody_mc.play();
-				addEventListener(Event.ENTER_FRAME, loop);
-				removeEventListener(Event.ENTER_FRAME, arguments.callee);
-			}
-		}
-		
-		public function Attacked ():void {
+		public function attacked ():void {
 			//Invulnerable for 5secs
 			if (!invulnerable) {
-				//invulnerable = true;
+				invulnerable = true;
 				survivorStat.takeDamage(10);//Temporary zombie damage
-				TweenMax.fromTo(this, .5, { alpha:1 }, { alpha:0, repeat:5, ease:Linear.easeNone , onComplete:function() {
-					//invulnerable = false;
+				TweenMax.fromTo(this, .5, { alpha:1 }, { alpha:0, repeat:3, ease:Linear.easeNone , onComplete:function() {
+					invulnerable = false;
 					alpha = 1;
 				} });
 			}
 		}
 		
-		public function show() {
+		public function resume():void {
+			heroBody_mc.play();
+			TweenMax.resumeAll(true, true);
+			addEventListener(Event.ENTER_FRAME, loop);
+		}
+		
+		public function pause():void {
+			heroBody_mc.stop();
+			TweenMax.pauseAll(true, true);
+			removeEventListener(Event.ENTER_FRAME, arguments.callee);
+		}
+		
+		public function show():void {
 			visible = true;
 		}
 		
-		public function hide() {
+		public function hide():void {
 			visible = false;
 		}
 	}

@@ -12,7 +12,6 @@
 		public function Map(main:Main) {
 			this.main = main;
 			
-			
 			if (stage) {
 				init();
 			}
@@ -22,8 +21,9 @@
 		}
 		
 		public function init(e:Event = null):void {
-			removeEventListener(Event.ADDED_TO_STAGE, init);
 			var mapStages:MovieClip;
+			
+			removeEventListener(Event.ADDED_TO_STAGE, init);
 			
 			hide();
 			modal = main.modal;
