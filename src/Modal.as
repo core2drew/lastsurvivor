@@ -79,12 +79,19 @@
 		/***************************************** PAUSE MODAL *******************************************/
 		public function showPause ():void {
 			pause.visible = true;
+			modal.showModal();
+			
 			pause.resumeBtn.addEventListener(MouseEvent.CLICK, function (e:MouseEvent) {
 				game.resume();
 				pause.resumeBtn.removeEventListener(MouseEvent.CLICK, arguments.callee);
 				hideAllModal();
 			});
-			modal.showModal();
+			
+			pause.restartBtn.addEventListener(MouseEvent.CLICK, function (e:MouseEvent) {
+				game.restart();
+				pause.restartBtn.removeEventListener(MouseEvent.CLICK, arguments.callee);
+				hideAllModal();
+			});
 		}
 		/***************************************** END OF PAUSE MODAL *******************************************/
 

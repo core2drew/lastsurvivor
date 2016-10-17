@@ -10,7 +10,7 @@
 	
 	public class Zombie extends MovieClip 
 	{
-		public var playerPosition:Number;
+		public var survivorPosition:Number;
 		public var survivor:Survivor;
 		public var stageWidth:int;
 		public var walkingBool:Boolean;
@@ -44,6 +44,7 @@
 			else {
 				addEventListener(Event.ADDED_TO_STAGE, init);
 			}
+			
         }
 		
 		public function init(e:Event = null) {
@@ -61,7 +62,9 @@
 			zombieBody_mc.stop();
 			zombieLegs_mc.stop();
 			updateDirection();
-			addEventListener(Event.ENTER_FRAME, loop);	
+			//if (!game.isGamePause) {
+				//addEventListener(Event.ENTER_FRAME, loop);	
+			//}
 		}
 		
 		public function updateDirection ():void {
@@ -75,7 +78,7 @@
 			}
 		}
 
-        public function loop (e:Event):void {
+        public function loop (e:Event = null):void {
             //the looping code goes here
 			//actions e.g (walking, attacking, etc.)
 			playerCollision();
@@ -179,24 +182,30 @@
 		
 		public function playerCurrentPosition ():void {
 			var background = this.parent.getChildByName("background_mc") as MovieClip;
-			playerPosition = ((background.width / 2) + Math.abs(this.parent.x)) - (this.width * 2) - (stageWidth / 2);
+			//survivorPosition = ((background.width / 2) + Math.abs(this.parent.x)) - (this.width * 2) - (stageWidth / 2);
 			
-			if (playerPosition < x) {
-				direction = 'left';
+			if (survivor.survivorCurrentPositon === "center") {
+				survivorPosition = ((background.width / 2) + Math.abs(this.parent.x)) - (this.width * 2) - (stageWidth / 2);
+				if (survivorPosition < x) {
+					direction = 'left';
+				}
+				else if (survivorPosition > x) {
+					direction = 'right';
+				}
 			}
-			else if (playerPosition > x) {
-				direction = 'right';
+			else if (survivor.survivorCurrentPositon === "left" || survivor.survivorCurrentPositon === "right") {
+				survivorPosition = survivor.x + Math.abs(this.parent.x);
+				if (survivorPosition < x) {
+					direction = 'left';
+				}else {
+					direction = 'right';
+				}
 			}
 			updateDirection();
 		}
 		
 		public function pause():void {
 			stopWalking();
-			removeEventListener(Event.ENTER_FRAME, loop);
-		}
-		
-		public function resume() {
-			addEventListener(Event.ENTER_FRAME, loop);
 		}
 	}
 }

@@ -3,6 +3,8 @@
 	import flash.display.MovieClip;
 	import flash.events.Event;
 	import flash.events.TouchEvent;
+	import flash.ui.Multitouch;
+	import flash.ui.MultitouchInputMode;
 	import Bullet;
 	
 	public class GameControls extends MovieClip {
@@ -11,7 +13,7 @@
 		private var game:Game;
 		private var survivor:Survivor;
 		private var joystick:JoyStick;
-		private var bullet:Bullet;
+		public var bullet:Bullet;
 		private var scrollBG:ScrollingBackground;
 		
 		private var scrollX:int;
@@ -20,7 +22,6 @@
 		private var jumpConstant:int;
 		private var	maxJumpHeight:int;
 		
-		public var bulletArr:Array;
 		public var jumping:Boolean;
 		public var falling:Boolean;
 		public var ground:int;
@@ -38,6 +39,7 @@
 		
 		public function init(e:Event = null):void {
 			removeEventListener(Event.ADDED_TO_STAGE, init);
+			Multitouch.inputMode = MultitouchInputMode.TOUCH_POINT;
 			
 			hide();
 			game = main.game;
@@ -47,18 +49,17 @@
 			
 			jumping = false;
 			falling = false;
-			gravityConstant = 20;
+			gravityConstant = 27;
 			jumpConstant = -27;
 			maxJumpHeight = 380;
 			ground = scrollBG.y;//This is the ground of the scrollBG
 			
-			bulletArr = new Array();
 			x = 1500;
 			y = 960;
 			jump_btn.addEventListener(TouchEvent.TOUCH_BEGIN, Jump);//Add jumping Event
 			fire_btn.addEventListener(TouchEvent.TOUCH_BEGIN, fireBullet);//Firing Event
 			
-			addEventListener(Event.ENTER_FRAME, loop);
+			//addEventListener(Event.ENTER_FRAME, loop);
 		}
 		
 		private function fireBullet (e:TouchEvent):void {
@@ -71,8 +72,8 @@
 			}
 			
 			bullet = new Bullet(main, playerDirection);
-			bulletArr.push(bullet);
 			scrollBG.addChild(bullet);
+			game.bulletArr.push(bullet);
 		}
 		
 		private function Jump (e:TouchEvent):void {
@@ -82,7 +83,7 @@
 			}
 		}
 		
-		private function loop(e:Event):void {
+		public function loop(e:Event = null):void {
 			//jumping Condition
 			if (jumping) {
 				if (survivor.y > maxJumpHeight) {
@@ -92,15 +93,13 @@
 				else {
 					falling = true;
 					jumping = false;
-					
+					survivor.Fall();
 				}
 			}
-			
 			//falling Condition
-			if (falling) {
+			else if (falling) {
 				if (survivor.y < ground - 30) {
 					survivor.y += gravityConstant;
-					survivor.Fall();
 				}
 				else {
 					falling = false;
@@ -117,6 +116,25 @@
 		
 		public function hide():void {
 			visible = false;
+		}
+		
+		public function pause():void {
+			survivor.pause();
+			//removeEventListener(Event.ENTER_FRAME, loop);
+		}
+		
+		public function resume() {
+			survivor.resume();
+			//addEventListener(Event.ENTER_FRAME, loop);
+		}
+		
+		public function reset():void {
+			//removeEventListener(Event.ENTER_FRAME, loop);
+			falling = false;
+			jumping = false;
+			
+			survivor.resume();
+			//addEventListener(Event.ENTER_FRAME, loop);
 		}
 	}
 }

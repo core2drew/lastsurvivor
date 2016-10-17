@@ -8,7 +8,7 @@ package  {
 	public class Bullet extends MovieClip {
 		
 		//how quickly the bullet will move
-		private var speed:int = 70;
+		private var speed:int = 80;
 		private var initialX:int;
 		private var deadZombieIndex:int;
 		private var bulletDamage:Number;
@@ -63,7 +63,7 @@ package  {
 			bulletDamage = damage;//Change Bullets depend on what weapon damage
 		}
 		
-		private function loop(event:Event):void
+		public function loop(e:Event = null):void
 		{
 			//looping code goes here
 			x += speed;
@@ -71,12 +71,11 @@ package  {
 			if (speed > 0)
 			{
 				//if player is facing right
-				if (x > initialX + 750) 
-				{ //and the bullet is more than 1920px to the right of where it was spawned
+				if (x > initialX + 750) { 
+					//and the bullet is more than 1920px to the right of where it was spawned
 					removeSelf(); //remove it
 				}
-				else
-				{
+				else{
 					bulletHitTargetChecker();
 				}
 			} 
@@ -87,14 +86,13 @@ package  {
 				{  //and bullet is more than 1920px to the left of where it was spawned
 					removeSelf(); //remove it
 				}
-				else
-				{
+				else {
 					bulletHitTargetChecker();
 				}
 			}
 		}
 		
-		private function pause():void {
+		public function pause():void {
 			removeEventListener(Event.ENTER_FRAME, loop);
 		}
 		
@@ -104,10 +102,9 @@ package  {
 		
 		public function removeSelf():void
 		{
-			removeEventListener(Event.ENTER_FRAME, loop); //stop the loop
+			pause(); //stop the loop
 			this.parent.removeChild(this); //tell this object's "parent object" to remove this object
-			//in our case, the parent is the background because in the main code we said:
-			//back.addChild(bullet);
+			game.bulletArr.shift();
 		}
 		
 		public function bulletHitTargetChecker():void 

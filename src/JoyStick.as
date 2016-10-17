@@ -3,7 +3,8 @@ package
 	import flash.display.MovieClip;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
-	import flash.events.TouchEvent;
+	import flash.ui.Multitouch;
+	import flash.ui.MultitouchInputMode;
 	/**
 	 * ...
 	 * @author Drew Calupe
@@ -26,8 +27,11 @@ package
 		private var xSpeed:int;
 		private var leftMoveLimit:Number;
 		private var rightMoveLimit:Number;
+		private var leftStageMoveLimit:Number;
+		private var rightStageMoveLimit:Number;
 		private var jumping:Boolean;
 		private var falling:Boolean;
+		private var stageSpeed:int;
 		
 		public var scrollX:int;
 		public var maxSpeedConstant:Number;
@@ -44,7 +48,8 @@ package
 		
 		public function init (e:Event = null):void {
 			removeEventListener(Event.ADDED_TO_STAGE, init);
-			
+			Multitouch.inputMode = MultitouchInputMode.TOUCH_POINT; 
+			 
 			survivor = main.survivor;
 			scrollBG = main.scrollBG;
 			gameControls = main.gameControls;
@@ -54,10 +59,13 @@ package
 			//ScrollBG variable
 			speedConstant = 15; //Character Speed (illusion only)
 			maxSpeedConstant = speedConstant;
+			stageSpeed = speedConstant;
 			xSpeed = 0;
 			scrollX = 0;
 			leftMoveLimit = 0;
 			rightMoveLimit = -2745;
+			leftStageMoveLimit = 150;
+			rightStageMoveLimit = 1800;
 			
 			//Joystick variable
 			_knob = knob
@@ -66,12 +74,12 @@ package
 			startX = x;
 			startY = y;
 			radius = 100;
-			addEventListener(Event.ENTER_FRAME, loop);
+			//addEventListener(Event.ENTER_FRAME, loop);
 			addEventListener(MouseEvent.MOUSE_DOWN, onTouch);
 			stage.addEventListener(MouseEvent.MOUSE_UP, offTouch);
 		}
 		
-		public function loop (e:Event):void {
+		public function loop (e:Event = null):void {
 			jumping = gameControls.jumping;
 			falling = gameControls.falling;
 			direction = "idle";
@@ -99,46 +107,76 @@ package
 				_knob.x = 0;
 			}
 			
-			//JoyStick Pad Condition
-			if (direction === "left") {
-				//movingLeft = true;
-				survivor.TurnLeft();
-				if (scrollX >= leftMoveLimit) {
-					//movingLeft = false;
-					survivor.Idle();
-				}
-				else {
-					xSpeed -= speedConstant;
-					if (!jumping && !falling) {
-						survivor.Walk();
+			switch (direction) 
+			{
+				case 'left':
+					survivor.TurnLeft();
+					
+					if (scrollX >= leftMoveLimit) {
+						if (survivor.x > leftStageMoveLimit) {
+							stageSpeed = speedConstant * 1;
+							moveSurvivor(stageSpeed);
+							survivor.survivorCurrentPositon = "left";
+						}
+						else {
+							survivor.Idle();
+						}
 					}
-					moveScrollBGX()
-				}
-			}
-			else if (direction === "right") {
-				//movingRight = true;
-				survivor.TurnRight();
-				if (scrollX <= rightMoveLimit) {
-					//movingRight = false;
-					survivor.Idle();
-				}
-				else {
-					xSpeed += speedConstant;
-					if (!jumping && !falling) {
-						survivor.Walk();
+					else {
+						if(960 >= survivor.x){	
+							xSpeed -= speedConstant;
+							moveScrollBGX()
+							survivor.survivorCurrentPositon = "center";
+						}
+						else if (960 <= survivor.x){
+							stageSpeed = speedConstant * 1;
+							moveSurvivor(stageSpeed);
+						}
 					}
-					moveScrollBGX()
-				}
-			}
-			else if (direction === "idle") {
-				//To animate jump when idle status
-				if (!jumping && !falling) {
-					survivor.Idle();
-				}
+				break;
+				
+				case 'right':
+					survivor.TurnRight();
+					
+					if (scrollX <= rightMoveLimit) {
+						if (survivor.x < rightStageMoveLimit) {
+							stageSpeed = speedConstant * -1; 
+							moveSurvivor(stageSpeed);
+							survivor.survivorCurrentPositon = "right";
+						}
+						else {
+							survivor.Idle();
+						}
+						
+					}
+					else {
+						if(960 <= survivor.x){
+							xSpeed += speedConstant;
+							moveScrollBGX();
+							survivor.survivorCurrentPositon = "center";
+						}
+						else if(960 >= survivor.x){
+							stageSpeed = speedConstant * -1;
+							moveSurvivor(stageSpeed);
+						}
+					}
+				break;
+				
+				case 'idle':
+					if (!jumping && !falling) {
+						survivor.Idle();
+					}
+				break;
+				
+				default:
 			}
 		}
 		
 		public function moveScrollBGX():void {
+			if (!jumping && !falling) {
+				survivor.Walk();
+			}
+			
 			//Maxspeed
 			if (xSpeed < (maxSpeedConstant * -1)) {
 				xSpeed = (maxSpeedConstant * -1);
@@ -149,6 +187,13 @@ package
 			//Move ScrollBG
 			scrollX -= xSpeed;
 			scrollBG.x = scrollX;
+		}
+		
+		public function moveSurvivor(speed):void {
+			if (!jumping && !falling) {
+				survivor.Walk();
+			}
+			survivor.x -= speed;
 		}
 		
 		public function onTouch (e:MouseEvent):void  {

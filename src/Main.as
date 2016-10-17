@@ -9,8 +9,6 @@ package
 	import flash.text.TextField;
 	import flash.text.TextInteractionMode;
 	import flash.ui.Keyboard;
-	import flash.ui.Multitouch;
-	import flash.ui.MultitouchInputMode;
 	import flash.desktop.NativeApplication;
 	import flash.events.KeyboardEvent;
 	import flash.media.SoundMixer;
@@ -106,7 +104,7 @@ package
 			mainStage.addChild(modal);
 			
 			_stage.scaleMode = StageScaleMode.EXACT_FIT;
-			Multitouch.inputMode = MultitouchInputMode.TOUCH_POINT;
+			
 			NativeApplication.nativeApplication.addEventListener(KeyboardEvent.KEY_DOWN, handleBackButton, false, 0, true);
 			NativeApplication.nativeApplication.addEventListener(Event.DEACTIVATE, handleAppDeactivated, false, 0, true);
 			NativeApplication.nativeApplication.addEventListener(Event.ACTIVATE, handleAppActivated, false, 0, true);
