@@ -15,7 +15,6 @@ package  {
 		private var survivorHalfWidth;
 		private var survivorHalfHeight;
 		private var scrollX:int;
-		private var ground:int;
 		private var playerDirection:String;
 		private var main:Main;
 		private var game:Game;
@@ -32,7 +31,6 @@ package  {
 			gameControls = main.gameControls;
 			
 			scrollX = joyStick.scrollX;
-			ground = gameControls.ground;
 			
 			survivorHalfWidth = survivor.width / 2 ;
 			survivorHalfHeight = survivor.height / 2;
@@ -48,7 +46,7 @@ package  {
 				x = (survivor.x - scrollX) + survivorHalfWidth;
 			}
 			
-			y = (survivor.y - ground ) - survivorHalfHeight;
+			y = (survivor.y - main.scrollBG.y) - survivorHalfHeight;
 			
 			initialX = x; //use this to remember the initial spawn point
 			

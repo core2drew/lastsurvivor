@@ -4,9 +4,12 @@
 	import flash.display.Stage;
 	import flash.events.*;
 	import flash.utils.*;
+	import flash.events.TimerEvent;
+	import flash.utils.Timer;
 	import com.greensock.easing.*;
 	import com.greensock.TweenMax;
 	import Game;
+	import Helper;
 	
 	public class Zombie extends MovieClip 
 	{
@@ -18,12 +21,18 @@
 		public var direction:String;
 		public var zombieSpeed:Number;
 		public var zombieHitpoints:Number;
-		
+		private var zombieHitTest:MovieClip;
 		private var zombieLifeBar_mc:MovieClip;
 		private var zombieBody_mc:MovieClip;
 		private var zombieLegs_mc:MovieClip;
 		private var zombieUpdateDirectionDelay:int;
 		private var currentZombieIndex:int;
+		private var minWalkDistance:int 
+		private var maxWalkDistance:int;
+		private var randomWalkTimer:Timer;
+		private var randomWalk_x:int;
+		private var survivorHitTest:MovieClip;
+		
 		private var main:Main;
 		private var game:Game;
 		
@@ -33,18 +42,17 @@
 			
             x = xLocation;
             y = yLocation;
-			
+			zombieHitTest = this.body_mc.hitTest;
 			this.stageWidth = stageWidth;
 			this.survivor = survivor;
 			this.direction = direction;
-			
+			survivorHitTest = survivor.heroBody_mc.hitTest;
 			if (stage) {
 				init();
 			}
 			else {
 				addEventListener(Event.ADDED_TO_STAGE, init);
 			}
-			
         }
 		
 		public function init(e:Event = null) {
@@ -62,9 +70,9 @@
 			zombieBody_mc.stop();
 			zombieLegs_mc.stop();
 			updateDirection();
-			//if (!game.isGamePause) {
-				//addEventListener(Event.ENTER_FRAME, loop);	
-			//}
+			
+			randomWalkTimer = new Timer(5000, 1);
+			randomWalkTimer.addEventListener(TimerEvent.TIMER, getRandomWalk);
 		}
 		
 		public function updateDirection ():void {
@@ -78,11 +86,11 @@
 			}
 		}
 
-        public function loop (e:Event = null):void {
+        public function locateSurvivor ():void {
             //the looping code goes here
 			//actions e.g (walking, attacking, etc.)
-			playerCollision();
-			playerCurrentPosition();
+			survivorCollision();
+			getsurvivorCurrentPosition();
         }
 		
 		public function takeDamage (damage:Number, currentZombieIndex:int):void {
@@ -102,8 +110,6 @@
 		
 		//Ready To Walk
 		public function startWalk ():void {
-			//Check the player current position
-			//playerCurrentPosition();
 			if (!walkingBool) {
 				walkingBool = true;
 				attackingBool = false;
@@ -139,7 +145,9 @@
 				zombieBody_mc.gotoAndPlay(91);
 			}
 			
-			survivor.attacked();
+			if (zombieBody_mc.currentFrame == 110) {
+				survivor.attacked();	
+			}
 		}
 		
 		//Walking Zombie
@@ -160,9 +168,9 @@
 			zombieBody_mc.stop();
 		}
 		
-		public function playerCollision ():void {
+		public function survivorCollision ():void {
 			//Damage the player
-			if ( this.hitTestObject(survivor as MovieClip) ) {
+			if (zombieHitTest.hitTestObject(survivorHitTest)) {
 				stopWalking();
 				if (!attackingBool) {
 					zombieBody_mc.gotoAndStop(91);
@@ -180,16 +188,13 @@
 			}
 		}
 		
-		public function playerCurrentPosition ():void {
-			var background = this.parent.getChildByName("background_mc") as MovieClip;
-			//survivorPosition = ((background.width / 2) + Math.abs(this.parent.x)) - (this.width * 2) - (stageWidth / 2);
-			
+		public function getsurvivorCurrentPosition ():void {
 			if (survivor.survivorCurrentPositon === "center") {
-				survivorPosition = ((background.width / 2) + Math.abs(this.parent.x)) - (this.width * 2) - (stageWidth / 2);
+				survivorPosition = (Math.abs(this.parent.x) + main.stageWidth) - main.stageWidth / 2;
 				if (survivorPosition < x) {
 					direction = 'left';
 				}
-				else if (survivorPosition > x) {
+				else {
 					direction = 'right';
 				}
 			}
@@ -200,12 +205,44 @@
 				}else {
 					direction = 'right';
 				}
+				
 			}
 			updateDirection();
 		}
 		
 		public function pause():void {
 			stopWalking();
+		}
+		
+		public function randomWalk():void {
+			randomWalkTimer.start();
+			minWalkDistance = Math.abs(this.parent.x) + (this.width / 2);
+			maxWalkDistance = (minWalkDistance + stageWidth) - this.width;
+			
+			if (randomWalk_x > x) {
+				direction = 'right';
+				walking();
+			}
+			else if (randomWalk_x < x) {
+				direction = 'left';
+				walking();
+			}
+			else if (randomWalk_x == x) {
+				stopWalking();
+			}
+			updateDirection();
+		}
+		
+		private function getRandomWalk(e:TimerEvent):void {
+			randomWalk_x = Helper.randomRange(minWalkDistance, maxWalkDistance);
+		}
+		
+		public function show():void {
+			visible = true;
+		}
+		
+		public function hide():void {
+			visible = false;
 		}
 	}
 }

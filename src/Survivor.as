@@ -38,13 +38,19 @@
 			
 			name = "survivor";
 			survivorCurrentPositon = "center";
-			x = (main.stageWidth / 2);
-			y = main.scrollBG.y;
-			
-			//addEventListener(Event.ENTER_FRAME, loop);
+			this.blendMode = "layer";
+			initialAppearance();
 		}
 		
-		public function loop (e:Event = null):void {
+		public function initialAppearance():void {
+			scaleX = 1;
+			alpha = 1;
+			x = (main.stageWidth / 2);
+			y = 950;
+			TweenMax.killAll(false, true, false);
+		}
+		
+		public function moves ():void {
 			
 			if (heroBody_mc.currentFrameLabel === "WalkEnd") {
 				heroBody_mc.gotoAndStop(20);
@@ -104,12 +110,9 @@
 			TweenMax.pauseAll(true, true);
 		}
 		
-		public function reset():void {
-			y = main.scrollBG.y;
-		}
-		
 		public function show():void {
 			visible = true;
+			initialAppearance();
 		}
 		
 		public function hide():void {

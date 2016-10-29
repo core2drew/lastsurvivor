@@ -4,8 +4,10 @@
 	import flash.events.Event;
 	
 	public class ScrollingBackground extends MovieClip {
+		private var main:Main;
 		
-		public function ScrollingBackground() {
+		public function ScrollingBackground(main:Main) {
+			this.main = main;
 			if (stage) {
 				init();
 			}
@@ -16,10 +18,9 @@
 		
 		public function init(e:Event = null):void {
 			removeEventListener(Event.ADDED_TO_STAGE, init);
-			
 			hide();
 			x = 0;
-			y = 860;
+			y = 0;
 		}
 		
 		public function show():void {

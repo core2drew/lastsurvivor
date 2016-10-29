@@ -42,7 +42,7 @@
 				break;
 				
 				case "settingsBtn":
-					modal.showSettings(db,"Main");
+					modal.showSettings("Main");
 				break;
 				
 				case "helpBtn":

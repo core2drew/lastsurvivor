@@ -7,7 +7,6 @@
 	import flash.data.SQLResult;
 	import flash.errors.SQLError;
 	import flash.net.Responder;
-	import Game;
 	/**
 	 * ...
 	 * @author Drew Calupe
@@ -26,12 +25,12 @@
 		
 		/************************* USER ******************************/
 		
-		public function checkUserUser():Boolean {
+		public function checkUserUser() {
 			sqlStatement.clearParameters();
 			sqlStatement.text = "SELECT new_user FROM GameState";
 			sqlStatement.execute();
 			result = sqlStatement.getResult().data;
-			return Boolean(result[0].new_user);
+			return result[0].new_user;
 		}
 		
 		public function setNewUser(username:String) {

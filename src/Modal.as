@@ -14,6 +14,7 @@
 	import com.greensock.TweenMax;
 	import flash.filters.*; 
 	import Settings;
+	import Database;
 	
 	/**
 	 * ...
@@ -35,6 +36,13 @@
 		private var shopItemDisplayLimit;
 		private var shopItemsCount:int;
 		private var shopItemsArr:Array =  new Array();
+		
+		
+		//Settings
+		private var bgSound:int;
+		private var SFX:int;
+		private var currentView:String;
+		
 		
 		public function Modal(main:Main) {
 			this.main = main;
@@ -63,6 +71,7 @@
 			pause.visible = false;
 			lockmessage.visible = false;
 			level.visible = false;
+			gameover.visible = false;
 			newUser.visible = false;
 			shop.visible = false;
 			settings.visible = false;
@@ -342,8 +351,8 @@
 			}
 			
 			if (!shop.nextBtn.hasEventListener(MouseEvent.CLICK) && !shop.prevBtn.hasEventListener(MouseEvent.CLICK)) {
-				shop.nextBtn.addEventListener(MouseEvent.CLICK, nextShopPage);
-				shop.prevBtn.addEventListener(MouseEvent.CLICK, prevShopPage);
+				shop.nextBtn.addEventListener(MouseEvent.CLICK, nextShopPage, false, 0, true);
+				shop.prevBtn.addEventListener(MouseEvent.CLICK, prevShopPage, false, 0, true);
 			}
 		}
 		
@@ -399,10 +408,12 @@
 		public function showLevel (title:String, selectedStage:int):void {
 			level.visible = true;
 			levelsCon =  level.levelsCon;
-			//Add Events to Level Buttons
-			levelBtnEvent(selectedStage);
 			//Show Parent Modal
 			modal.showModal();
+			
+			//Add Events to Level Buttons
+			levelBtnEvent(selectedStage);
+			
 			//Change stage title
 			level.title_txt.text = title;
 			//Start Button
@@ -415,7 +426,7 @@
 				resetLevelModal();
 				hideAllModal();
 				level.XBtn.removeEventListener(MouseEvent.CLICK, arguments.callee);
-			});
+			}, false, 0, true);
 		}
 		
 		private function resetLevelModal ():void {
@@ -437,6 +448,10 @@
 		private function levelBtnEvent (selectedStage:int):void {
 			var myGlow:GlowFilter = new GlowFilter(); 
 			var stageLeveldata:Array = db.getLevelStars(selectedStage)
+			var level_btn:MovieClip = new MovieClip();
+			var firstLevel:MovieClip;
+			var star:MovieClip;
+			var curTarget:MovieClip
 			
 			//Yellow Glow
 			myGlow.inner = false; 
@@ -445,19 +460,13 @@
 			myGlow.blurY = 15; 
 			myGlow.alpha = 0.5;
 			
-			//loop for button level
+			
 			for (var i = 0; i < levelsCon.numChildren; i++) {
-				var level_btn:MovieClip = levelsCon.getChildAt(i) as MovieClip;
-				var firstLevel:MovieClip = levelsCon.getChildAt(0) as MovieClip;
-				var star:MovieClip = new MovieClip();
+				level_btn = levelsCon.getChildAt(i) as MovieClip;
 				
 				//Change Button Level Number
 				level_btn.level_txt.text = i + 1;
 				level_btn.level_txt.visible = false;
-				
-				//First Button Level
-				firstLevel.closed.visible = false;
-				firstLevel.level_txt.visible = true;
 				
 				//Stop Buttons Stars
 				for (var x = 0; x < level_btn.starsCon.numChildren; x++) {
@@ -465,34 +474,44 @@
 					star.gotoAndStop(1);
 				}
 				
-				//Show stars on buttons levels
-				if (stageLeveldata.length > i) {
-					for (var j = 0; j < stageLeveldata[i].stars; j++) {
-						star = level_btn.starsCon.getChildAt(j) as MovieClip;
-						star.gotoAndStop(2);
-					}
-				}
-					
-				//If the previous button level has stars unlock the next button level 
-				for (var z = 0; z < stageLeveldata.length; z++) {
-					var nextLevel_btn:MovieClip = new MovieClip();
-					nextLevel_btn = levelsCon.getChildAt(z + 1) as MovieClip;
-					nextLevel_btn.closed.visible = false;
-					nextLevel_btn.level_txt.visible = true;	
+				//Show how many stars on each level
+				for (var j = 0; j < stageLeveldata[i].stars; j++) {
+					star = level_btn.starsCon.getChildAt(j) as MovieClip;
+					star.gotoAndStop(2);
 				}
 				
+			}
+			
+			//Level 1 Button
+			firstLevel = levelsCon.getChildAt(0) as MovieClip;	
+			firstLevel.closed.visible = false;
+			firstLevel.level_txt.visible = true;
+			
+			
+			//Level 2,3,4,5... button
+			for (var a = 1; a < levelsCon.numChildren; a++) {
+				if (stageLeveldata[a - 1].stars > 0) {
+					level_btn = levelsCon.getChildAt(a) as MovieClip;
+					level_btn.closed.visible = false;
+					level_btn.level_txt.visible = true;
+				}
+			}
+			
+			//Adding event on each Level button
+			for (var b = 0; b < levelsCon.numChildren; b++) {
+				level_btn = levelsCon.getChildAt(b) as MovieClip;
 				//Add Event only when stage is unlocked
 				if (level_btn.level_txt.visible) {
+					level_btn = levelsCon.getChildAt(b) as MovieClip;
 					level_btn.addEventListener(MouseEvent.CLICK, function(e:MouseEvent) {
-						var curTarget:MovieClip = e.currentTarget as MovieClip;
+						curTarget = e.currentTarget as MovieClip;
 						resetLevelModal();
 						level.startBtn.visible = true;
 						curTarget.filters = [myGlow];
-					});
+					}, false, 0, true);
 				}
-				
-				//Start Level
-				level.startBtn.addEventListener(MouseEvent.CLICK, startGame);
+				//Start Level Event
+				level.startBtn.addEventListener(MouseEvent.CLICK, startGame, false, 0, true);
 			}
 		}
 		
@@ -503,6 +522,8 @@
 			hideAllModal();
 			
 			game.GameInit();
+			
+			level.startBtn.removeEventListener(MouseEvent.CLICK, startGame);
 		}
 		
 		public function showLockMessage (title:String):void {
@@ -516,21 +537,63 @@
 			lockmessage.XBtn.addEventListener(MouseEvent.CLICK, function (e:MouseEvent) {
 				hideAllModal();
 				lockmessage.XBtn.removeEventListener(MouseEvent.CLICK, arguments.callee);
-			});
+			}, false, 0, true);
 		}
 		
 		/**************************** END OF SELECT LEVEL MODAL *******************************************/
 		
+		/************************************ GAME OVER MODAL *******************************************/
+		
+		public function showGameOver(/*coinsCollected:int, zombieskilled:int, zombiesCount:int*/) {
+			gameover.visible = true;
+			
+			modal.showModal();
+			
+			TweenMax.fromTo(gameover, 2, { y:-540 }, { y:540, ease:Bounce.easeOut } );
+			
+			gameover.mainBtn.addEventListener(MouseEvent.CLICK, backToMain, false, 0, true);
+			gameover.playBtn.addEventListener(MouseEvent.CLICK, playAgain, false, 0, true);
+		}
+		
+		private function backToMain(e:MouseEvent):void {
+			hideAllModal();
+			
+			game.removeEnterFrame();
+			game.hideGameUI();
+			game.survivor.hide();
+			game.removeAllZombies();
+			game.removeAllBullets();
+			game.isInGame = false;
+			game.isGamePause = false;
+			main.showMainMenu();
+			
+			removeGameOverEvents();
+		}
+		
+		private function playAgain(e:MouseEvent):void {
+			hideAllModal();	
+			game.restart();
+			removeGameOverEvents();
+		}
+		
+		private function removeGameOverEvents():void {
+			gameover.mainBtn.removeEventListener(MouseEvent.CLICK, backToMain);
+			gameover.playBtn.removeEventListener(MouseEvent.CLICK, playAgain);
+		}
+		
+		/************************************ END OF GAME OVER MODAL ***********************************/
+		
 		/************************************** SETTINGS MODAL **************************************/
 		
-		public function showSettings (db:Database,_currentView:String):void {
-			var bgSound:int = db.getBGSound();
-			var SFX:int = db.getSFX();
-			var currentView:String = _currentView;
+		public function showSettings (_currentView:String):void {
+			bgSound = db.getBGSound();
+			SFX = db.getSFX();
+			currentView = _currentView;
 			
 			settings.visible = true;
 			//TweenMax.fromTo(settings, .8, { x:2607 }, { x:955, ease:Back.easeOut } );
 			modal.showModal();
+			
 			if (!bgSound) {
 				settings.bgmusic_cb.check.visible = false;
 			}
@@ -539,39 +602,44 @@
 				settings.sfx_cb.check.visible = false;
 			}
 			
+			settings.bgmusic_cb.addEventListener(MouseEvent.CLICK, setBGMusic, false, 0, true);
 			
-			settings.bgmusic_cb.addEventListener(MouseEvent.CLICK, function (e:MouseEvent) { 
-				if (bgSound) {
-					settings.bgmusic_cb.check.visible = false;
-					db.updateBGSound(0);
-					Settings.stopBGSounds();
-				}
-				else {
-					settings.bgmusic_cb.check.visible = true;
-					db.updateBGSound(1);
-					Settings.playBGSound(db.getBGSound(),currentView);
-				}
-				
-				bgSound = db.getBGSound()
-			});
-			
-			settings.sfx_cb.addEventListener(MouseEvent.CLICK, function (e:MouseEvent) { 
-				if (SFX) {
-					settings.sfx_cb.check.visible = false;
-					db.updateSFX(0);
-				}
-				else {
-					settings.sfx_cb.check.visible = true;
-					db.updateSFX(1);
-				}
-				SFX = db.getSFX();
-			});
+			settings.sfx_cb.addEventListener(MouseEvent.CLICK, setSFX, false, 0, true);
 			
 			//Hide unlock Modal
 			settings.XBtn.addEventListener(MouseEvent.CLICK, function (e:MouseEvent) {
 				hideAllModal();
+				settings.bgmusic_cb.removeEventListener(MouseEvent.CLICK, setBGMusic);
+				settings.sfx_cb.removeEventListener(MouseEvent.CLICK, setSFX);
 				settings.XBtn.removeEventListener(MouseEvent.CLICK, arguments.callee);
-			});
+			}, false, 0, true);
+		}
+		
+		private function setBGMusic (e:MouseEvent) { 
+			if (bgSound) {
+				settings.bgmusic_cb.check.visible = false;
+				db.updateBGSound(0);
+				Settings.stopBGSounds();
+			}
+			else {
+				settings.bgmusic_cb.check.visible = true;
+				db.updateBGSound(1);
+				Settings.playBGSound(db.getBGSound(), currentView);
+			}
+			
+			bgSound = db.getBGSound()
+		}
+		
+		private function setSFX(e:MouseEvent) {
+			if (SFX) {
+				settings.sfx_cb.check.visible = false;
+				db.updateSFX(0);
+			}
+			else {
+				settings.sfx_cb.check.visible = true;
+				db.updateSFX(1);
+			}
+			SFX = db.getSFX();
 		}
 		/************************************** END OF SETTINGS MODAL **************************************/
 		
@@ -585,8 +653,8 @@
 			
 			tutorial.steps.gotoAndStop(1);
 			
-			tutorial.nav.prev_btn.addEventListener(MouseEvent.CLICK, prevSlide);
-			tutorial.nav.next_btn.addEventListener(MouseEvent.CLICK, nextSlide);
+			tutorial.nav.prev_btn.addEventListener(MouseEvent.CLICK, prevSlide, false, 0, true);
+			tutorial.nav.next_btn.addEventListener(MouseEvent.CLICK, nextSlide, false, 0, true);
 			
 			//Close the Tutorial Modal
 			tutorial.XBtn.addEventListener(MouseEvent.CLICK, function (e:MouseEvent) {
@@ -594,7 +662,7 @@
 				tutorial.nav.prev_btn.removeEventListener(MouseEvent.CLICK, prevSlide);
 				tutorial.nav.next_btn.removeEventListener(MouseEvent.CLICK, nextSlide);
 				tutorial.XBtn.removeEventListener(MouseEvent.CLICK, arguments.callee);
-			});
+			}, false, 0, true);
 		}
 		
 		private function prevSlide(e:MouseEvent) {
@@ -616,13 +684,13 @@
 			//Exit the Game
 			exit.yesBtn.addEventListener(MouseEvent.CLICK, function () {
 				NativeApplication.nativeApplication.exit();
-			});
+			}, false, 0, true);
 			
 			//Hide Exit Modal
 			exit.noBtn.addEventListener(MouseEvent.CLICK, function (e:MouseEvent) {
 				hideAllModal();
 				exit.noBtn.removeEventListener(MouseEvent.CLICK, arguments.callee);
-			});
+			}, false, 0, true);
 		}
 		/********************************** END OF SHOW EXIT MODAL *****************************************/
 	}

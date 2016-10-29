@@ -41,9 +41,7 @@ package
 			y = 80;
 		}
 		
-		public function displayStat():void {
-			show();
-			
+		public function setStatus() {
 			healthPoints = db.getCurrentCharacterStatus().health;
 			armorPoints = db.getCurrentCharacterStatus().armor;
 			
@@ -51,10 +49,22 @@ package
 			currentArmorPoints = armorPoints;
 			
 			healthBar = healthBarContainer_mc.healthBar;
-			armorBar = armorBarContainer_mc.armorBar;
-			
+			armorBar = armorBarContainer_mc.armorBar;	
+		}
+				
+		public function hide():void {
+			visible = false;
+		}
+		
+		public function show():void {
+			visible = true;
+			setStatus();
+			resetStat();
+		}
+		
+		public function resetStat():void {
 			healthBar.mask.scaleX = 1;
-			armorBar.mask.scaleX = armorPoints ? 1 : 0;	
+			armorBar.mask.scaleX = armorPoints ? 1 : 0;		
 		}
 		
 		
@@ -71,17 +81,8 @@ package
 			healthBar.mask.scaleX = healthPercentage;
 			
 			if (currentHealthPoints <= 0 && !game.survivorDied) {
-				game.survivorDied = true;
 				game.gameOver();
 			}
-		}
-		
-		public function hide():void {
-			visible = false;
-		}
-		
-		public function show():void {
-			visible = true;
 		}
 	}
 }

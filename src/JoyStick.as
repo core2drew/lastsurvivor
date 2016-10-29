@@ -57,13 +57,13 @@ package
 			hide();
 			
 			//ScrollBG variable
-			speedConstant = 15; //Character Speed (illusion only)
+			speedConstant = 18; //Character Speed (illusion only)
 			maxSpeedConstant = speedConstant;
 			stageSpeed = speedConstant;
 			xSpeed = 0;
 			scrollX = 0;
 			leftMoveLimit = 0;
-			rightMoveLimit = -2745;
+			rightMoveLimit = main.stageWidth - scrollBG.width;
 			leftStageMoveLimit = 150;
 			rightStageMoveLimit = 1800;
 			
@@ -74,12 +74,12 @@ package
 			startX = x;
 			startY = y;
 			radius = 100;
-			//addEventListener(Event.ENTER_FRAME, loop);
+			
 			addEventListener(MouseEvent.MOUSE_DOWN, onTouch);
 			stage.addEventListener(MouseEvent.MOUSE_UP, offTouch);
 		}
 		
-		public function loop (e:Event = null):void {
+		public function moveJoystick ():void {
 			jumping = gameControls.jumping;
 			falling = gameControls.falling;
 			direction = "idle";
@@ -206,6 +206,7 @@ package
 		
 		public function show():void {
 			visible = true;
+			reset();
 		}
 		
 		public function hide():void {

@@ -76,14 +76,14 @@ package
 			stageHeight = _stage.stageHeight;
 			
 			db = new Database();
-			scrollBG = new ScrollingBackground();
+			scrollBG = new ScrollingBackground(this);
+			modal = new Modal(this);
 			survivorStat = new SurvivorStat(this);
 			survivor = new Survivor(this);
 			joystick = new JoyStick(this);
 			gameControls = new GameControls(this);
 			game = new Game(this);
 			loadingScreen = new LoadingScreen(this);
-			modal = new Modal(this);
 			menu = new Menu(this);
 			map = new Map(this);
 			user = new User(this);

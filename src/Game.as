@@ -23,6 +23,7 @@ package
 		public var isGamePause:Boolean;
 		
 		public var main:Main;
+		public var modal:Modal;
 		public var mainStage:MovieClip;
 		public var scrollBG:ScrollingBackground;
 		public var joystick:JoyStick;
@@ -36,13 +37,18 @@ package
 		
 		public function Game (main:Main) {
 			this.main = main;
-			isInGame = false;
-			isGamePause = false;
+			modal = main.modal;
 			zombieArr = new Array();
 			bulletArr = new Array();
 		}
 		
 		public function GameInit ():void {
+			
+			//Native Device Back Button Event
+			NativeApplication.nativeApplication.addEventListener(KeyboardEvent.KEY_UP, handleBackButton, false, 0, true);
+			
+			//Inactive App in user Device Event
+			//NativeApplication.nativeApplication.addEventListener(Event.DEACTIVATE, handleDeactivated, false, 0, true);
 			
 			mainStage = main.mainStage;
 			scrollBG = main.scrollBG;
@@ -54,14 +60,32 @@ package
 			stageWidth = main._stage.stageWidth;
 			scrollBGWidth = scrollBG.width;
 			
-			
-			//Native Device Back Button Event
-			NativeApplication.nativeApplication.addEventListener(KeyboardEvent.KEY_UP, handleBackButton, false, 0, true);
-			
-			//Inactive App in user Device Event
-			//NativeApplication.nativeApplication.addEventListener(Event.DEACTIVATE, handleDeactivated, false, 0, true);
-			
 			startGame();
+		}
+		
+		public function loop (e:Event):void {
+			if (!survivorDied) {
+				//Spawing Zombie Condition
+				if (zombieArr.length < 1) {
+					zombieSpawnTimer.start();
+				}
+				
+				survivor.moves();
+				joystick.moveJoystick();
+				gameControls.actions();
+				
+				for (var i = 0; i < zombieArr.length; i++) {
+					zombieArr[i].locateSurvivor();
+				}
+			}
+			else {
+				
+				//for (var x = 0; x < zombieArr.length; x++) {
+					//zombieArr[x].randomWalk();
+				//}
+				
+				zombieSpawnTimer.stop();
+			}
 		}
 		
 		public function spawnZombie (e:TimerEvent):void {
@@ -80,29 +104,9 @@ package
 				direction = "left";
 			}
 			
-			zombie = new Zombie(main, xLocation, 0, direction , survivor, stageWidth);//Creating new Zombie Obj
+			zombie = new Zombie(main, xLocation, 950, direction , survivor, stageWidth);//Creating new Zombie Obj
 			scrollBG.addChild(zombie);
 			zombieArr.push(zombie);
-		}
-		
-		private function loop (e:Event):void {
-			if (!survivorDied) {
-				//Spawing Zombie Condition
-				if (zombieArr.length < 2) {
-					//zombieSpawnTimer.start();
-				}
-				
-				survivor.loop();
-				joystick.loop();
-				gameControls.loop();
-				
-				for (var i = 0; i < zombieArr.length; i++) {
-					zombieArr[i].loop();
-				}
-			}
-			else {
-				zombieSpawnTimer.stop();
-			}
 		}
 		
 		public function handleBackButton (e:KeyboardEvent):void {
@@ -122,22 +126,16 @@ package
 				return;
 			}
 		}
-		
 				
 		public function showGameUI():void {
-			scrollBG.reset();
-			joystick.reset();
-			
 			scrollBG.show();
-			survivor.show();
-			survivorStat.displayStat();
 			joystick.show();
 			gameControls.show();	
+			survivorStat.show();
 		}
 		
 		public function hideGameUI():void {
 			scrollBG.hide();
-			survivor.hide();
 			survivorStat.hide();
 			joystick.hide();
 			gameControls.hide();	
@@ -151,12 +149,55 @@ package
 		}
 		
 		public function pause ():void {
-			isGamePause = true;
-			main.modal.showPause();
+			if (!survivorDied) {
+				isGamePause = true;
+				main.modal.showPause();
+				pauseAllZombies();
+				pauseAllBullets();
+				gameControls.pause();
+				removeEnterFrame();
+			}
+		}
+		
+		public function startGame():void {
+			main.hideMainMenu();
+			showGameUI();
+			
+			survivor.show();
+			
+			isInGame = true;
+			survivorDied = false;
+			isGamePause = false;
+			
 			pauseAllZombies();
-			pauseAllBullets();
-			gameControls.pause();
-			removeEventListener(Event.ENTER_FRAME, loop);
+			removeAllZombies();
+			removeAllBullets();
+			
+			zombieSpawnTimer = new Timer(5000, 1);
+			zombieSpawnTimer.addEventListener(TimerEvent.TIMER, spawnZombie);
+			addEventListener(Event.ENTER_FRAME, loop);
+		}
+		
+		public function restart():void {
+			removeEnterFrame();
+			
+			gameControls.reset();
+			survivor.initialAppearance();
+			survivorStat.resetStat();
+			
+			startGame();
+		}
+		
+		public function gameOver():void {
+			
+			survivorDied = true;
+			survivorStat.hide();
+			joystick.hide();
+			gameControls.hide();
+			survivor.hide();
+			removeAllBullets();
+			
+			modal.showGameOver();
 		}
 		
 		public function pauseAllZombies():void {
@@ -192,51 +233,8 @@ package
 			}
 		}
 		
-		public function startGame():void {
-			main.hideMainMenu();
-			showGameUI();
-			isInGame = true;
-			survivorDied = false;
-			
-			removeAllZombies();
-			
-			zombieSpawnTimer = new Timer(5000, 1);
-			zombieSpawnTimer.addEventListener(TimerEvent.TIMER, spawnZombie);
-			addEventListener(Event.ENTER_FRAME, loop);
-		}
-		
-		public function gameOver():void {
+		public function removeEnterFrame():void {
 			removeEventListener(Event.ENTER_FRAME, loop);
-			
-			hideGameUI();
-			isInGame = false;
-			isGamePause = false;
-			main.loadingScreen.showLoadingScreen();
-			
-		}
-		
-		public function restart():void {
-			removeEventListener(Event.ENTER_FRAME, loop);
-			
-			isInGame = true;
-			survivorDied = false;
-			isGamePause = false;
-			
-			showGameUI();
-			
-			pauseAllZombies();
-			removeAllZombies();
-			
-			removeAllBullets();
-			
-			zombieSpawnTimer = new Timer(5000, 1);
-			zombieSpawnTimer.addEventListener(TimerEvent.TIMER, spawnZombie);
-			
-			gameControls.reset();
-			survivor.reset();
-			survivorStat.displayStat();
-			
-			addEventListener(Event.ENTER_FRAME, loop);
 		}
 	}
 }

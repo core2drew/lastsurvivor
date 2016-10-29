@@ -52,8 +52,8 @@
 			gravityConstant = 27;
 			jumpConstant = -27;
 			maxJumpHeight = 380;
-			ground = scrollBG.y;//This is the ground of the scrollBG
-			
+			ground = 830;//This is the ground of the scrollBG
+						
 			x = 1500;
 			y = 960;
 			jump_btn.addEventListener(TouchEvent.TOUCH_BEGIN, Jump);//Add jumping Event
@@ -83,7 +83,7 @@
 			}
 		}
 		
-		public function loop(e:Event = null):void {
+		public function actions():void {
 			//jumping Condition
 			if (jumping) {
 				if (survivor.y > maxJumpHeight) {
@@ -112,6 +112,7 @@
 		
 		public function show():void {
 			visible = true;
+			reset();
 		}
 		
 		public function hide():void {
@@ -120,7 +121,6 @@
 		
 		public function pause():void {
 			survivor.pause();
-			//removeEventListener(Event.ENTER_FRAME, loop);
 		}
 		
 		public function resume() {
