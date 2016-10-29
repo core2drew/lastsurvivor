@@ -48,16 +48,12 @@
 			return result[0].username;
 		}
 		
-		public function getCurrentStage () {
+		public function getCurrentLevel () {
 			sqlStatement.clearParameters();
-			sqlStatement.text = "SELECT current_stage FROM GameState";
+			sqlStatement.text = "SELECT current_level FROM GameState";
 			sqlStatement.execute();
 			result = sqlStatement.getResult().data;
-			return result[0].current_stage;
-		}
-		
-		public function getCurrentLevel () {
-			
+			return result[0].current_level;
 		}
 		
 		public function getCoins ():int {

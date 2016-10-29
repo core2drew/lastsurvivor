@@ -101,16 +101,19 @@
 				{
 					case "Health":
 						currentSelectedStat = characterStatus.health;
+						shopModal.upgradeInfo_mc.currentStatLabel_txt.text = "Current Health";
 						shopModal.upgradeInfo_mc.currentStat_txt.text = characterStatus.health;
 					break;
 					
 					case "Armor":
 						currentSelectedStat = characterStatus.armor;
+						shopModal.upgradeInfo_mc.currentStatLabel_txt.text = "Current Armor";
 						shopModal.upgradeInfo_mc.currentStat_txt.text = characterStatus.armor;
 					break;
 					
 					case "Gun Slot":
 						currentSelectedStat = characterStatus.gun_slot;
+						shopModal.upgradeInfo_mc.currentStatLabel_txt.text = "Current Gun Slot";
 						shopModal.upgradeInfo_mc.currentStat_txt.text = characterStatus.gun_slot;
 					break;
 					
@@ -297,14 +300,14 @@
 		
 		private function checkIfMaxUpgradeLevel () {
 			if (itemUpgradeLevel > itemUpgrades.length) {
-				shopModal.upgradeInfo_mc.currentLevel_txt.text = "Max";
+				//shopModal.upgradeInfo_mc.currentLevel_txt.text = "Max";
 				shopModal.upgradeInfo_mc.additionalUpgrade_txt.text = "Max";
 				shopModal.upgradeInfo_mc.upgradePrice_mc.price_txt.text = "0";
 				buyUpgrade_btn.visible = false;
 			}
 			else {
 				//Upgrade Level Label
-				shopModal.upgradeInfo_mc.currentLevel_txt.text = itemUpgradeLevel;
+				//shopModal.upgradeInfo_mc.currentLevel_txt.text = itemUpgradeLevel;
 				
 				//Update Additional Stat
 				shopModal.upgradeInfo_mc.additionalUpgrade_txt.text = "+" + String(itemUpgrades[itemUpgradeLevelIndex]);
