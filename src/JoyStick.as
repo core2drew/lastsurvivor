@@ -57,7 +57,7 @@ package
 			hide();
 			
 			//ScrollBG variable
-			speedConstant = 18; //Character Speed (illusion only)
+			speedConstant = 13; //Character Speed (illusion only)
 			maxSpeedConstant = speedConstant;
 			stageSpeed = speedConstant;
 			xSpeed = 0;

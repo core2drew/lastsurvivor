@@ -34,6 +34,8 @@ package
 		public var scrollBGWidth:Number;
 		public var zombieSpawnTimer:Timer;
 		public var survivorDied:Boolean;
+		public var levelCompleted:Boolean;
+		public var currentLevel:String;
 		
 		public function Game (main:Main) {
 			this.main = main;
@@ -164,6 +166,7 @@ package
 			showGameUI();
 			
 			survivor.show();
+			scrollBG.reset();
 			
 			isInGame = true;
 			survivorDied = false;
@@ -184,6 +187,7 @@ package
 			gameControls.reset();
 			survivor.initialAppearance();
 			survivorStat.resetStat();
+			scrollBG.reset();
 			
 			startGame();
 		}
@@ -198,6 +202,16 @@ package
 			removeAllBullets();
 			
 			modal.showGameOver();
+		}
+		
+		public function levelComplete():void {
+			survivorStat.hide();
+			joystick.hide();
+			gameControls.hide();
+			survivor.hide();
+			removeAllBullets();
+			
+			modal.showLevelComplete(1,2);//temporary
 		}
 		
 		public function pauseAllZombies():void {

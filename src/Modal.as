@@ -43,6 +43,11 @@
 		private var SFX:int;
 		private var currentView:String;
 		
+		//Level Complete
+		private var star1:MovieClip;
+		private var star2:MovieClip;
+		private var star3:MovieClip;
+		
 		
 		public function Modal(main:Main) {
 			this.main = main;
@@ -71,6 +76,7 @@
 			pause.visible = false;
 			lockmessage.visible = false;
 			level.visible = false;
+			levelcomplete.visible = false;
 			gameover.visible = false;
 			newUser.visible = false;
 			shop.visible = false;
@@ -447,7 +453,7 @@
 		
 		private function levelBtnEvent (selectedStage:int):void {
 			var myGlow:GlowFilter = new GlowFilter(); 
-			var stageLeveldata:Array = db.getLevelStars(selectedStage)
+			var stageLeveldata:Array = db.getLevelStars(selectedStage);
 			var level_btn:MovieClip = new MovieClip();
 			var firstLevel:MovieClip;
 			var star:MovieClip;
@@ -465,7 +471,7 @@
 				level_btn = levelsCon.getChildAt(i) as MovieClip;
 				
 				//Change Button Level Number
-				level_btn.level_txt.text = i + 1;
+				level_btn.level_txt.text = stageLeveldata[i].level;
 				level_btn.level_txt.visible = false;
 				
 				//Stop Buttons Stars
@@ -542,6 +548,93 @@
 		
 		/**************************** END OF SELECT LEVEL MODAL *******************************************/
 		
+		/************************************ LEVEL COMPLETE MODAL *******************************************/
+		public function showLevelComplete(level:int, stars:int/*coinsCollected:int, zombieskilled:int, zombiesCount:int*/) {
+			star1 = levelcomplete.star1_mc;
+			star2 = levelcomplete.star2_mc;
+			star3 = levelcomplete.star3_mc;
+			
+			star1.visible = false;
+			star2.visible = false;
+			star3.visible = false;
+			star1.y = 325;
+			star2.y = 325;
+			star3.y = 325;
+			
+			levelcomplete.visible = true;
+			modal.showModal();
+			
+			levelcomplete.complete_txt.text = String("Level " + level + " Complete!");
+			
+			switch (stars) 
+			{
+				case 1:
+					showOneStar();
+				break;
+				
+				case 2:
+					showTwoStar();
+				break;
+				
+				case 3:
+					showThreeStar();
+				break;
+				default:
+			}
+			
+			TweenMax.fromTo(levelcomplete, 2, { y: -540 }, { y:0, ease:Bounce.easeOut} );
+			
+			levelcomplete.mainBtn.addEventListener(MouseEvent.CLICK, levelCompleteToMain, false, 0, true);
+			levelcomplete.restartBtn.addEventListener(MouseEvent.CLICK, restartLevel, false, 0, true);
+			levelcomplete.nextBtn.addEventListener(MouseEvent.CLICK, nextLevel, false, 0, true);
+		}
+		
+		private function removeLevelCompleteEvents():void {
+			levelcomplete.mainBtn.removeEventListener(MouseEvent.CLICK, levelCompleteToMain);
+			levelcomplete.restartBtn.removeEventListener(MouseEvent.CLICK, restartLevel);
+			levelcomplete.nextBtn.removeEventListener(MouseEvent.CLICK, nextLevel);
+		}
+		
+		private function levelCompleteToMain(e:MouseEvent) {
+			backToMain();
+			removeLevelCompleteEvents();
+		}
+		
+		private function restartLevel(e:MouseEvent) {
+			restartGame();
+			removeLevelCompleteEvents();
+		}
+		
+		private function nextLevel(e:MouseEvent) {
+			
+			removeLevelCompleteEvents();
+		}
+		
+		public function showOneStar() {
+			star1.visible = true;
+			
+			star1.x = 960;
+		}
+		
+		public function showTwoStar() {
+			star1.visible = true;
+			star2.visible = true;
+			
+			star1.x = 775;
+			star2.x = 1135;
+		}
+		
+		public function showThreeStar() {
+			star1.visible = true;
+			star2.visible = true;
+			star3.visible = true;
+			
+			star1.x = 600;
+			star2.x = 960;
+			star3.x = 1315;
+		}
+		/************************************ END LEVEL COMPLETE MODAL *******************************************/
+		
 		/************************************ GAME OVER MODAL *******************************************/
 		
 		public function showGameOver(/*coinsCollected:int, zombieskilled:int, zombiesCount:int*/) {
@@ -555,24 +648,13 @@
 			gameover.playBtn.addEventListener(MouseEvent.CLICK, playAgain, false, 0, true);
 		}
 		
-		private function backToMain(e:MouseEvent):void {
-			hideAllModal();
-			
-			game.removeEnterFrame();
-			game.hideGameUI();
-			game.survivor.hide();
-			game.removeAllZombies();
-			game.removeAllBullets();
-			game.isInGame = false;
-			game.isGamePause = false;
-			main.showMainMenu();
-			
+		private function gameOverToMain(e:MouseEvent):void {
+			backToMain();
 			removeGameOverEvents();
 		}
 		
 		private function playAgain(e:MouseEvent):void {
-			hideAllModal();	
-			game.restart();
+			restartGame();
 			removeGameOverEvents();
 		}
 		
@@ -693,5 +775,24 @@
 			}, false, 0, true);
 		}
 		/********************************** END OF SHOW EXIT MODAL *****************************************/
+		
+		private function backToMain() {
+			hideAllModal();
+			
+			game.removeEnterFrame();
+			game.hideGameUI();
+			game.survivor.hide();
+			game.removeAllZombies();
+			game.removeAllBullets();
+			game.isInGame = false;
+			game.isGamePause = false;
+			
+			main.showMainMenu();
+		}
+		
+		private function restartGame() {
+			hideAllModal();	
+			game.restart();
+		}
 	}
 }

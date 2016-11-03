@@ -37,7 +37,7 @@ package
 			db = main.db;
 			game = main.game;
 			name = "survivorStat";
-			x = 685;
+			x = 550;
 			y = 80;
 		}
 		

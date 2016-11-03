@@ -59,7 +59,7 @@
 			removeEventListener(Event.ADDED_TO_STAGE, init);
 			
 			//must be from database data
-			zombieSpeed = 10; ;
+			zombieSpeed = 5;
 			zombieHitpoints = 100;
 			zombieUpdateDirectionDelay =  4;
 			

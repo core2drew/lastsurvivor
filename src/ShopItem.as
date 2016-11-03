@@ -10,8 +10,8 @@
 	import Main;
 	
 	public class ShopItem extends MovieClip {
-		private var DB:Database;
 		private var main:Main;
+		private var db:Database;
 		private var shopModal:MovieClip;
 		private var itemDetails:Object;
 		private var itemID:int;
@@ -21,6 +21,7 @@
 		private var itemWeaponBullets:int;
 		private var itemWeaponDamage:int;
 		private var itemWeaponReloadTime:int;
+		private var itemWeaponLevelReq:int;
 		private var itemUpgradeLevelIndex:int;
 		private var itemUpgradeLevel:int;
 		private var itemUpgrades:Array = new Array();
@@ -28,6 +29,7 @@
 		private var updatePriceArr:Array;
 		private var characterStatus:Object;
 		private var currentSelectedStat:int;
+		private var userCurrentLevel:int;
 		
 		public function ShopItem(itemDetails:Object, main:Main) {
 			this.itemDetails = itemDetails;
@@ -45,7 +47,8 @@
 			removeEventListener(Event.ADDED_TO_STAGE, init);
 			stop();
 			
-			DB = new Database();
+			db = main.db;
+			userCurrentLevel = db.getCurrentLevel();
 			shopModal = this.parent.parent as MovieClip;
 			
 			//Shop Item Details
@@ -55,10 +58,10 @@
 			itemPrice = itemDetails.price;//Item Price / Item PriceArr
 			itemWeaponBullets = itemDetails.bullets;//Weapon Bullets
 			itemWeaponDamage = itemDetails.damage;//Weapon Damage
+			itemWeaponLevelReq = itemDetails.levelreq;//Weapon require level
 			itemWeaponReloadTime = itemDetails.reload;//Weapon Reload Time
 			itemUpgradeLevelIndex = itemDetails.level;//Upgrade Level it must be start with zero
 			itemUpgradeLevel = itemUpgradeLevelIndex + 1; //For Upgrade Level label
-			
 			itemUpgrades = String(itemDetails.upgrades).split(",");//Upgrade Additional Array
 			
 			//Shop Item Display and Text
@@ -79,9 +82,6 @@
 			//Show Buy/Upgrade Button
 			showBuyUpgrade();
 			
-			//Full Item  Global Container
-			shopModal.itemID_txt.text = itemDetails.id;
-			
 			//Full Item Info Display Image
 			shopModal.itemDisplay_mc.gotoAndStop(itemDetails.frame);
 			
@@ -92,7 +92,7 @@
 			if (Modal.shopPickCategory == "Character") {
 				
 				//Get All Character Stats
-				characterStatus = DB.getCurrentCharacterStatus();
+				characterStatus = db.getCurrentCharacterStatus();
 				
 				updatePriceArr = String(itemDetails.price).split(",");
 				
@@ -134,11 +134,12 @@
 				shopModal.weaponInfo_mc.visible = true;
 				shopModal.weaponInfo_mc.damage_txt.text = itemDetails.damage;
 				
-				currentBullets = String(DB.getCurrentBullet(itemDetails.id));
+				currentBullets = String(db.getCurrentBullet(itemDetails.id));
 				shopModal.weaponInfo_mc.bullet_txt.text = itemDetails.bullets + "/" + currentBullets
 				
 				shopModal.weaponInfo_mc.reload_txt.text = String(itemDetails.reload) + " sec";
 				shopModal.weaponInfo_mc.price_txt.text = Helper.formatCost(itemDetails.price.toString(), 0, "", 0);
+				
 			}
 		}
 		
@@ -155,13 +156,27 @@
 			//Buy/Upgrade Button Positioning
 			buyUpgrade_btn.x = -10;
 			buyUpgrade_btn.y = 370.2	
+			buyUpgrade_btn.visible = false;
+			
 			
 			//Change Text of Buy/Upgrade Button
 			if (Modal.shopPickCategory == "Character") {
 				buyUpgrade_btn.text_txt.text = "Upgrade";
+				buyUpgrade_btn.visible = true;
 			}
-			else if (Modal.shopPickCategory == "Weaponry") {
+			
+			if (Modal.shopPickCategory == "Weaponry") {
 				buyUpgrade_btn.text_txt.text = "Buy";
+				shopModal.weaponInfo_mc.unlock_txt.visible = false;
+				
+				if (userCurrentLevel >= itemWeaponLevelReq) {
+					buyUpgrade_btn.visible = true;
+				}
+				else {
+					trace("Show Unlock Label");
+					shopModal.weaponInfo_mc.unlock_txt.text = "Unlock At Level " + String(itemWeaponLevelReq);
+					shopModal.weaponInfo_mc.unlock_txt.visible = true;
+				}
 			}
 			
 			buyUpgrade_btn.addEventListener(MouseEvent.CLICK, buyItemOrUpgradeChar);
@@ -176,13 +191,14 @@
 			var bulletTxt:String;
 			
 			//Current Coins Item Conditon
-			currentCoin = DB.getCoins();
+			currentCoin = db.getCoins();
 			
 			//Item price
 			if (Modal.shopPickCategory === "Character") {
 				itemPrice = parseInt(shopModal.upgradeInfo_mc.upgradePrice_mc.price_txt.text.replace(",", ""));
 			}
-			else if (Modal.shopPickCategory === "Weaponry") {
+			
+			if (Modal.shopPickCategory === "Weaponry") {
 				itemPrice = parseInt(shopModal.weaponInfo_mc.price_txt.text.replace(",", ""));
 			}
 			
@@ -198,37 +214,37 @@
 					switch (itemName) 
 					{
 						case "Health":
-							DB.upgradeCharacterStatus("health", int(updatedUpgradeStat) );
+							db.upgradeCharacterStatus("health", int(updatedUpgradeStat) );
 							
 							//Upgrade Stat
 							shopModal.upgradeInfo_mc.currentStat_txt.text = updatedUpgradeStat;
 							
 							//Get All Character Stats
-							characterStatus = DB.getCurrentCharacterStatus();
+							characterStatus = db.getCurrentCharacterStatus();
 							
 							currentSelectedStat = characterStatus.health;
 						break;
 						
 						case "Armor":
-							DB.upgradeCharacterStatus("armor", int(updatedUpgradeStat) );
+							db.upgradeCharacterStatus("armor", int(updatedUpgradeStat) );
 							
 							//Upgrade Stat
 							shopModal.upgradeInfo_mc.currentStat_txt.text = updatedUpgradeStat;
 							
 							//Get All Character Stats
-							characterStatus = DB.getCurrentCharacterStatus();
+							characterStatus = db.getCurrentCharacterStatus();
 							
 							currentSelectedStat = characterStatus.armor;
 						break;
 						
 						case "Gun Slot":
-							DB.upgradeCharacterStatus("gun_slot", int(updatedUpgradeStat) );
+							db.upgradeCharacterStatus("gun_slot", int(updatedUpgradeStat) );
 							
 							//Upgrade Stat
 							shopModal.upgradeInfo_mc.currentStat_txt.text = updatedUpgradeStat;
 							
 							//Get All Character Stats
-							characterStatus = DB.getCurrentCharacterStatus();
+							characterStatus = db.getCurrentCharacterStatus();
 							
 							currentSelectedStat = characterStatus.gun_slot;
 						break;
@@ -246,7 +262,7 @@
 					
 					main.coins.updateCoins(itemPrice);//Update the Coin Container
 					
-					DB.updateUpgradeShopLevel(itemID, itemUpgradeLevelIndex);//Update UpgradeShop Table
+					db.updateUpgradeShopLevel(itemID, itemUpgradeLevelIndex);//Update UpgradeShop Table
 					
 					checkIfMaxUpgradeLevel();
 				}
@@ -256,18 +272,18 @@
 					bullet = int(bulletTxt.substring(0, bulletTxt.indexOf("/")));
 					
 					//Update Weaponry Table
-					checkWeaponry = DB.checkWeaponry(itemID);
+					checkWeaponry = db.checkWeaponry(itemID);
 					if (checkWeaponry > 0) {
 						//Just Add the bullets of the bought weapon
 						//Bullet limit = 999 the excess will be void
-						DB.updateBulletsWeaponry(itemID, bullet);
+						db.updateBulletsWeaponry(itemID, bullet);
 					} else {
 						//Add the weapon to weaponry table with bullets
-						DB.addToWeaponry(itemID, itemName, bullet);
+						db.addToWeaponry(itemID, itemName, bullet);
 					}
 					
 					//Update bullet_txt current bullet
-					currentBullet = DB.getCurrentBullet(itemID);
+					currentBullet = db.getCurrentBullet(itemID);
 					shopModal.weaponInfo_mc.bullet_txt.text = String(bullet) + "/" + String(currentBullet);
 				}
 			}

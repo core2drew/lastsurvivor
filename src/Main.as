@@ -92,8 +92,8 @@ package
 			
 			mainStage.addChild(scrollBG);
 			mainStage.addChild(loadingScreen);
-			mainStage.addChild(menu);
 			mainStage.addChild(map);
+			mainStage.addChild(menu);
 			mainStage.addChild(user);
 			mainStage.addChild(stars);
 			mainStage.addChild(coins);

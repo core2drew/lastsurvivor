@@ -3,15 +3,17 @@
 	import flash.display.MovieClip;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
+	import Database;
 	
 	public class Map extends MovieClip {
 		
 		private var main:Main;
+		private var db:Database;
 		private var modal:Modal;
+		private var userCurrentLevel:int;
 		
 		public function Map(main:Main) {
 			this.main = main;
-			
 			if (stage) {
 				init();
 			}
@@ -26,10 +28,11 @@
 			removeEventListener(Event.ADDED_TO_STAGE, init);
 			
 			hide();
+			db = main.db;
 			modal = main.modal;
-			x = 1600;
-			y = 480;
-			
+			x = 0;
+			y = 0;
+			userCurrentLevel = db.getCurrentLevel();
 			addEventListener(MouseEvent.CLICK, mapStageClicked);
 			
 			//Lock All Stage
@@ -38,7 +41,25 @@
 				mapStages.gotoAndStop(1);
 			}
 			
-			stage1.gotoAndStop(2);//Unlock Stage 1
+			if (userCurrentLevel >= 1) {
+				stage1.gotoAndStop(2);//Unlock Stage 1
+			}
+			
+			if (userCurrentLevel >= 8) {
+				stage2.gotoAndStop(2);//Unlock Stage 2
+			}
+			
+			if (userCurrentLevel >= 16) {
+				stage3.gotoAndStop(2);//Unlock Stage 3
+			}
+			
+			if (userCurrentLevel >= 24) {
+				stage4.gotoAndStop(2);//Unlock Stage 4
+			}
+			
+			if (userCurrentLevel >= 36) {
+				stage5.gotoAndStop(2);//Unlock Stage 5
+			}
 		}
 		
 		public function mapStageClicked (e:MouseEvent):void {

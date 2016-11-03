@@ -52,7 +52,7 @@
 			gravityConstant = 27;
 			jumpConstant = -27;
 			maxJumpHeight = 380;
-			ground = 830;//This is the ground of the scrollBG
+			ground = 950;//This is the ground of the scrollBG
 						
 			x = 1500;
 			y = 960;
