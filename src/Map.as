@@ -57,7 +57,7 @@
 				stage4.gotoAndStop(2);//Unlock Stage 4
 			}
 			
-			if (userCurrentLevel >= 36) {
+			if (userCurrentLevel >= 32) {
 				stage5.gotoAndStop(2);//Unlock Stage 5
 			}
 		}

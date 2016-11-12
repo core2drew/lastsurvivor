@@ -93,7 +93,7 @@
 			if (!invulnerable) {
 				invulnerable = true;
 				survivorStat.takeDamage(10);//Temporary zombie damage
-				TweenMax.fromTo(this, .5, { alpha:1 }, { alpha:0, repeat:5, ease:Linear.easeNone , onComplete:function() {
+				TweenMax.fromTo(this, .5, { alpha:1 }, { alpha:0, repeat:3, ease:Linear.easeNone , onComplete:function() {
 					invulnerable = false;
 					alpha = 1;
 				} });

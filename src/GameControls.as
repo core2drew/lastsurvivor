@@ -49,13 +49,13 @@
 			
 			jumping = false;
 			falling = false;
-			gravityConstant = 27;
-			jumpConstant = -27;
-			maxJumpHeight = 380;
+			gravityConstant = 23;
+			jumpConstant = -23;
+			maxJumpHeight = 600;
 			ground = 950;//This is the ground of the scrollBG
 						
-			x = 1500;
-			y = 960;
+			x = 1600;
+			y = 920;
 			jump_btn.addEventListener(TouchEvent.TOUCH_BEGIN, Jump);//Add jumping Event
 			fire_btn.addEventListener(TouchEvent.TOUCH_BEGIN, fireBullet);//Firing Event
 			
