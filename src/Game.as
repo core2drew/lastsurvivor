@@ -17,11 +17,11 @@ package
 	 * @author Drew Calupe
 	 */
 	public class Game extends MovieClip {
+		private var db:Database;
 		public var zombieArr:Array;
 		public var bulletArr:Array;
 		public var isInGame:Boolean;
 		public var isGamePause:Boolean;
-		
 		public var main:Main;
 		public var modal:Modal;
 		public var mainStage:MovieClip;
@@ -35,16 +35,20 @@ package
 		public var zombieSpawnTimer:Timer;
 		public var survivorDied:Boolean;
 		public var levelCompleted:Boolean;
-		public var currentLevel:String;
+		private var zombieVariations:Array;
 		
 		public function Game (main:Main) {
 			this.main = main;
+			db = main.db;
 			modal = main.modal;
 			zombieArr = new Array();
 			bulletArr = new Array();
 		}
 		
-		public function GameInit ():void {
+		public function GameInit (currentLevel:int):void {
+			//Get ZombiesVariation from the Database
+			var zombieInfo:Object = JSON.parse(db.getZombies(currentLevel).zombie_variation);
+			trace(zombieInfo.variation);
 			
 			//Native Device Back Button Event
 			NativeApplication.nativeApplication.addEventListener(KeyboardEvent.KEY_UP, handleBackButton, false, 0, true);
@@ -93,20 +97,22 @@ package
 		public function spawnZombie (e:TimerEvent):void {
 			var zombie:Zombie
 			var xLocation:int;
-			var direction:String;
+			var initialDirection:String;
 			var zombieWidth:Number = 212.85;
 			var spawnPointX = (Math.floor(Math.random() * (1 - 0 + 1)) + 0);//If 0 Spawn Zombie Left, Else Right
+			var variation:int;
+			var skill:int;
 			
 			if (spawnPointX) {
 				xLocation = -1 * (zombieWidth / 2);
-				direction = "right";
+				initialDirection = "right";
 			}
 			else {
 				xLocation = scrollBGWidth + (zombieWidth / 2);
-				direction = "left";
+				initialDirection = "left";
 			}
 			
-			zombie = new Zombie(main, xLocation, 950, direction , survivor, stageWidth);//Creating new Zombie Obj
+			zombie = new Zombie(main, xLocation, 950, initialDirection, variation);//Creating new Zombie Obj
 			scrollBG.addChild(zombie);
 			zombieArr.push(zombie);
 		}

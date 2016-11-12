@@ -215,6 +215,16 @@
 		}
 		/********************************* END OF CHARACTER STATUS *******************************/
 		
+		/********************************* ZOMBIE *******************************/
+		public function getZombies(currentLevel:int) {
+			sqlStatement.clearParameters();
+			sqlStatement.text = "SELECT zombie_count, zombie_variation, zombie_boss FROM Game WHERE level=@currentLevel";
+			sqlStatement.parameters["@currentLevel"] = currentLevel;
+			sqlStatement.execute();
+			result = sqlStatement.getResult().data;
+			return result[0];
+		}
+		/********************************* END OF ZOMBIE *******************************/
 		
 		/********************************* WEAPONRY **************************************/
 		

@@ -37,6 +37,8 @@
 		private var shopItemsCount:int;
 		private var shopItemsArr:Array =  new Array();
 		
+		//Select Level
+		private var currentLevel:int;
 		
 		//Settings
 		private var bgSound:int;
@@ -440,31 +442,43 @@
 			var level_btn:MovieClip = new MovieClip();
 			levelsCon =  level.levelsCon;
 			
+			//Remove Click Event in Level Button
 			for (var i = 0; i < levelsCon.numChildren; i++) {
-				//Remove All Filters
 				level_btn = levelsCon.getChildAt(i) as MovieClip;
-				level_btn.filters = [];
-				
-				//and removeEventListener
-				level_btn.removeEventListener(MouseEvent.CLICK, arguments.callee);
-				level.startBtn.removeEventListener(MouseEvent.CLICK, arguments.callee);
+				if (level_btn.level_txt.visible) { 
+					//Remove All Filters
+					trace(level_btn);
+					//and removeEventListener
+					level_btn.removeEventListener(MouseEvent.CLICK, selectLevel);
+				}
+			}
+			
+			resetLevelButtonFilter();
+			//Remove Click Event in Start Button
+			level.startBtn.removeEventListener(MouseEvent.CLICK, startGame);
+		}
+		
+		private function resetLevelButtonFilter() {
+			var levelsCon:MovieClip = new MovieClip();
+			var level_btn:MovieClip = new MovieClip();
+			levelsCon =  level.levelsCon;
+			
+			for (var i = 0; i < levelsCon.numChildren; i++) {
+				level_btn = levelsCon.getChildAt(i) as MovieClip;
+				if (level_btn.level_txt.visible) { 
+					//Remove All Filters
+					level_btn.filters = [];
+				}
 			}
 		}
 		
 		private function levelBtnEvent (selectedStage:int):void {
-			var myGlow:GlowFilter = new GlowFilter(); 
+			
 			var stageLeveldata:Array = db.getLevelStars(selectedStage);
 			var level_btn:MovieClip = new MovieClip();
 			var firstLevel:MovieClip;
 			var star:MovieClip;
 			var curTarget:MovieClip
-			
-			//Yellow Glow
-			myGlow.inner = false; 
-			myGlow.color = 0xFFDF1E; 
-			myGlow.blurX = 15; 
-			myGlow.blurY = 15; 
-			myGlow.alpha = 0.5;
 			
 			
 			for (var i = 0; i < levelsCon.numChildren; i++) {
@@ -494,7 +508,7 @@
 			firstLevel.level_txt.visible = true;
 			
 			
-			//Level 2,3,4,5... button
+			//Level 2,3,4,5... button numbering
 			for (var a = 1; a < levelsCon.numChildren; a++) {
 				if (stageLeveldata[a - 1].stars > 0) {
 					level_btn = levelsCon.getChildAt(a) as MovieClip;
@@ -506,28 +520,40 @@
 			//Adding event on each Level button
 			for (var b = 0; b < levelsCon.numChildren; b++) {
 				level_btn = levelsCon.getChildAt(b) as MovieClip;
+				
 				//Add Event only when stage is unlocked
 				if (level_btn.level_txt.visible) {
-					level_btn = levelsCon.getChildAt(b) as MovieClip;
-					level_btn.addEventListener(MouseEvent.CLICK, function(e:MouseEvent) {
-						curTarget = e.currentTarget as MovieClip;
-						resetLevelModal();
-						level.startBtn.visible = true;
-						curTarget.filters = [myGlow];
-					}, false, 0, true);
+					level_btn.addEventListener(MouseEvent.CLICK, selectLevel, false, 0, true);
 				}
 				//Start Level Event
 				level.startBtn.addEventListener(MouseEvent.CLICK, startGame, false, 0, true);
 			}
 		}
 		
+		private function selectLevel (e:MouseEvent):void {
+			var curTarget:MovieClip =  e.currentTarget as MovieClip;
+			var myGlow:GlowFilter = new GlowFilter(); 
+			
+			//Yellow Glow
+			myGlow.inner = false; 
+			myGlow.color = 0xFFDF1E; 
+			myGlow.blurX = 15; 
+			myGlow.blurY = 15; 
+			myGlow.alpha = 0.5;
+			curTarget.filters = [myGlow];
+			
+			currentLevel = curTarget.level_txt.text;
+			
+			//Show Start Button
+			level.startBtn.visible = true;
+		}
+		
 		private function startGame(e:MouseEvent):void {
 			main.hideMainMenu();
 			
-			resetLevelModal();
 			hideAllModal();
 			
-			game.GameInit();
+			game.GameInit(currentLevel);
 			
 			level.startBtn.removeEventListener(MouseEvent.CLICK, startGame);
 		}
@@ -606,7 +632,6 @@
 		}
 		
 		private function nextLevel(e:MouseEvent) {
-			
 			removeLevelCompleteEvents();
 		}
 		

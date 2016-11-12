@@ -25,28 +25,29 @@
 		private var zombieLifeBar_mc:MovieClip;
 		private var zombieBody_mc:MovieClip;
 		private var zombieLegs_mc:MovieClip;
-		private var zombieUpdateDirectionDelay:int;
+		private var directionDelayTimer:Timer;
 		private var currentZombieIndex:int;
 		private var minWalkDistance:int 
 		private var maxWalkDistance:int;
 		private var randomWalkTimer:Timer;
 		private var randomWalk_x:int;
 		private var survivorHitTest:MovieClip;
-		
+		private var collisionCoordinate:int;
 		private var main:Main;
 		private var game:Game;
 		
-		public function Zombie (main:Main, xLocation:int, yLocation:int, direction:String, survivor:Survivor, stageWidth:int) {
+		public function Zombie (main:Main, xLocation:int, yLocation:int, initialDirection:String, variation:int) {
             this.main = main;
 			game = main.game;
 			
             x = xLocation;
             y = yLocation;
 			zombieHitTest = this.body_mc.hitTest;
-			this.stageWidth = stageWidth;
-			this.survivor = survivor;
-			this.direction = direction;
+			this.stageWidth = main.stageWidth;
+			this.survivor = main.survivor;
+			this.direction = initialDirection;
 			survivorHitTest = survivor.heroBody_mc.hitTest;
+			
 			if (stage) {
 				init();
 			}
@@ -61,7 +62,6 @@
 			//must be from database data
 			zombieSpeed = 5;
 			zombieHitpoints = 100;
-			zombieUpdateDirectionDelay =  4;
 			
 			stop();
 			zombieBody_mc = this.body_mc;
@@ -69,10 +69,11 @@
 			zombieLifeBar_mc = this.lifebar_mc;
 			zombieBody_mc.stop();
 			zombieLegs_mc.stop();
-			updateDirection();
 			
 			randomWalkTimer = new Timer(5000, 1);
+			directionDelayTimer = new Timer(500, 1);
 			randomWalkTimer.addEventListener(TimerEvent.TIMER, getRandomWalk);
+			//directionDelayTimer.addEventListener(TimerEvent.TIMER, updateDirection);
 		}
 		
 		public function updateDirection ():void {
@@ -89,8 +90,9 @@
         public function locateSurvivor ():void {
             //the looping code goes here
 			//actions e.g (walking, attacking, etc.)
+			getDirection();
+			walking();
 			survivorCollision();
-			getsurvivorCurrentPosition();
         }
 		
 		public function takeDamage (damage:Number, currentZombieIndex:int):void {
@@ -107,14 +109,6 @@
             pause();
             this.parent.removeChild(this); //tell this object's "parent object" to remove this object
         }
-		
-		//Ready To Walk
-		public function startWalk ():void {
-			if (!walkingBool) {
-				walkingBool = true;
-				attackingBool = false;
-			}
-		}
 		
 		public function animateWalkingLegs ():void {
 			zombieLegs_mc.play();
@@ -152,43 +146,39 @@
 		
 		//Walking Zombie
 		public function walking ():void {
-			
-			//Zombie Legs Animation
-			animateWalkingLegs();
-			
-			//Zombie Body Animation
-			animateWalkingBody();
+			if (collisionCoordinate != survivorPosition) {
+				//Zombie Legs Animation
+				animateWalkingLegs();
+				
+				//Zombie Body Animation
+				animateWalkingBody();
+				
+			}else {
+				stopWalking();
+			}
 		}
 		
 		//Stop Zombie
 		public function stopWalking ():void {
-			walkingBool = false;
 			stop();
 			zombieLegs_mc.stop();
-			zombieBody_mc.stop();
 		}
 		
 		public function survivorCollision ():void {
 			//Damage the player
 			if (zombieHitTest.hitTestObject(survivorHitTest)) {
-				stopWalking();
 				if (!attackingBool) {
 					zombieBody_mc.gotoAndStop(91);
 					attackingBool = true;
 				}
+				collisionCoordinate = survivorPosition;
 				animateAttacking();
-			}
-			else {
-				if (!walkingBool) {
-					startWalk();
-				}
-				else {
-					walking();
-				}
+			}else {
+				attackingBool = false;
 			}
 		}
 		
-		public function getsurvivorCurrentPosition ():void {
+		public function getDirection ():void {
 			if (survivor.survivorCurrentPositon === "center") {
 				survivorPosition = (Math.abs(this.parent.x) + main.stageWidth) - main.stageWidth / 2;
 				if (survivorPosition < x) {
@@ -205,12 +195,13 @@
 				}else {
 					direction = 'right';
 				}
-				
 			}
+			
 			updateDirection();
 		}
 		
 		public function pause():void {
+			directionDelayTimer.stop();
 			stopWalking();
 		}
 		
@@ -230,7 +221,7 @@
 			else if (randomWalk_x == x) {
 				stopWalking();
 			}
-			updateDirection();
+			directionDelayTimer.start();
 		}
 		
 		private function getRandomWalk(e:TimerEvent):void {
@@ -243,6 +234,10 @@
 		
 		public function hide():void {
 			visible = false;
+		}
+		
+		public function skill():void {
+			
 		}
 	}
 }
