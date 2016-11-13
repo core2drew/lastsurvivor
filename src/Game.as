@@ -67,12 +67,11 @@ package
 			
 			stageWidth = main._stage.stageWidth;
 			scrollBGWidth = scrollBG.width;
-			
 			startGame();
 		}
 		
 		public function loop (e:Event):void {
-			if (!survivorDied) {
+			if (!survivorDied && !levelCompleted) {
 				
 				//Spawing Zombie Condition
 				if (zombieCount > 0) {
@@ -82,7 +81,6 @@ package
 				}
 				else{
 					if (zombieArr.length == 0) {
-						levelCompleted = true;
 						levelComplete();
 					}
 				}
@@ -119,7 +117,7 @@ package
 			var initialDirection:String;
 			var zombieWidth:Number = 212.85;
 			var spawnPointX = (Math.floor(Math.random() * (1 - 0 + 1)) + 0);//If 0 Spawn Zombie Left, Else Right
-			var variation:Object;
+			var zombieVariation:Object;
 			
 			if (spawnPointX) {
 				xLocation = -1 * (zombieWidth / 2);
@@ -130,11 +128,11 @@ package
 				initialDirection = "left";
 			}
 			
-			zombie = new Zombie(main, xLocation, 950, initialDirection, variation);//Creating new Zombie Obj
+			zombieVariation = JSON.parse(zombieVariations[ Helper.randomRange(0, (zombieVariations.length - 1) ) ]);
+			zombie = new Zombie(main, xLocation, 950, initialDirection, zombieVariation);//Creating new Zombie Obj
 			scrollBG.addChild(zombie);
 			zombieArr.push(zombie);
 			zombieCount--;
-			trace(zombieCount);
 		}
 		
 		public function handleBackButton (e:KeyboardEvent):void {
@@ -177,7 +175,7 @@ package
 		}
 		
 		public function pause ():void {
-			if (!survivorDied) {
+			if (!survivorDied && !levelCompleted) {
 				isGamePause = true;
 				main.modal.showPause();
 				pauseAllZombies();
@@ -198,6 +196,7 @@ package
 			isInGame = true;
 			survivorDied = false;
 			isGamePause = false;
+			levelCompleted = false;
 			
 			pauseAllZombies();
 			removeAllZombies();
@@ -232,6 +231,8 @@ package
 		}
 		
 		public function levelComplete():void {
+			
+			levelCompleted = true;
 			survivorStat.hide();
 			joystick.hide();
 			gameControls.hide();

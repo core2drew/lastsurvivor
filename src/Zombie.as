@@ -33,6 +33,7 @@
 		private var randomWalk_x:int;
 		private var survivorHitTest:MovieClip;
 		private var collisionCoordinate:int;
+		private var variation:Object;
 		private var main:Main;
 		private var game:Game;
 		
@@ -46,6 +47,7 @@
 			this.stageWidth = main.stageWidth;
 			this.survivor = main.survivor;
 			this.direction = initialDirection;
+			this.variation = variation;
 			survivorHitTest = survivor.heroBody_mc.hitTest;
 			
 			if (stage) {
@@ -60,11 +62,12 @@
 			removeEventListener(Event.ADDED_TO_STAGE, init);
 			
 			//must be from database data
-			zombieSpeed = 5;
-			zombieHitpoints = 100;
+			zombieSpeed = variation.speed;
+			zombieHitpoints = variation.health;
 			
 			stop();
 			zombieBody_mc = this.body_mc;
+			zombieBody_mc.zbody_mc.gotoAndStop(variation.appearance);
 			zombieLegs_mc = this.legs_mc;
 			zombieLifeBar_mc = this.lifebar_mc;
 			zombieBody_mc.stop();
@@ -234,10 +237,6 @@
 		
 		public function hide():void {
 			visible = false;
-		}
-		
-		public function skill():void {
-			
 		}
 	}
 }

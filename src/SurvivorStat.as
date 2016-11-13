@@ -80,7 +80,7 @@ package
 			healthPercentage = currentHealthPoints / healthPoints;
 			healthBar.mask.scaleX = healthPercentage;
 			
-			if (currentHealthPoints <= 0 && !game.survivorDied) {
+			if (currentHealthPoints <= 0) {
 				game.gameOver();
 			}
 		}

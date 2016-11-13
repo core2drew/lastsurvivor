@@ -446,8 +446,6 @@
 			for (var i = 0; i < levelsCon.numChildren; i++) {
 				level_btn = levelsCon.getChildAt(i) as MovieClip;
 				if (level_btn.level_txt.visible) { 
-					//Remove All Filters
-					trace(level_btn);
 					//and removeEventListener
 					level_btn.removeEventListener(MouseEvent.CLICK, selectLevel);
 				}
