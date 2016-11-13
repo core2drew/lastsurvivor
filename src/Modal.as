@@ -109,6 +109,11 @@
 				pause.restartBtn.removeEventListener(MouseEvent.CLICK, arguments.callee);
 				hideAllModal();
 			});
+			
+			pause.exitBtn.addEventListener(MouseEvent.CLICK, function (e:MouseEvent) {
+				backToMain();
+				pause.exitBtn.removeEventListener(MouseEvent.CLICK, arguments.callee);
+			});
 		}
 		/***************************************** END OF PAUSE MODAL *******************************************/
 
@@ -809,6 +814,7 @@
 			game.removeAllBullets();
 			game.isInGame = false;
 			game.isGamePause = false;
+			game.levelCompleted = false;
 			
 			main.showMainMenu();
 		}

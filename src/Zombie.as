@@ -23,8 +23,8 @@
 		public var zombieHitpoints:Number;
 		private var zombieHitTest:MovieClip;
 		private var zombieLifeBar_mc:MovieClip;
-		private var zombieBody_mc:MovieClip;
-		private var zombieLegs_mc:MovieClip;
+		private var zombieUpper_mc:MovieClip;
+		private var zombieLower_mc:MovieClip;
 		private var directionDelayTimer:Timer;
 		private var currentZombieIndex:int;
 		private var minWalkDistance:int 
@@ -59,19 +59,21 @@
         }
 		
 		public function init(e:Event = null) {
+			stop();
 			removeEventListener(Event.ADDED_TO_STAGE, init);
+			
+			zombieLifeBar_mc = this.lifebar_mc;
+			zombieUpper_mc = this.body_mc;
+			zombieLower_mc = this.legs_mc;
+			zombieUpper_mc.stop();
+			zombieLower_mc.stop();
 			
 			//must be from database data
 			zombieSpeed = variation.speed;
 			zombieHitpoints = variation.health;
 			
-			stop();
-			zombieBody_mc = this.body_mc;
-			zombieBody_mc.zbody_mc.gotoAndStop(variation.appearance);
-			zombieLegs_mc = this.legs_mc;
-			zombieLifeBar_mc = this.lifebar_mc;
-			zombieBody_mc.stop();
-			zombieLegs_mc.stop();
+			//appearance
+			zombieUpper_mc.zbody_mc.gotoAndStop(variation.appearance);
 			
 			randomWalkTimer = new Timer(5000, 1);
 			directionDelayTimer = new Timer(500, 1);
@@ -89,7 +91,7 @@
 				this.rotationY = 180;
 			}
 		}
-
+		
         public function locateSurvivor ():void {
             //the looping code goes here
 			//actions e.g (walking, attacking, etc.)
@@ -114,12 +116,12 @@
         }
 		
 		public function animateWalkingLegs ():void {
-			zombieLegs_mc.play();
-			if (zombieLegs_mc.currentFrame == 90) {
-				zombieLegs_mc.gotoAndPlay(30);
+			zombieLower_mc.play();
+			if (zombieLower_mc.currentFrame == 90) {
+				zombieLower_mc.gotoAndPlay(30);
 			}
 			
-			if (zombieLegs_mc.currentLabel == "Forward") {
+			if (zombieLower_mc.currentLabel == "Forward") {
 				if (direction == "left") {
 					x += -1 * (zombieSpeed);
 				}
@@ -130,19 +132,19 @@
 		}
 		
 		public function animateWalkingBody ():void {
-			zombieBody_mc.play();
-			if (zombieBody_mc.currentFrame == 90) {
-				zombieBody_mc.gotoAndPlay(30);
+			zombieUpper_mc.play();
+			if (zombieUpper_mc.currentFrame == 90) {
+				zombieUpper_mc.gotoAndPlay(30);
 			}
 		}
 		
 		public function animateAttacking ():void {
-			zombieBody_mc.play();
-			if (zombieBody_mc.currentFrame == 151) {
-				zombieBody_mc.gotoAndPlay(91);
+			zombieUpper_mc.play();
+			if (zombieUpper_mc.currentFrame == 151) {
+				zombieUpper_mc.gotoAndPlay(91);
 			}
 			
-			if (zombieBody_mc.currentFrame == 110) {
+			if (zombieUpper_mc.currentFrame == 110) {
 				survivor.attacked();	
 			}
 		}
@@ -155,7 +157,6 @@
 				
 				//Zombie Body Animation
 				animateWalkingBody();
-				
 			}else {
 				stopWalking();
 			}
@@ -164,14 +165,14 @@
 		//Stop Zombie
 		public function stopWalking ():void {
 			stop();
-			zombieLegs_mc.stop();
+			zombieLower_mc.stop();
 		}
 		
 		public function survivorCollision ():void {
 			//Damage the player
 			if (zombieHitTest.hitTestObject(survivorHitTest)) {
 				if (!attackingBool) {
-					zombieBody_mc.gotoAndStop(91);
+					zombieUpper_mc.gotoAndStop(91);
 					attackingBool = true;
 				}
 				collisionCoordinate = survivorPosition;
