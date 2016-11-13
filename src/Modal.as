@@ -553,7 +553,7 @@
 		
 		private function startGame(e:MouseEvent):void {
 			main.hideMainMenu();
-			
+			resetLevelModal();
 			hideAllModal();
 			game.currentLevel = currentLevel;
 			game.GameInit();
