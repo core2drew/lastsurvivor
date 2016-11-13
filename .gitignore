@@ -1,1 +1,8 @@
 src/LastSurvivor.fla
+Lastsurvivor.hxproj
+bin/LastSurvivorApp-app.xml
+bin/LastSurvivorApp.swf
+bin/expressInstall.swf
+bin/index.html
+bin/js/swfobject.js
+src/Main.hx
