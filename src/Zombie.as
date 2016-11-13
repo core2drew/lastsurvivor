@@ -36,7 +36,7 @@
 		private var main:Main;
 		private var game:Game;
 		
-		public function Zombie (main:Main, xLocation:int, yLocation:int, initialDirection:String, variation:int) {
+		public function Zombie (main:Main, xLocation:int, yLocation:int, initialDirection:String, variation:Object) {
             this.main = main;
 			game = main.game;
 			

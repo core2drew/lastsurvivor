@@ -35,7 +35,13 @@ package
 		public var zombieSpawnTimer:Timer;
 		public var survivorDied:Boolean;
 		public var levelCompleted:Boolean;
+		public var currentLevel:int;
+		
+		private var zombieLevelObject:Object;
+		private var zombieCount:int;
+		private var zombieShowCount:int;
 		private var zombieVariations:Array;
+		private var zombieBoss:Boolean;
 		
 		public function Game (main:Main) {
 			this.main = main;
@@ -45,11 +51,7 @@ package
 			bulletArr = new Array();
 		}
 		
-		public function GameInit (currentLevel:int):void {
-			//Get ZombiesVariation from the Database
-			var zombieInfo:Object = JSON.parse(db.getZombies(currentLevel).zombie_variation);
-			trace(zombieInfo.variation);
-			
+		public function GameInit ():void {
 			//Native Device Back Button Event
 			NativeApplication.nativeApplication.addEventListener(KeyboardEvent.KEY_UP, handleBackButton, false, 0, true);
 			
@@ -71,9 +73,18 @@ package
 		
 		public function loop (e:Event):void {
 			if (!survivorDied) {
+				
 				//Spawing Zombie Condition
-				if (zombieArr.length < 1) {
-					zombieSpawnTimer.start();
+				if (zombieCount > 0) {
+					if (zombieArr.length < zombieShowCount) {
+						zombieSpawnTimer.start();
+					}
+				}
+				else{
+					if (zombieArr.length == 0) {
+						levelCompleted = true;
+						levelComplete();
+					}
 				}
 				
 				survivor.moves();
@@ -94,14 +105,21 @@ package
 			}
 		}
 		
+		private function zombieInit():void {
+			zombieLevelObject = db.getZombies(currentLevel);
+			zombieCount = int(zombieLevelObject.zombie_count);
+			zombieShowCount = int(zombieLevelObject.zombie_show_count);
+			zombieVariations = String(zombieLevelObject.zombie_variation).split(";");
+			zombieBoss = Boolean(zombieLevelObject.zombie_boss);
+		}
+		
 		public function spawnZombie (e:TimerEvent):void {
 			var zombie:Zombie
 			var xLocation:int;
 			var initialDirection:String;
 			var zombieWidth:Number = 212.85;
 			var spawnPointX = (Math.floor(Math.random() * (1 - 0 + 1)) + 0);//If 0 Spawn Zombie Left, Else Right
-			var variation:int;
-			var skill:int;
+			var variation:Object;
 			
 			if (spawnPointX) {
 				xLocation = -1 * (zombieWidth / 2);
@@ -115,6 +133,8 @@ package
 			zombie = new Zombie(main, xLocation, 950, initialDirection, variation);//Creating new Zombie Obj
 			scrollBG.addChild(zombie);
 			zombieArr.push(zombie);
+			zombieCount--;
+			trace(zombieCount);
 		}
 		
 		public function handleBackButton (e:KeyboardEvent):void {
@@ -168,6 +188,7 @@ package
 		}
 		
 		public function startGame():void {
+			zombieInit();
 			main.hideMainMenu();
 			showGameUI();
 			

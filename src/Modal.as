@@ -552,8 +552,8 @@
 			main.hideMainMenu();
 			
 			hideAllModal();
-			
-			game.GameInit(currentLevel);
+			game.currentLevel = currentLevel;
+			game.GameInit();
 			
 			level.startBtn.removeEventListener(MouseEvent.CLICK, startGame);
 		}

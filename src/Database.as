@@ -88,8 +88,13 @@
 		
 		/************************ GAME *******************************/
 		
-		public function getZombieList () {
-			//Available Zombie for Current Level/Current Stage
+		public function getZombies(currentLevel:int) {
+			sqlStatement.clearParameters();
+			sqlStatement.text = "SELECT zombie_count, zombie_show_count, zombie_variation, zombie_boss FROM Game WHERE level=@currentLevel";
+			sqlStatement.parameters["@currentLevel"] = currentLevel;
+			sqlStatement.execute();
+			result = sqlStatement.getResult().data;
+			return result[0];
 		}
 		
 		/************************ END GAME *******************************/
@@ -214,17 +219,6 @@
 			sqlStatement.execute();
 		}
 		/********************************* END OF CHARACTER STATUS *******************************/
-		
-		/********************************* ZOMBIE *******************************/
-		public function getZombies(currentLevel:int) {
-			sqlStatement.clearParameters();
-			sqlStatement.text = "SELECT zombie_count, zombie_variation, zombie_boss FROM Game WHERE level=@currentLevel";
-			sqlStatement.parameters["@currentLevel"] = currentLevel;
-			sqlStatement.execute();
-			result = sqlStatement.getResult().data;
-			return result[0];
-		}
-		/********************************* END OF ZOMBIE *******************************/
 		
 		/********************************* WEAPONRY **************************************/
 		
