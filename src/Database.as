@@ -97,11 +97,19 @@
 			return result[0];
 		}
 		
+		public function getTimelimit(currentLevel:int) {
+			sqlStatement.clearParameters();
+			sqlStatement.text = "SELECT timelimit FROM Game WHERE level=@currentLevel";
+			sqlStatement.parameters["@currentLevel"] = currentLevel;
+			sqlStatement.execute();
+			result = sqlStatement.getResult().data;
+			return result[0].timelimit;
+		}
+		
 		/************************ END GAME *******************************/
 		
 		
 		/************************ MAP ******************************/
-		
 		
 		public function getLevelStars (stage:int) {
 			//Display the current stars of level on selected stage

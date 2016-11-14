@@ -28,6 +28,7 @@ package
 		public var scrollBG:ScrollingBackground;
 		public var joystick:JoyStick;
 		public var survivor:Survivor;
+		public var countDown:CountDown;
 		public var survivorStat:SurvivorStat;
 		public var gameControls:GameControls;
 		public var stageWidth:int;
@@ -47,6 +48,7 @@ package
 			this.main = main;
 			db = main.db;
 			modal = main.modal;
+			countDown = main.countDown;
 			zombieArr = new Array();
 			bulletArr = new Array();
 		}
@@ -67,6 +69,9 @@ package
 			
 			stageWidth = main._stage.stageWidth;
 			scrollBGWidth = scrollBG.width;
+			
+			countdownInit();
+			zombieInit();
 			startGame();
 		}
 		
@@ -94,14 +99,29 @@ package
 				}
 			}
 			else {
-				
 				//for (var x = 0; x < zombieArr.length; x++) {
 					//zombieArr[x].randomWalk();
 				//}
-				
 				zombieSpawnTimer.stop();
 			}
 		}
+		
+		private function countdownInit() {
+			countDown.show()
+			countDown.TARGET_SECONDS = db.getTimelimit(currentLevel);
+			countDown.START();
+			countDown.addEventListener(Event.CHANGE, onUpdateCountdown);
+			countDown.addEventListener(Event.COMPLETE, onCompleteCountdown);
+		}
+		
+		private function onUpdateCountdown(evt:Event):void {
+            var timeRemaining:Object = countDown.timeRemaining;
+           countDown.countDownText.text = timeRemaining.minutes + ":" +timeRemaining.seconds;
+        }
+		
+        private function onCompleteCountdown(evt:Event):void{
+            trace ("Times up!");
+        }
 		
 		private function zombieInit():void {
 			zombieLevelObject = db.getZombies(currentLevel);
@@ -186,10 +206,10 @@ package
 		}
 		
 		public function startGame():void {
-			zombieInit();
 			main.hideMainMenu();
 			showGameUI();
 			
+			countDown.show();
 			survivor.show();
 			scrollBG.reset();
 			
@@ -221,6 +241,7 @@ package
 		public function gameOver():void {
 			
 			survivorDied = true;
+			countDown.hide();
 			survivorStat.hide();
 			joystick.hide();
 			gameControls.hide();
@@ -233,6 +254,7 @@ package
 		public function levelComplete():void {
 			
 			levelCompleted = true;
+			countDown.hide();
 			survivorStat.hide();
 			joystick.hide();
 			gameControls.hide();

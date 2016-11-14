@@ -46,6 +46,7 @@ package
 		public var scrollBG:ScrollingBackground;
 		public var survivor:Survivor;
 		public var survivorStat:SurvivorStat;
+		public var countDown:CountDown;
 		public var joystick:JoyStick
 		public var gameControls:GameControls;
 		public var game:Game;
@@ -78,6 +79,7 @@ package
 			db = new Database();
 			scrollBG = new ScrollingBackground(this);
 			modal = new Modal(this);
+			countDown = new CountDown();
 			survivorStat = new SurvivorStat(this);
 			survivor = new Survivor(this);
 			joystick = new JoyStick(this);
@@ -91,6 +93,7 @@ package
 			coins = new Coins(this);
 			
 			mainStage.addChild(scrollBG);
+			mainStage.addChild(countDown);
 			mainStage.addChild(loadingScreen);
 			mainStage.addChild(map);
 			mainStage.addChild(menu);
