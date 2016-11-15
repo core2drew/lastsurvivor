@@ -38,6 +38,7 @@ package
 		public var levelCompleted:Boolean;
 		public var currentLevel:int;
 		
+		private var timeRemaining:Object;
 		private var zombieLevelObject:Object;
 		private var zombieCount:int;
 		private var zombieShowCount:int;
@@ -107,16 +108,18 @@ package
 		}
 		
 		private function countdownInit() {
-			countDown.show()
+			countDown.show();
 			countDown.TARGET_SECONDS = db.getTimelimit(currentLevel);
+			timeRemaining = countDown.timeRemaining;
 			countDown.START();
+			countDown.countDownText.text = timeRemaining.minutes + ":" + timeRemaining.seconds;
 			countDown.addEventListener(Event.CHANGE, onUpdateCountdown);
 			countDown.addEventListener(Event.COMPLETE, onCompleteCountdown);
 		}
 		
 		private function onUpdateCountdown(evt:Event):void {
-            var timeRemaining:Object = countDown.timeRemaining;
-           countDown.countDownText.text = timeRemaining.minutes + ":" +timeRemaining.seconds;
+           timeRemaining = countDown.timeRemaining;
+           countDown.countDownText.text = timeRemaining.minutes + ":" + timeRemaining.seconds;
         }
 		
         private function onCompleteCountdown(evt:Event):void{

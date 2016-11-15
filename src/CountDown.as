@@ -81,12 +81,8 @@ package  {
         private function onCountdown(evt:TimerEvent):void
         {
             secondsRemaining--;
-            var days:int = Math.floor(secondsRemaining/(3600*24));
-            var hours:int = Math.floor((secondsRemaining / 3600)%24);
             var minutes:int = Math.floor((secondsRemaining / 60) % 60);
             var seconds:int = secondsRemaining%60;
-            //timeRemaining.days = days;
-            //timeRemaining.hours = hours;
             timeRemaining.minutes = minutes;
             timeRemaining.seconds = seconds;
             if(secondsRemaining < 0)
