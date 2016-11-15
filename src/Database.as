@@ -105,11 +105,11 @@
 			result = sqlStatement.getResult().data;
 			return result[0].timelimit;
 		}
-		
 		/************************ END GAME *******************************/
 		
 		
 		/************************ MAP ******************************/
+		
 		
 		public function getLevelStars (stage:int) {
 			//Display the current stars of level on selected stage

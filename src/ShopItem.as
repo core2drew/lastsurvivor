@@ -19,6 +19,7 @@
 		private var itemName:String;
 		private var itemPrice;
 		private var itemWeaponBullets:int;
+		private var itemWeaponMaxBullets:int;
 		private var itemWeaponDamage:int;
 		private var itemWeaponReloadTime:int;
 		private var itemWeaponLevelReq:int;
@@ -57,13 +58,13 @@
 			itemName = itemDetails.name;//Item Name
 			itemPrice = itemDetails.price;//Item Price / Item PriceArr
 			itemWeaponBullets = itemDetails.bullets;//Weapon Bullets
+			itemWeaponMaxBullets = itemDetails.max_bullets;
 			itemWeaponDamage = itemDetails.damage;//Weapon Damage
 			itemWeaponLevelReq = itemDetails.levelreq;//Weapon require level
 			itemWeaponReloadTime = itemDetails.reload;//Weapon Reload Time
 			itemUpgradeLevelIndex = itemDetails.level;//Upgrade Level it must be start with zero
 			itemUpgradeLevel = itemUpgradeLevelIndex + 1; //For Upgrade Level label
 			itemUpgrades = String(itemDetails.upgrades).split(",");//Upgrade Additional Array
-			
 			//Shop Item Display and Text
 			this.itemText.text = itemDetails.name;
 			this.gotoAndStop(itemDetails.frame);
@@ -132,13 +133,13 @@
 				
 				//Show Weapon Item Info
 				shopModal.weaponInfo_mc.visible = true;
-				shopModal.weaponInfo_mc.damage_txt.text = itemDetails.damage;
+				shopModal.weaponInfo_mc.damage_txt.text = String(itemWeaponDamage);
 				
-				currentBullets = String(db.getCurrentBullet(itemDetails.id));
-				shopModal.weaponInfo_mc.bullet_txt.text = itemDetails.bullets + "/" + currentBullets
-				
-				shopModal.weaponInfo_mc.reload_txt.text = String(itemDetails.reload) + " sec";
-				shopModal.weaponInfo_mc.price_txt.text = Helper.formatCost(itemDetails.price.toString(), 0, "", 0);
+				currentBullets = String(db.getCurrentBullet(itemID));
+				shopModal.weaponInfo_mc.bullet_txt.text = String(itemWeaponBullets) + "/" + currentBullets
+				shopModal.weaponInfo_mc.maxbullet_txt.text = String(itemWeaponMaxBullets);
+				shopModal.weaponInfo_mc.reload_txt.text = String(itemWeaponReloadTime) + " sec";
+				shopModal.weaponInfo_mc.price_txt.text = Helper.formatCost(String(itemPrice), 0, "", 0);
 				
 			}
 		}
@@ -173,7 +174,6 @@
 					buyUpgrade_btn.visible = true;
 				}
 				else {
-					trace("Show Unlock Label");
 					shopModal.weaponInfo_mc.unlock_txt.text = "Unlock At Level " + String(itemWeaponLevelReq);
 					shopModal.weaponInfo_mc.unlock_txt.visible = true;
 				}
@@ -276,7 +276,11 @@
 					if (checkWeaponry > 0) {
 						//Just Add the bullets of the bought weapon
 						//Bullet limit = 999 the excess will be void
-						db.updateBulletsWeaponry(itemID, bullet);
+						if (currentBullet < itemWeaponMaxBullets) {
+							db.updateBulletsWeaponry(itemID, bullet);
+						}else {
+							showShopMessage("You reach the Max Bullet Capacity of this Weapon");
+						}
 					} else {
 						//Add the weapon to weaponry table with bullets
 						db.addToWeaponry(itemID, itemName, bullet);

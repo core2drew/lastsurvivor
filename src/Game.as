@@ -108,7 +108,6 @@ package
 		}
 		
 		private function countdownInit() {
-			countDown.show();
 			countDown.TARGET_SECONDS = db.getTimelimit(currentLevel);
 			timeRemaining = countDown.timeRemaining;
 			countDown.START();
@@ -119,7 +118,7 @@ package
 		
 		private function onUpdateCountdown(evt:Event):void {
            timeRemaining = countDown.timeRemaining;
-           countDown.countDownText.text = timeRemaining.minutes + ":" + timeRemaining.seconds;
+           //countDown.countDownText.text = timeRemaining.minutes + ":" + timeRemaining.seconds;
         }
 		
         private function onCompleteCountdown(evt:Event):void{
@@ -212,7 +211,7 @@ package
 			main.hideMainMenu();
 			showGameUI();
 			
-			countDown.show();
+			//countDown.show();
 			survivor.show();
 			scrollBG.reset();
 			
