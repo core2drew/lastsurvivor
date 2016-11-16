@@ -261,6 +261,14 @@
 			sqlStatement.execute();
 		}
 		
+		public function removeExcessBullets(weaponID:int, bullets:int) {
+			sqlStatement.clearParameters();
+			sqlStatement.text = "UPDATE Weaponry SET bullets = @bullets WHERE weapon_id=@weaponID";
+			sqlStatement.parameters["@weaponID"] = weaponID;
+			sqlStatement.parameters["@bullets"] = bullets;
+			sqlStatement.execute();
+		}
+		
 		public function getCurrentBullet (weaponID:int) {
 			sqlStatement.clearParameters();
 			sqlStatement.text = "SELECT bullets FROM Weaponry WHERE weapon_id=@weaponID";

@@ -11,6 +11,8 @@ package  {
         private var secondsRemaining:int;
         private var _timeRemaining:Object = {}
         private var countdownTimer:Timer;
+		private var minutes:int;
+		private var seconds:int;
         //INFO//
  
        /* This countdown does all the math to calculate how many days/hours/minutes/seconds are left in a specific countdown.
@@ -47,7 +49,6 @@ package  {
         public function CountDown() {
 			x = 960;
 			y = 130;
-			hide();
             countdownTimer = new Timer(1000);
             countdownTimer.addEventListener(TimerEvent.TIMER, onCountdown);
         }
@@ -55,6 +56,18 @@ package  {
         public function set TARGET_SECONDS(seconds:int):void
         {
             secondsRemaining = seconds;
+
+			minutes = Math.floor((secondsRemaining / 60) % 60);
+            seconds = secondsRemaining % 60;
+			
+            timeRemaining.minutes = minutes;
+			
+			if (seconds >= 10) {
+				 timeRemaining.seconds = seconds;
+			}
+			else {
+				timeRemaining.seconds = "0" + String(seconds);
+			}
         }
  
         public function set TARGET_DATE(target:Date):void
@@ -81,10 +94,18 @@ package  {
         private function onCountdown(evt:TimerEvent):void
         {
             secondsRemaining--;
-            var minutes:int = Math.floor((secondsRemaining / 60) % 60);
-            var seconds:int = secondsRemaining%60;
+            minutes = Math.floor((secondsRemaining / 60) % 60);
+            seconds = secondsRemaining%60;
+ 
             timeRemaining.minutes = minutes;
-            timeRemaining.seconds = seconds;
+			
+			if (seconds >= 10) {
+				 timeRemaining.seconds = seconds;
+			}
+			else {
+				timeRemaining.seconds = "0" + String(seconds);
+			}
+ 
             if(secondsRemaining < 0)
             {
                 dispatchEvent(new Event(Event.COMPLETE, true));
@@ -96,6 +117,7 @@ package  {
                 dispatchEvent(new Event(Event.CHANGE, true));
             }
         }
+ 
         public function get timeRemaining():Object
         {
             return _timeRemaining;

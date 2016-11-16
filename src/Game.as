@@ -71,9 +71,10 @@ package
 			stageWidth = main._stage.stageWidth;
 			scrollBGWidth = scrollBG.width;
 			
-			countdownInit();
+			
 			zombieInit();
 			startGame();
+			countdownInit();
 		}
 		
 		public function loop (e:Event):void {
@@ -110,15 +111,15 @@ package
 		private function countdownInit() {
 			countDown.TARGET_SECONDS = db.getTimelimit(currentLevel);
 			timeRemaining = countDown.timeRemaining;
-			countDown.START();
 			countDown.countDownText.text = timeRemaining.minutes + ":" + timeRemaining.seconds;
 			countDown.addEventListener(Event.CHANGE, onUpdateCountdown);
 			countDown.addEventListener(Event.COMPLETE, onCompleteCountdown);
+			//countDown.START();
 		}
 		
 		private function onUpdateCountdown(evt:Event):void {
            timeRemaining = countDown.timeRemaining;
-           //countDown.countDownText.text = timeRemaining.minutes + ":" + timeRemaining.seconds;
+           countDown.countDownText.text = timeRemaining.minutes + ":" + timeRemaining.seconds;
         }
 		
         private function onCompleteCountdown(evt:Event):void{
@@ -183,6 +184,7 @@ package
 		}
 		
 		public function hideGameUI():void {
+			countDown.hide();
 			scrollBG.hide();
 			survivorStat.hide();
 			joystick.hide();
@@ -211,9 +213,10 @@ package
 			main.hideMainMenu();
 			showGameUI();
 			
-			//countDown.show();
 			survivor.show();
 			scrollBG.reset();
+			
+			countDown.START();
 			
 			isInGame = true;
 			survivorDied = false;
@@ -241,7 +244,6 @@ package
 		}
 		
 		public function gameOver():void {
-			
 			survivorDied = true;
 			countDown.hide();
 			survivorStat.hide();
@@ -254,7 +256,6 @@ package
 		}
 		
 		public function levelComplete():void {
-			
 			levelCompleted = true;
 			countDown.hide();
 			survivorStat.hide();
