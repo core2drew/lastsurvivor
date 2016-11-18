@@ -31,7 +31,6 @@
 		private var characterStatus:Object;
 		private var currentSelectedStat:int;
 		private var userCurrentLevel:int;
-		private var currentBullets:int;
 		
 		public function ShopItem(itemDetails:Object, main:Main) {
 			this.itemDetails = itemDetails;
@@ -130,12 +129,14 @@
 				
 			}
 			else if (Modal.shopPickCategory == "Weaponry") {
+				var currentBullets;
+				
 				//Show Weapon Item Info
 				shopModal.weaponInfo_mc.visible = true;
 				shopModal.weaponInfo_mc.damage_txt.text = String(itemWeaponDamage);
 				
-				currentBullets = db.getCurrentBullet(itemID);
-				shopModal.weaponInfo_mc.bullet_txt.text = String(itemWeaponBullets) + "/" + String(currentBullets);
+				currentBullets = String(db.getCurrentBullet(itemID));
+				shopModal.weaponInfo_mc.bullet_txt.text = String(itemWeaponBullets) + "/" + currentBullets
 				shopModal.weaponInfo_mc.maxbullet_txt.text = String(itemWeaponMaxBullets);
 				shopModal.weaponInfo_mc.reload_txt.text = String(itemWeaponReloadTime) + " sec";
 				shopModal.weaponInfo_mc.price_txt.text = Helper.formatCost(String(itemPrice), 0, "", 0);
@@ -185,6 +186,7 @@
 			var updatedUpgradeStat:String;
 			var bullet:int;
 			var currentCoin:int;
+			var currentBullet:int;
 			var checkWeaponry:int;
 			var bulletTxt:String;
 			
@@ -273,14 +275,9 @@
 					checkWeaponry = db.checkWeaponry(itemID);
 					if (checkWeaponry > 0) {
 						//Just Add the bullets of the bought weapon
-						if (currentBullets < itemWeaponMaxBullets) {
+						//Bullet limit = 999 the excess will be void
+						if (currentBullet < itemWeaponMaxBullets) {
 							db.updateBulletsWeaponry(itemID, bullet);
-							currentBullets = db.getCurrentBullet(itemID);
-							
-							//Bullet limit excess will be void :-( soooo saddd
-							if (currentBullets > itemWeaponMaxBullets) {
-								db.removeExcessBullets(itemID, itemWeaponMaxBullets);
-							}
 						}else {
 							showShopMessage("You reach the Max Bullet Capacity of this Weapon");
 						}
@@ -290,8 +287,8 @@
 					}
 					
 					//Update bullet_txt current bullet
-					currentBullets = db.getCurrentBullet(itemID);
-					shopModal.weaponInfo_mc.bullet_txt.text = String(bullet) + "/" + String(currentBullets);
+					currentBullet = db.getCurrentBullet(itemID);
+					shopModal.weaponInfo_mc.bullet_txt.text = String(bullet) + "/" + String(currentBullet);
 				}
 			}
 			else {
